@@ -36,10 +36,14 @@ mutFilterNormalDP <- function(rawmaf, vcf_add, CSQ_info, normalSampleName) {
     }
   }
   
-  maf <- rawmaf[-discard, ]
-  vcf <- vcf_add[-discard, ]
-  CSQ_f <- CSQ_info[-discard, ]
-  
+  if (is.null(discard)){
+    message('Note: no mutation filtered for deficient normal depth.')
+    return(list(rawmaf, vcf_add, CSQ_info))
+  }else {
+    maf <- rawmaf[-discard, ]
+    vcf <- vcf_add[-discard, ]
+    CSQ_f <- CSQ_info[-discard, ]
+  }
   
   if (nrow(maf) == 0) {
     
