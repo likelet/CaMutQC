@@ -2,10 +2,10 @@ library(vcfR)
 library(org.Hs.eg.db)
 library(clusterProfiler)
 
-vcfToMAF <- function(vcfFile, mAFfile = 'MAF.maf',MAFdir = './', 
-                     tumorID = 'Extracted', normalID = 'Extracted', 
-                     ncbiBuild = 'GRCh37', MAFcenter = '.', MAFstrand = '+', 
-                     species = 'homo_sapiens'){
+vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf', 
+                     MAFdir = './', tumorID = 'Extracted', 
+                     normalID = 'Extracted', ncbiBuild = 'GRCh37', 
+                     MAFcenter = '.', MAFstrand = '+'){
   
   # read vcf File
   ## check whether the file exists
@@ -33,8 +33,8 @@ vcfToMAF <- function(vcfFile, mAFfile = 'MAF.maf',MAFdir = './',
   # build data frame in MAF format
   maf <- as.data.frame(matrix(ncol = 46, nrow = nrow(vcf_main)))
   colnames(maf) <- c('Hugo_Symbol', 'Entrez_Gene_Id', 'Center', 'NCBI_Build', 
-                     'Chromosome', 'Start_Position', 'End_Position', 
-                     'Strand', 'Variant_Classification', 'Variant_Type',
+                     'Chromosome', 'Start_Position', 'End_Position', 'Strand', 
+                     'Variant_Classification', 'Variant_Type',
                      'Reference_Allele', 'Tumor_Seq_Allele1', 'Tumor_Seq_Allele2',
                      'dbSNP_RS', 'dbSNP_Val_Status', 'Tumor_Sample_Barcode',
                      'Matched_Norm_Sample_Barcode', 'Match_Norm_Seq_Allele1', 
@@ -126,7 +126,14 @@ vcfToMAF <- function(vcfFile, mAFfile = 'MAF.maf',MAFdir = './',
                              #tumorSampleName, normalSampleName)
   #}
   
+  maf[, c(15, 18:34, 37, 46)] <- '.'
+  
   for (i in 1:nrow(maf)) {
+    
+    ## ENTREZID
+    maf[i, 2] <- IDs$ENTREZID[which(IDs$ENSEMBL == CSQ_info$Gene[i])][1]
+    
+    
     ## endPos and Variant_Type
     maf[i, 7] <- getVariantType(maf[i, 6], maf[i, 11], maf[i, 13])[1]
     maf[i, 10] <- getVariantType(maf[i, 6], maf[i, 11], maf[i, 13])[2]
@@ -154,6 +161,123 @@ vcfToMAF <- function(vcfFile, mAFfile = 'MAF.maf',MAFdir = './',
                    ",")[[1]][2]
     DP <- strsplit(vcf_additional[i, tumorID], ":")[[1]][DP_loc]
     maf[i, 'VAF'] <- as.numeric(AD)/as.numeric(DP)
+    
+    ## fill in dbSNP_RS
+    if(nchar(CSQ_info[i, 'Existing_variation']) == 0) {
+      maf[i, 'dbSNP_RS'] <- 'novel'
+    } else if (str_detect(CSQ_info[i, 'Existing_variation'], 'rs')) {
+      extVar <- strsplit(CSQ_info[i, 'Existing_variation'], "&")[[1]]
+      dbSNP_loc <- str_detect(extVar, 'rs')
+      maf[i, 'dbSNP_RS'] <- paste(extVar[dbSNP_loc], collapse = ",")
+    } else {
+      maf[i, 'dbSNP_RS'] <- '.'
+    }
+    
+    ## HGVSc
+    if (nchar(CSQ_info[i, 'HGVSc']) == 0) {
+      maf[i, 'HGVSc'] <- ''
+    }else{
+      maf[i, 'HGVSc'] <- strsplit(CSQ_info[i, 'HGVSc'], split = ":")[[1]][2]
+      
+    }
+    ## HGVSp
+    if (nchar(CSQ_info[i, 'HGVSp']) == 0) {
+      maf[i, 'HGVSp'] <- ''
+    }else{
+      maf[i, 'HGVSp'] <- strsplit(CSQ_info[i, 'HGVSp'], split = ":")[[1]][2]
+      
+    }
+    
+    ## HGVSp_short
+    
+    
+    ## Transcript_ID
+    maf[i, 'Transcript_ID'] <- CSQ_info[i, 'Feature']
+    
+    ## Exon_Number
+    
+    maf[i, 'Exon_Number'] <- CSQ_info[i, 'EXON']
+    
+    ## t_depth, n_depth, t_ref_count, t_alt_count, n_ref_count, n_alt_count
+    DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
+    AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
+    tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorID], ":")[[1]][AD_loc], 
+                                  ",")[[1]][1])
+    
+    tAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorID], ":")[[1]][AD_loc], 
+                                  ",")[[1]][2])
+    tDP <- as.numeric(strsplit(vcf_additional[i, tumorID], ":")[[1]][DP_loc])
+    nDP <- as.numeric(strsplit(vcf_additional[i, normalID], ":")[[1]][DP_loc])
+    nRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalID], ":")[[1]][AD_loc], 
+                                  ",")[[1]][1])
+    nAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalID], ":")[[1]][AD_loc], 
+                                  ",")[[1]][2])
+    maf[i, "t_depth"] <- tDP
+    maf[i, "n_depth"] <- nDP
+    maf[i, "t_ref_count"] <- tRefAD
+    maf[i, "t_alt_count"] <- tAltAD
+    maf[i, "n_ref_count"] <- nRefAD
+    maf[i, "n_alt_count"] <- nAltAD
+    
+    
+    ## Tumor_Seq_Allele1, set Tumor_Seq_Allele1 same as ref
+    maf[i, 12] <- maf[i, 11]
+  }
+  
+  maf[, 'Tumor_Sample_Barcode'] <- tumorID
+  maf[, 'Matched_Norm_Sample_Barcode'] <- normalID
+  
+  
+  maf <- cbind(maf[, 1:46], Allele = CSQ_info$Allele, Gene = CSQ_info$Gene,
+               Feature = CSQ_info$Feature, Feature_type = CSQ_info$Feature_type, 
+               One_Consequence = CSQ_info$Consequence, 
+               Consequence = CSQ_info$Consequence, 
+               cDNA_position = CSQ_info$cDNA_position,
+               CDS_position = CSQ_info$CDS_position, 
+               Protein_position = CSQ_info$Protein_position,
+               Amino_acids = CSQ_info$Amino_acids, Codons = CSQ_info$Codons,
+               Existing_variation = CSQ_info$Existing_variation,
+               ALLELE_NUM = CSQ_info$ALLELE_NUM, DISTANCE = CSQ_info$DISTANCE,
+               TRANSCRIPT_STRAND = CSQ_info$STRAND, SYMBOL = CSQ_info$SYMBOL,
+               SYMBOL_SOURCE = CSQ_info$SYMBOL_SOURCE, 
+               HGNC_ID = CSQ_info$HGNC_ID, BIOTYPE = CSQ_info$BIOTYPE, 
+               CANONICAL = CSQ_info$CANONICAL, CCDS = CSQ_info$CCDS, 
+               ENSP = CSQ_info$ENSP, SWISSPROT = CSQ_info$SWISSPROT,
+               TREMBL = CSQ_info$TREMBL, UNIPARC = CSQ_info$UNIPARC,
+               RefSeq = CSQ_info$RefSeq, SIFT = CSQ_info$SIFT, 
+               PolyPhen = CSQ_info$PolyPhen, Exon = CSQ_info$EXON, 
+               INTRON = CSQ_info$INTRON, DOMAINS = CSQ_info$DOMAINS,
+               GMAF = CSQ_info$gnomAD_AF, AFR_MAF = CSQ_info$AFR_AF, 
+               AMR_MAF = CSQ_info$AMR_AF, ASN_MAF = '.', 
+               EAS_MAF = CSQ_info$EAS_AF, EUR_MAF = CSQ_info$EUR_AF,
+               SAS_MAF = CSQ_info$SAS_AF, AA_MAF = CSQ_info$AA_AF, 
+               EA_MAF = CSQ_info$EA_AF, CLIN_SIG = CSQ_info$CLIN_SIG, 
+               SOMATIC = CSQ_info$SOMATIC, PUBMED = CSQ_info$PUBMED,
+               MOTIF_NAME = CSQ_info$MOTIF_NAME, MOTIF_POS = CSQ_info$MOTIF_POS, 
+               HIGH_INF_POS = CSQ_info$HIGH_INF_POS,
+               MOTIF_SCORE_CHANGE = CSQ_info$MOTIF_SCORE_CHANGE, 
+               IMPACT = CSQ_info$IMPACT, PICK = CSQ_info$PICK, 
+               VARIANT_CLASS = CSQ_info$VARIANT_CLASS, TSL = CSQ_info$TSL, 
+               HGVS_OFFSET = CSQ_info$HGVS_OFFSET, PHENO = CSQ_info$PHENO, 
+               MINIMISED = '.', gnomAD_AF = CSQ_info$gnomAD_AF,
+               gnomAD_AFR_AF = CSQ_info$gnomAD_AFR_AF, 
+               gnomAD_AMR_AF = CSQ_info$gnomAD_AMR_AF,
+               gnomAD_EAS_AF = CSQ_info$gnomAD_EAS_AF, 
+               gnomAD_FIN_AF = CSQ_info$gnomAD_FIN_AF, 
+               gnomAD_NFE_AF = CSQ_info$gnomAD_NFE_AF, 
+               gnomAD_OTH_AF = CSQ_info$gnomAD_OTH_AF, 
+               gnomAD_SAS_AF = CSQ_info$gnomAD_SAS_AF, 
+               GENE_PHENO = CSQ_info$GENE_PHENO, FILTER = vcf_main$FILTER, 
+               VAF = maf[, 47])
+  maf <- cbind(maf, vcf_additional)
+  
+  if (writeFile) {
+    message('The generated MAF file has been saved.')
+    write.table(maf, paste0(MAFdir, MAFfile), sep = "\t", 
+                quote = FALSE, row.names = FALSE)
+    
+  } else{
+    return(maf)
   }
   
 }
