@@ -1,10 +1,35 @@
-library(vcfR)
-library(org.Hs.eg.db)
-library(clusterProfiler)
+#'
+#' @description Format transformation from VCF to MAF.
+#'
+#' @param vcfFile Directory of the VCF file that is going to be transformed. 
+#' It should be in .vcf or .vcf.gz format.
+#' @param writeFile Whether to directly write MAF file to the disk. If FALSE,
+#' a MAF data frame will be returned. If TRUE, 
+#' a MAF file will be saved in your disk. Default: FALSE.
+#' @param MAFfile File name of the exported MAF file, if writeFile is set as 
+#' TRUE.
+#' @param MAFdir Directory of the exported MAF file, if writeFile is set as 
+#' TRUE.
+#' @param tumorSampleName Name of the tumor sample in the VCF file. 
+#' If it is set as 'Extracted', tumorSampleName would be extracted automatically 
+#' from the VCF file. Default: 'Extracted'.
+#' @param normalSampleName Name the normal sample in the VCF file. 
+#' If it is set as 'Extracted', normalSampleName would be extracted automatically 
+#' from the VCF file. Default: 'Extracted'.
+#' @param ncbiBuild The reference genome used for the alignment, which will be 
+#' presented as value in 'NCBIbuild' column in MAF file. Default: 'GRCh38'.
+#' @param MAFcenter One or more genome sequencing center reporting the variant,
+#' which will be presented as value in 'Center' column in MAF file. Default: '.'.
+#' @param MAFstrand Genomic strand of the reported allele, which will be 
+#' presented as value in 'Strand' column in MAF file. Default: '+'.
+#' 
+#' @import vcfR, org.Hs.eg.db, clusterProfiler
+#' @return A MAF data frame
+
 
 vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf', 
-                     MAFdir = './', tumorID = 'Extracted', 
-                     normalID = 'Extracted', ncbiBuild = 'GRCh37', 
+                     MAFdir = './', tumorSampleName = 'Extracted', 
+                     normalSampleName = 'Extracted', ncbiBuild = 'GRCh38', 
                      MAFcenter = '.', MAFstrand = '+'){
   
   # read vcf File
@@ -89,26 +114,29 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   }
   
   ## tumor sample name and normal sample name
-  if (tumorID == 'Extracted'){
+  if (tumorSampleName == 'Extracted'){
     tumorSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('tumor_sample=', 
                                                        vcf_header$`Anno_Vcf@meta`)]
-    tumorID <- strsplit(tumorSampleLine, split = '=')[[1]][2]
+    tumorSampleName <- strsplit(tumorSampleLine, split = '=')[[1]][2]
     
   }
   
-  if (normalID == 'Extracted'){
+  if (normalSampleName == 'Extracted'){
     normalSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('normal_sample=', 
                                                        vcf_header$`Anno_Vcf@meta`)]
-    normalID <- strsplit(normalSampleLine, split = '=')[[1]][2]
+    normalSampleName <- strsplit(normalSampleLine, split = '=')[[1]][2]
   }
   
-  ### check the consistence of tumorID/normalID with colnames of FORMAT column
-  if (!(tumorID %in% colnames(vcf_additional))){
-    stop('Tumor ID is inconsistent. 
-     Set to \'Extracted\' if you want tumor ID to be extracted from VCF file')
-  }else if(!(normalID %in% colnames(vcf_additional))){
-    stop('Normal ID is inconsistent.
-     Set to \'Extracted\' if you want normal ID to be extracted from VCF file')
+  ### check the consistence of tumorSampleName/normalSampleName 
+  ### with colnames of FORMAT column
+  if (!(tumorSampleName %in% colnames(vcf_additional))){
+    stop('Tumor Sample Name is invalid. 
+     Set as \'Extracted\' if you want tumorSampleName 
+         to be extracted from VCF file')
+  }else if(!(normalSampleName %in% colnames(vcf_additional))){
+    stop('Normal Sample Name is invalid.
+     Set as \'Extracted\' if you want normalSampleName 
+         to be extracted from VCF file')
   }
   
   ## strand
@@ -157,9 +185,9 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     ## fill in VAF
     DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
     AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
-    AD <- strsplit(strsplit(vcf_additional[i, tumorID], ":")[[1]][AD_loc], 
+    AD <- strsplit(strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][AD_loc], 
                    ",")[[1]][2]
-    DP <- strsplit(vcf_additional[i, tumorID], ":")[[1]][DP_loc]
+    DP <- strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][DP_loc]
     maf[i, 'VAF'] <- as.numeric(AD)/as.numeric(DP)
     
     ## fill in dbSNP_RS
@@ -201,17 +229,19 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     ## t_depth, n_depth, t_ref_count, t_alt_count, n_ref_count, n_alt_count
     DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
     AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
-    tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorID], ":")[[1]][AD_loc], 
-                                  ",")[[1]][1])
+    tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName], 
+                                           ":")[[1]][AD_loc], ",")[[1]][1])
     
-    tAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorID], ":")[[1]][AD_loc], 
-                                  ",")[[1]][2])
-    tDP <- as.numeric(strsplit(vcf_additional[i, tumorID], ":")[[1]][DP_loc])
-    nDP <- as.numeric(strsplit(vcf_additional[i, normalID], ":")[[1]][DP_loc])
-    nRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalID], ":")[[1]][AD_loc], 
-                                  ",")[[1]][1])
-    nAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalID], ":")[[1]][AD_loc], 
-                                  ",")[[1]][2])
+    tAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName], 
+                                           ":")[[1]][AD_loc], ",")[[1]][2])
+    tDP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName], 
+                               ":")[[1]][DP_loc])
+    nDP <- as.numeric(strsplit(vcf_additional[i, normalSampleName], 
+                               ":")[[1]][DP_loc])
+    nRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName], 
+                                           ":")[[1]][AD_loc], ",")[[1]][1])
+    nAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName], 
+                                           ":")[[1]][AD_loc], ",")[[1]][2])
     maf[i, "t_depth"] <- tDP
     maf[i, "n_depth"] <- nDP
     maf[i, "t_ref_count"] <- tRefAD
@@ -224,8 +254,8 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     maf[i, 12] <- maf[i, 11]
   }
   
-  maf[, 'Tumor_Sample_Barcode'] <- tumorID
-  maf[, 'Matched_Norm_Sample_Barcode'] <- normalID
+  maf[, 'Tumor_Sample_Barcode'] <- tumorSampleName
+  maf[, 'Matched_Norm_Sample_Barcode'] <- normalSampleName
   
   
   maf <- cbind(maf[, 1:46], Allele = CSQ_info$Allele, Gene = CSQ_info$Gene,
