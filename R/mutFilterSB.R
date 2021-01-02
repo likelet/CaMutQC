@@ -14,7 +14,7 @@
 mutFilterSB <- function(maf, tumorSampleName = 'Extracted', 
                         method = 'SOR', threshold = 3) {
   withSB <- grep('SB', maf$FORMAT)
-  message(paste0(length(withSB), 
+  cat(paste0(length(withSB), 
                  ' row(s) of information have SB information.'))
   
   ## get tumorSampleName and normalSampleName
@@ -41,8 +41,12 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
   if (is.null(discard)){
     return(maf)
   }else {
-    maf_filtered <- maf[-discard, ]
-    rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    maf_filtered <- as.data.frame(maf[-discard, ])
+    if (nrow(maf_filtered) == 0){
+      message('No mutation left after strand bias filtering.\n')
+    }else{
+      rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    }
     return(maf_filtered)
   }
 }

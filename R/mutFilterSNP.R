@@ -22,8 +22,12 @@ mutFilterSNP <- function(maf, VAFcutoff = 0.05) {
   if (is.null(discard)){
     return(maf)
   }else {
-    maf_filtered <- maf[-discard, ]
-    rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    maf_filtered <- as.data.frame(maf[-discard, ])
+    if (nrow(maf_filtered) == 0){
+      message('No mutation left after SNP filtering.')
+    }else{
+      rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    }
     return(maf_filtered)
   }
 }

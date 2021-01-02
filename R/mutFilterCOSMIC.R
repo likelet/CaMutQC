@@ -9,13 +9,16 @@ mutFilterCOSMIC <- function(maf) {
   
     if ('Existing_variation' %in% colnames(maf)) {
     
-      maf_filtered <- data.frame(maf[grep('COSV', maf[, 
+      maf_filtered <- as.data.frame(maf[grep('COSV', maf[, 
                                                       'Existing_variation']), ])
     
-      rownames(maf_filtered) <- 1:nrow(maf_filtered)
+      
+      if (nrow(maf_filtered) == 0){
+        message('No mutation left after COSMIC filtering.')
+      }else{
+        rownames(maf_filtered) <- 1:nrow(maf_filtered)
+      }
       return(maf_filtered)
-    
-  
   } else {
     return(maf)
   }

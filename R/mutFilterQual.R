@@ -61,8 +61,17 @@ mutFilterQual <- function(maf, tumorSampleName = 'Extracted',
     }
   }
   
-  maf_filtered <- maf_filtered[-discard, ]
-  rownames(maf_filtered) <- 1:nrow(maf_filtered)
-  return(maf_filtered)
+  if (is.null(discard)){
+    return(maf_filtered)
+  }else {
+    maf_filtered <- as.data.frame(maf_filtered[-discard, ])
+    if (nrow(maf_filtered) == 0){
+      message('No mutation left after sequencing quality filtering.')
+    }else{
+      rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    }
+    return(maf_filtered)
+  }
   
 }
+

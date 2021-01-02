@@ -27,7 +27,7 @@ mutFilterNormalDP <- function(maf, normalSampleName = 'Extracted') {
     nDP <- as.numeric(strsplit(maf[i, normalSampleName], ":")[[1]][nDP_loc])
     
     # variants in dbsnp
-    if(length(grep('rs', l[, 'Existing_variation'])) != 0) {
+    if(length(grep('rs', maf[, 'Existing_variation'])) != 0) {
       if(nDP < 19) {
         discard <- c(discard, i)
       }
@@ -41,8 +41,12 @@ mutFilterNormalDP <- function(maf, normalSampleName = 'Extracted') {
   if (is.null(discard)){
     return(maf)
   }else {
-    maf_filtered <- maf[-discard, ]
-    rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    maf_filtered <- as.data.frame(maf[-discard, ])
+    if (nrow(maf_filtered) == 0){
+      message('No mutation left after Normal DP filtering.')
+    }else{
+      rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    }
     return(maf_filtered)
   }
   

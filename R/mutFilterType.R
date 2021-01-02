@@ -22,10 +22,12 @@ mutFilterType <- function(maf, types = 'nonExomic') {
     stop('Please select one group of types from nonExomic and synonymous.')
   }
   
-  maf_filtered <- data.frame(maf[which(!(maf$Variant_Classification %in% 
-                                           types)), ])
-  
-  rownames(maf_filtered) <- 1:nrow(maf_filtered)
+  maf_filtered <- as.data.frame(maf[which(!(maf$Variant_Classification 
+                                            %in% types)), ])
+  if (nrow(maf_filtered) == 0){
+    message('No mutation left after variant type filtering.')
+  } else {
+    rownames(maf_filtered) <- 1:nrow(maf_filtered)
+  }
   return(maf_filtered)
-
 }
