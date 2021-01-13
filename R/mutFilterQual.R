@@ -15,6 +15,7 @@
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
 #' 
 #' @return An MAF data frame after filtering for sequencing quality
+#' @export
 
 mutFilterQual <- function(maf, tumorSampleName = 'Extracted', 
                           normalSampleName = 'Extracted', tumorDP = 20, 

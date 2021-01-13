@@ -20,7 +20,7 @@ mutFilterPON <- function(maf) {
   
   # joint useful information for matching
   if (unique(maf$NCBI_Build) == 'GRCh37') {
-    somatic37 <- read.vcfR('../inst/extdata/somatic-b37_Mutect2-exome-panel.vcf')
+    somatic37 <- read.vcfR('../PONdata/somatic-b37_Mutect2-exome-panel.vcf')
     ext37 <- rep(NA, nrow(somatic37@fix))
     for (k in 1:nrow(somatic37@fix)) {
       ext37[k] <- paste(somatic37@fix[k, c(1, 2, 4, 5)], collapse = ";")
@@ -35,7 +35,7 @@ mutFilterPON <- function(maf) {
       }
     }
   } else if (unique(maf$NCBI_Build) == 'GRCh38') {
-    somatic38 <- read.vcfR('../inst/extdata/somatic-hg38_1000g_pon.hg38.vcf')
+    somatic38 <- read.vcfR('../PONdata/somatic-hg38_1000g_pon.hg38.vcf')
     ext38 <- rep(NA, nrow(somatic38@fix))
     for (k in 1:nrow(somatic38@fix)) {
       ext38[k] <- paste(somatic38@fix[k, c(1, 2, 4, 5)], collapse = ";")

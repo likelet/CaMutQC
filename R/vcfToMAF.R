@@ -23,7 +23,7 @@
 #' @param MAFstrand Genomic strand of the reported allele, which will be 
 #' presented as value in 'Strand' column in MAF file. Default: '+'.
 #' 
-#' @import vcfR, org.Hs.eg.db, clusterProfiler
+#' @import vcfR, org.Hs.eg.db, clusterProfiler, stringr
 #' @return A MAF data frame
 
 
