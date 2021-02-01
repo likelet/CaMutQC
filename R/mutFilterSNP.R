@@ -5,29 +5,20 @@
 #' @param VAFcutoff Threshold of VAF value, variants with VAF lower than cutoff
 #' will be filtered. Default: 0.05
 #' 
+#' @importFrom dplyr::filter
 #' @return An MAF data frame after SNP filtering.
 
 mutFilterSNP <- function(maf, VAFcutoff = 0.05) {
   
-  ## create a vector to store the indices variants will be discarded
-  discard <- c()
-  for (i in 1:nrow(maf)) {
-    if (maf[i, 'VAF'] < VAFcutoff) {
-      if (length(grep('athogenic', maf[i, 'CLIN_SIG'])) == 0){
-        discard <- c(discard, i)
-      }
-    }
-  }
+  ## filter variants
+  maf_filtered <- dplyr::filter(maf, maf$VAF >= 0.05 | 
+                           length(grep('athogenic', maf[, 'CLIN_SIG'])) != 0)
   
-  if (is.null(discard)){
-    return(maf)
-  }else {
-    maf_filtered <- as.data.frame(maf[-discard, ])
-    if (nrow(maf_filtered) == 0){
-      message('No mutation left after SNP filtering.')
-    }else{
-      rownames(maf_filtered) <- 1:nrow(maf_filtered)
-    }
-    return(maf_filtered)
+  
+  if (nrow(maf_filtered) == 0){
+    message('No mutation left after SNP filtering.')
+  }else{
+    rownames(maf_filtered) <- 1:nrow(maf_filtered)
   }
+  return(maf_filtered)
 }
