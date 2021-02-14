@@ -23,7 +23,7 @@
 #' @param MAFstrand Genomic strand of the reported allele, which will be 
 #' presented as value in 'Strand' column in MAF file. Default: '+'.
 #' 
-#' @import vcfR, org.Hs.eg.db, clusterProfiler, stringr
+#' @import vcfR, org.Hs.eg.db, clusterProfiler, stringr, dplyr
 #' @return A MAF data frame
 
 
@@ -301,13 +301,41 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
                VAF = maf[, 47])
   maf <- cbind(maf, vcf_additional)
   
+  ## add column isIndelAround
+  maf <- cbind(maf, isIndelAround = 0)
+  maf$Start_Position <- as.numeric(maf$Start_Position)
+  maf$End_Position <- as.numeric(maf$End_Position)
+  
+  maf_arr <- arrange(maf, Chromosome, Variant_Type, Start_Position)
+  chroms <- unique(maf_arr$Chromosome)
+  for (c in 1:length(chroms)) {
+    mafdat <- maf_arr[which(maf_arr$Chromosome == chroms[c]), ]
+    if(any(mafdat$Variant_Type %in% c('INS', 'DEL'))) {
+      mafIndel <- mafdat[which(mafdat$Variant_Type %in% c('INS', 'DEL')), ]
+      mafSNP <- mafdat[which(!(mafdat$Variant_Type %in% c('INS', 'DEL'))), ]
+      if(nrow(mafSNP) != 0) {
+        for (i in 1:nrow(mafSNP)){
+          if(any(abs(mafSNP$Start_Position[i] - c(mafIndel$End_Position, 
+                                                  mafIndel$Start_Position)) <= 5) |
+             any(abs(mafSNP$End_Position[i] - c(mafIndel$End_Position, 
+                                                mafIndel$Start_Position)) <= 5)) {
+            maf_arr[which(rownames(maf_arr) == rownames(mafSNP[i, ])), 
+                    'isIndelAround'] <- 1
+          }
+        }
+      }
+      
+    }
+  }  
+  
+  
   if (writeFile) {
     message('The generated MAF file has been saved.')
-    write.table(maf, paste0(MAFdir, MAFfile), sep = "\t", 
+    write.table(maf_arr, paste0(MAFdir, MAFfile), sep = "\t", 
                 quote = FALSE, row.names = FALSE)
     
   } else{
-    return(maf)
+    return(maf_arr)
   }
   
 }
