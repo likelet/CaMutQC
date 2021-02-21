@@ -32,7 +32,7 @@ mutFilterNormalDP <- function(maf, normalSampleName = 'Extracted') {
         discard <- c(discard, i)
       }
       
-      # variants not in dbsnp
+    # variants not in dbsnp
     }else if (nDP < 8) {
       discard <- c(discard, i)
     } 

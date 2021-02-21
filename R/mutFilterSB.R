@@ -6,7 +6,9 @@
 #' column names of maf. If it is set as 'Extracted', tumorSampleName would be
 #' extracted automatically from the maf data frame. Default: 'Extracted'.
 #' @param method Method will be used to detect strand bias, 
-#' including 'SOR' and 'Fisher'. Default: 'SOR'.
+#' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio 
+#' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
+#' StrandOddsRatio)
 #' @param threshold Cutoff strand bias value will be used to filter variants.
 #' Default: 3
 #'

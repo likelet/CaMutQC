@@ -11,11 +11,15 @@
 #' @param mut.filter Whether to directly return a filtered MAF data frame. 
 #' If FALSE, a simulation filtering process will be run,  and only a filter 
 #' report will be generated. If TRUE, a new MAF data frame and a filter report 
-#' will be generated.
+#' will be generated. Default: TRUE
+#' @param report.dir Path to the output report file. Default: './'
+#' @import rmarkdown
+#' 
 #' @return An MAF data frame after SNP filtering
 
 mutFilterCom <- function(maf, tumorSampleName = 'Extracted', 
-                         normalSampleName = 'Extracted', mut.filter = TRUE) {
+                         normalSampleName = 'Extracted', mut.filter = TRUE,
+                         report.dir = './') {
   
   # process tumorSampleName and normalSampleName
   if (tumorSampleName == 'Extracted'){
@@ -84,10 +88,12 @@ mutFilterCom <- function(maf, tumorSampleName = 'Extracted',
   }
   
   # report generation
-  report <- filterReport(maf, maf_c)
   if (mut.filter) {
-    return(list(MAF = maf_c, Report = report))
+    rmarkdown::render('./report/report.Rmd', paste0(report.dir, 
+                                            'filterReport.html'))
+    return(maf_c)
   }else{
-    return(report)
+    rmarkdown::render('./report/report.Rmd', paste0(report.dir, 
+                                            'filterReport.html'))
   }
 }
