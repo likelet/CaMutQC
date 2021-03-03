@@ -13,7 +13,7 @@
 #' report will be generated. If TRUE, a new MAF data frame and a filter report 
 #' will be generated. Default: TRUE
 #' @param report.dir Path to the output report file. Default: './'
-#' @import rmarkdown
+#' @import rmarkdown, ggplot2
 #' 
 #' @return An MAF data frame after SNP filtering
 
