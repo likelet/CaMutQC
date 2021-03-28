@@ -4,10 +4,11 @@ selectTrans <- function(maf, CSQdf, INFOdf) {
   for (n in 1:nrow(maf)) {
     CSQ_general <- strsplit(INFOdf$CSQ[n], split = ",")[[1]]
     CSQ_subinfo <- CSQdf[1:length(CSQ_general), ]
+    rownames(CSQ_subinfo) <- 1:length(CSQ_general)
     
     for (m in 1:length(CSQ_general)) {
       CSQ_p <- strsplit(CSQ_general[m], split = "\\|")[[1]]
-      if(length(CSQ_p) == ncol(CSQ_subinfo) - 1) {
+      if(length(CSQ_p) == (ncol(CSQ_subinfo) - 1)) {
         CSQ_p <- c(CSQ_p, "")
       }
       CSQ_subinfo[m, ] <- CSQ_p

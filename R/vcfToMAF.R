@@ -1,4 +1,4 @@
-#'
+#' vcfToMAF
 #' @description Format transformation from VCF to MAF.
 #'
 #' @param vcfFile Directory of the VCF file that is going to be transformed. 
@@ -87,7 +87,7 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   
   # process CSQ column
   ## extract CSQ header and set as colnames
-  CSQ_headers <- strsplit(INFOFrame[25, 4], 
+  CSQ_headers <- strsplit(INFOFrame[which(INFOFrame$ID == 'CSQ'), 4], 
                            split = "Format: ")[[1]][2]
   CSQ_headers <- strsplit(CSQ_headers, split = "\\|")[[1]]
   CSQ_info <- as.data.frame(matrix(ncol = length(CSQ_headers), nrow = nrow(maf)))
@@ -117,14 +117,27 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   if (tumorSampleName == 'Extracted'){
     tumorSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('tumor_sample=', 
                                                        vcf_header$`Anno_Vcf@meta`)]
-    tumorSampleName <- strsplit(tumorSampleLine, split = '=')[[1]][2]
     
+    if (length(tumorSampleLine) == 0){
+      stop('Please check the input VCF file to make sure that it contains
+           \'tumor_sample=\' in the header.')
+    }else{
+      tumorSampleName <- strsplit(tumorSampleLine, split = '=')[[1]][2]
+      
+    }
   }
   
   if (normalSampleName == 'Extracted'){
     normalSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('normal_sample=', 
-                                                       vcf_header$`Anno_Vcf@meta`)]
-    normalSampleName <- strsplit(normalSampleLine, split = '=')[[1]][2]
+                                                        vcf_header$`Anno_Vcf@meta`)]
+    
+    if (length(normalSampleLine) == 0){
+      stop('Please check the input VCF file to make sure that it contains
+           \'normal_sample=\' in the header.')
+    }else{
+      normalSampleName <- strsplit(normalSampleLine, split = '=')[[1]][2]
+      
+    }
   }
   
   ### check the consistence of tumorSampleName/normalSampleName 
