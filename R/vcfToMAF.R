@@ -22,6 +22,8 @@
 #' which will be presented as value in 'Center' column in MAF file. Default: '.'.
 #' @param MAFstrand Genomic strand of the reported allele, which will be 
 #' presented as value in 'Strand' column in MAF file. Default: '+'.
+#' @param filterGene Logical. Whether to filter variants without Hugo Symbol.
+#' Default: TRUE
 #' 
 #' @import vcfR, org.Hs.eg.db, clusterProfiler, stringr, dplyr
 #' @return A MAF data frame
@@ -29,8 +31,8 @@
 
 vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf', 
                      MAFdir = './', tumorSampleName = 'Extracted', 
-                     normalSampleName = 'Extracted', ncbiBuild = 'GRCh38', 
-                     MAFcenter = '.', MAFstrand = '+'){
+                     normalSampleName = 'Extracted', ncbiBuild = 'Extracted', 
+                     MAFcenter = '.', MAFstrand = '+', filterGene = TRUE){
   
   # read vcf File
   ## check whether the file exists
@@ -98,9 +100,10 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   
   # fill in other information in MAF file
   ## ID conversion
-  IDs <- bitr(CSQ_info$Gene, fromType = "ENSEMBL", 
-              toType = "ENTREZID", 
-              OrgDb = org.Hs.eg.db)
+  IDs <- suppressWarnings(suppressMessages(bitr(CSQ_info$Gene, 
+                                                fromType = "ENSEMBL",
+                                                toType = "ENTREZID",
+                                                OrgDb = org.Hs.eg.db)))
   
   ## center
   maf[, 3] <- MAFcenter
@@ -181,6 +184,7 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     inframe <- switch(getVariantType(maf[i, 6], maf[i, 11], maf[i, 13])[3],
                       'TRUE' = 1,
                       'FALSE' = 0)
+    
     ## Variant_Class
     ### select consequence in CSQ first
     if (length(strsplit(CSQ_info[i, 2], split = '&')[[1]]) > 1) {
@@ -196,12 +200,45 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     maf[i, 9] <- getVariantClassification(CSQ_info[i, 2], maf[i, 10], inframe)
     
     ## fill in VAF
-    DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
+    if (length(grep('AF', strsplit(vcf_additional[i, 1], ":")[[1]]))){
+      AF_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AF'
+      VAFs <- strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][AF_loc]
+      if (length(grep(',', VAFs))){
+        maf[i, 'VAF'] <- as.numeric(strsplit(VAFs, ',')[[1]][1])
+      }else{
+        maf[i, 'VAF'] <- as.numeric(VAFs)
+      }
+    }
+      
+    ## get AD and DP in INFO or FORMAT
     AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
-    AD <- strsplit(strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][AD_loc], 
-                   ",")[[1]][2]
-    DP <- strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][DP_loc]
-    maf[i, 'VAF'] <- as.numeric(AD)/as.numeric(DP)
+    AD <- strsplit(strsplit(vcf_additional[i, tumorSampleName], 
+                            ":")[[1]][AD_loc], ",")[[1]][2]
+    
+    if (length(grep('DP', strsplit(vcf_additional[i, 1], ":")[[1]]))){
+      DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
+      DP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName], 
+                                ":")[[1]][DP_loc])
+      tDP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName], 
+                                 ":")[[1]][DP_loc])
+      nDP <- as.numeric(strsplit(vcf_additional[i, normalSampleName], 
+                                  ":")[[1]][DP_loc])
+    }else if('DP' %in% colnames(INFOinfo)){
+      DP <- as.numeric(INFOinfo[i, 'DP'])
+      tDP <- DP
+      nDP <- sum(as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName], 
+                               ":")[[1]][AD_loc], ",")[[1]]))
+    }else{
+      stop('No read depth information detected! Please check your VCF file.')
+    }
+      
+    maf[i, "t_depth"] <- tDP
+    maf[i, "n_depth"] <- nDP
+    
+    if (is.na(maf[i, 'VAF'])){
+      maf[i, 'VAF'] <- as.numeric(AD)/DP
+    }
+    
     
     ## fill in dbSNP_RS
     if(nchar(CSQ_info[i, 'Existing_variation']) == 0) {
@@ -231,41 +268,31 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     
     ## HGVSp_short
     
-    
-    ## Transcript_ID
-    maf[i, 'Transcript_ID'] <- CSQ_info[i, 'Feature']
-    
-    ## Exon_Number
-    
-    maf[i, 'Exon_Number'] <- CSQ_info[i, 'EXON']
-    
     ## t_depth, n_depth, t_ref_count, t_alt_count, n_ref_count, n_alt_count
-    DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
-    AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
     tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName], 
                                            ":")[[1]][AD_loc], ",")[[1]][1])
-    
     tAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName], 
                                            ":")[[1]][AD_loc], ",")[[1]][2])
-    tDP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName], 
-                               ":")[[1]][DP_loc])
-    nDP <- as.numeric(strsplit(vcf_additional[i, normalSampleName], 
-                               ":")[[1]][DP_loc])
     nRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName], 
                                            ":")[[1]][AD_loc], ",")[[1]][1])
     nAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName], 
                                            ":")[[1]][AD_loc], ",")[[1]][2])
-    maf[i, "t_depth"] <- tDP
-    maf[i, "n_depth"] <- nDP
     maf[i, "t_ref_count"] <- tRefAD
     maf[i, "t_alt_count"] <- tAltAD
     maf[i, "n_ref_count"] <- nRefAD
     maf[i, "n_alt_count"] <- nAltAD
-    
-    
-    ## Tumor_Seq_Allele1, set Tumor_Seq_Allele1 same as ref
-    maf[i, 12] <- maf[i, 11]
   }
+  
+  
+  ## Transcript_ID
+  maf[, 'Transcript_ID'] <- CSQ_info[, 'Feature']
+  
+  ## Exon_Number
+  
+  maf[, 'Exon_Number'] <- CSQ_info[, 'EXON']
+  
+  ## Tumor_Seq_Allele1, set Tumor_Seq_Allele1 same as ref
+  maf[, 12] <- maf[, 11]
   
   maf[, 'Tumor_Sample_Barcode'] <- tumorSampleName
   maf[, 'Matched_Norm_Sample_Barcode'] <- normalSampleName
@@ -341,6 +368,9 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     }
   }  
   
+  if (filterGene){
+    maf_arr <- maf_arr[which(maf_arr$Hugo_Symbol != ''), ]
+  }
   
   if (writeFile) {
     message('The generated MAF file has been saved.')
