@@ -13,7 +13,7 @@ selectMut <- function(charMatrix) {
     Biotypefreq <- data.frame(table(numMatrix[, 1]))
     Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing = FALSE), ]
     
-    if (Biotypefreq[1, 1] == 1){
+    if (Biotypefreq[1, 2] == 1){
       
       # return the one with the highest biofunction priority
       return(as.numeric(rownames(numMatrix[which(numMatrix$V1 
@@ -36,7 +36,7 @@ selectMut <- function(charMatrix) {
       Conseqfreq <- data.frame(table(remNumMatrix[, 1]))
       Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing = FALSE), ]
       
-      if (Conseqfreq[1, 1] == 1){
+      if (Conseqfreq[1, 2] == 1){
         
         # return the one with the highest consequence priority
         return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1] 
