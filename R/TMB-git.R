@@ -105,7 +105,7 @@ calTMB <- function(maf, bedFile, tumorSampleName, assay = 'MSKCC-v3',
     bedProc[which(bedProc$chrom == chrs[c]), 'Num'] <- l
   }
   
-  TMB <- mean(bedProc$Num/bedProc$interval) * 1000000
+  TMB <- round(mean(bedProc$Num/bedProc$interval) * 1000000, 3)
   return(TMB)
 }
 
