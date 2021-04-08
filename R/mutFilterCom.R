@@ -12,14 +12,22 @@
 #' If FALSE, a simulation filtering process will be run,  and only a filter 
 #' report will be generated. If TRUE, a new MAF data frame and a filter report 
 #' will be generated. Default: TRUE
+#' @param filterParam Value in FILTER field used to filter variants.
+#' Default: 'PASS'
 #' @param report.dir Path to the output report file. Default: './'
+#' @param TMB Whether to calculate TMB. Default: FALSE
+#' @param bedFile A bed File used to calculate TMB. Default: NULL
 #' @import rmarkdown, ggplot2
 #' 
-#' @return An MAF data frame after SNP filtering
+#' @return An MAF data frame after common strategy filtering
+#' @return A filter report in HTML format
+#' 
+#' @export mutFilterCom
 
 mutFilterCom <- function(maf, tumorSampleName = 'Extracted', 
-                         normalSampleName = 'Extracted', mut.filter = TRUE,
-                         report.dir = './') {
+                         normalSampleName = 'Extracted', mut.filter = TRUE, 
+                         filterParam = 'PASS', report.dir = './', TMB = FALSE,
+                         bedFile = NULL) {
   
   # process tumorSampleName and normalSampleName
   if (tumorSampleName == 'Extracted'){
@@ -36,64 +44,85 @@ mutFilterCom <- function(maf, tumorSampleName = 'Extracted',
  
   
   # start filtering 
-  ## sequencing quality
-  cat('Variants filtering for sequencing quality is in process.')
-  maf_q <- mutFilterQual(maf, tumorSampleName = tumorSample, 
-                         normalSampleName = normalSample)
-  if (nrow(maf_q) == 0) {
-    message('No variation left after filtering variants in low sequencing quality.')
+  ## FILTER field
+  cat('Variants filtering based on FILTER field is in process.')
+  maf_filtered <- maf[maf$FILTER ==  filterParam, ]
+  if (nrow(maf_filtered) == 0) {
+    message('No variation left after FILTER field filtering.')
+  }else{
+    
+    ## sequencing quality
+    cat('\nVariants filtering for sequencing quality is in process.')
+    maf_filtered <- mutFilterQual(maf_filtered, tumorSampleName = tumorSample, 
+                           normalSampleName = normalSample)
+    if (nrow(maf_filtered) == 0) {
+      message('No variation left after filtering variants in low 
+              sequencing quality.')
+    }else{
+      
+      ## PON
+      cat('\nVariants filtering for PON is in process.\n')
+      maf_filtered <- mutFilterPON(maf_filtered)
+      if (nrow(maf_filtered) == 0) {
+        message('No variation left after filtering variants in PON.')
+      }else{
+        
+        ## SNP
+        cat('\nVariants filtering of SNP variants is in process.')
+        maf_filtered <- mutFilterSNP(maf_filtered)
+        if (nrow(maf_filtered) == 0) {
+          message('No variation left after filtering SNP variants.')
+        }else{
+          ## variant types
+          cat('\nVariants filtering of variant types.\n')
+          maf_filtered <- mutFilterType(maf_filtered)
+          if (nrow(maf_filtered) == 0) {
+            message('No variation left after filtering variants of certain types.')
+          }else{
+            ## Strand Bias
+            cat('\nVariants filtering of strand bias is in process.\n')
+            #cat(tumorSample %in% colnames(maf_type))
+            maf_filtered <- mutFilterSB(maf_filtered, 
+                                        tumorSampleName = tumorSample)
+            if (nrow(maf_filtered) == 0) {
+              message('No variation left after filtering SB variants.')
+            }else{
+              ## normal depth
+              cat('\nVariants filtering of normal depth is in process.')
+              maf_filtered <- mutFilterNormalDP(maf_filtered, 
+                                                normalSampleName = normalSample)
+              if (nrow(maf_filtered) == 0) {
+                message('No variation left after filtering variants through normal depth.')
+              }else{
+                ## COSMIC
+                cat('\nVariants filtering of non-COSMIC variants is in process.\n')
+                maf_filtered <- mutFilterCOSMIC(maf_filtered)
+                if (nrow(maf_filtered) == 0) {
+                  message('No variation left after filtering variants not 
+                          in COSMIC.')
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
   
-  ## PON
-  cat('\nVariants filtering for PON is in process.\n')
-  maf_p <- mutFilterPON(maf_q)
-  if (nrow(maf_p) == 0) {
-    message('No variation left after filtering variants in PON.')
-  }
-  
-  ## SNP
-  cat('\nVariants filtering of SNP variants is in process.')
-  maf_snp <- mutFilterSNP(maf_p)
-  if (nrow(maf_snp) == 0) {
-    message('No variation left after filtering SNP variants.')
-  }
-  
-  ## variant types
-  cat('\nVariants filtering of variant types.\n')
-  maf_type <- mutFilterType(maf_snp)
-  if (nrow(maf_type) == 0) {
-    message('No variation left after filtering variants of certain types.')
-  }
-  
-  ## Strand Bias
-  cat('\nVariants filtering of strand bias is in process.\n')
-  #cat(tumorSample %in% colnames(maf_type))
-  maf_sb <- mutFilterSB(maf_type, tumorSampleName = tumorSample)
-  if (nrow(maf_sb) == 0) {
-    message('No variation left after filtering SB variants.')
-  }
-  
-  ## normal depth
-  cat('\nVariants filtering of normal depth is in process.')
-  maf_n <- mutFilterNormalDP(maf_sb, normalSampleName = normalSample)
-  if (nrow(maf_n) == 0) {
-    message('No variation left after filtering variants through normal depth.')
-  }
-  
-  ## COSMIC
-  cat('\nVariants filtering of non-COSMIC variants is in process.\n')
-  maf_c <- mutFilterCOSMIC(maf_n)
-  if (nrow(maf_c) == 0) {
-    message('No variation left after filtering variants not in COSMIC.')
+  if (TMB){
+    # check bed file
+    if (is.null(bedFile)){
+      stop('A bed file is missing, which is required for TMB calculation.
+           If you don\'t want to calculate TMB, please set TMB as FALSE.')
+    }else{
+      TMBvalue <- calTMB(maf_filtered, bedFile = bedFile)
+    }
   }
   
   # report generation
+  rmarkdown::render('./report/FilterReport.Rmd', 
+                    output_file = paste0(report.dir, 'filterReport.html'))
   if (mut.filter) {
-    rmarkdown::render('./report/report.Rmd', paste0(report.dir, 
-                                            'filterReport.html'))
-    return(maf_c)
-  }else{
-    rmarkdown::render('./report/report.Rmd', paste0(report.dir, 
-                                            'filterReport.html'))
+    return(maf_filtered)
   }
 }
