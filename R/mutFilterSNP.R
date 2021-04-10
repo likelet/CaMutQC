@@ -6,19 +6,22 @@
 #' will be filtered. Default: 0.05
 #' 
 #' @importFrom dplyr::filter
-#' @return An MAF data frame after SNP filtering.
+#' @return An MAF data frame after SNP filtration.
+#' 
+#' @export mutFilterSNP
 
 mutFilterSNP <- function(maf, VAFcutoff = 0.05) {
   
   ## filter variants
-  maf_filtered <- dplyr::filter(maf, maf$VAF >= 0.05 | 
-                           length(grep('athogenic', maf[, 'CLIN_SIG'])) != 0)
+  maf_filtered <- dplyr::filter(maf, (maf$VAF >= 0.05 & 
+                                        maf$Variant_Type == 'SNP') | 
+                           length(grep('athogenic', maf[, 'CLIN_SIG'])))
   
   
   if (nrow(maf_filtered) == 0){
-    message('No mutation left after SNP filtering.')
+    message('No mutation left after SNP filtration.')
   }else{
-    rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    rownames(maf_filtered) <- seq_len(nrow(maf_filtered))
   }
   return(maf_filtered)
 }
