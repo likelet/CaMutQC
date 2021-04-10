@@ -9,15 +9,16 @@
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio 
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
 #' StrandOddsRatio)
-#' @param threshold Cutoff strand bias value will be used to filter variants.
+#' @param threshold Cutoff strand bias score used to filter variants.
 #' Default: 3
-#'
+#' 
+#' @return An MAF data frame after strand bias filtration
+#' 
+#' @export mutFilterSB
+#'  
 
 mutFilterSB <- function(maf, tumorSampleName = 'Extracted', 
                         method = 'SOR', threshold = 3) {
-  withSB <- grep('SB', maf$FORMAT)
-  cat(paste0(length(withSB), 
-                 ' row(s) of information have SB information.'))
   
   ## get tumorSampleName and normalSampleName
   if (tumorSampleName == 'Extracted'){
@@ -28,18 +29,32 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
   
   discard <- c()
   # use for loop to get the SB score for each variation
-  for (i in 1:nrow(maf)){
-    if (i %in% withSB) {
+  if (method == 'Fisher') {
+    for (i in seq_len(nrow(maf))) {
       SBindex <- strsplit(maf$FORMAT[i], ':')[[1]] == 'SB'
+      if (all(SBindex == FALSE)){
+        stop(paste0('No SB annotation found in FORMAT column, ', 
+                    'so strand bias cannot be measured by Fisher exact test.'))
+      }
       SBcharmatix <- strsplit(maf[i, tumorSampleName], 
                               ':')[[1]][SBindex]
       if (SBscore(SBcharmatix, method) > threshold) {
         discard <- c(discard, i)
       }
     }
+  }else if (method == 'SOR'){
+    for (i in seq_len(nrow(maf))) {
+      F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F1R2'
+      F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F2R1'
+      F1R2 <- strsplit(maf[i, tumorSampleName], ':')[[1]][F1R2index]
+      F2R1 <- strsplit(maf[i, tumorSampleName], ':')[[1]][F2R1index]
+      SBcharmatix <- paste(F1R2, F2R1, sep = ',')
+      if (SBscore(SBcharmatix, method) > threshold) {
+        discard <- c(discard, i)
+      }
+    }
   }
-  
-  
+
   if (is.null(discard)){
     return(maf)
   }else {
@@ -47,7 +62,7 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
     if (nrow(maf_filtered) == 0){
       message('No mutation left after strand bias filtering.\n')
     }else{
-      rownames(maf_filtered) <- 1:nrow(maf_filtered)
+      rownames(maf_filtered) <- seq_len(nrow(maf_filtered))
     }
     return(maf_filtered)
   }
@@ -56,12 +71,11 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
 ## construct function to calculate the SB score for strand bias detection
 SBscore <- function(charmatrix, method = 'SOR'){
   depths <- as.numeric(strsplit(charmatrix, ",")[[1]])
-  refFw <- depths[1] + 1
-  refRv <- depths[2] + 1
-  altFw <- depths[3] + 1
-  altRv <- depths[4] + 1
-  
   if (method == 'SOR') {
+    refFw <- depths[1] + 1
+    refRv <- depths[3] + 1
+    altFw <- depths[2] + 1
+    altRv <- depths[4] + 1
     symmetricalRatio <- (refFw * altRv)/(refRv * altFw) + 
       (refRv * altFw) / (refFw * altRv)
     
@@ -70,6 +84,10 @@ SBscore <- function(charmatrix, method = 'SOR'){
     score <- log(symmetricalRatio) + log(refRatio) - log(altRatio)
     
   }else if (method == 'Fisher')   {
+    refFw <- depths[1] 
+    refRv <- depths[2]
+    altFw <- depths[3]
+    altRv <- depths[4]
     matrix <- rbind(c(refFw, refRv), c(altFw, altRv))
     score <- 1 - fisher.test(matrix)$p.value 
   }else {
