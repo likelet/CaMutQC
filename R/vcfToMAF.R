@@ -200,15 +200,15 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     maf[i, 9] <- getVariantClassification(CSQ_info[i, 2], maf[i, 10], inframe)
     
     ## fill in VAF
-    if (length(grep('AF', strsplit(vcf_additional[i, 1], ":")[[1]]))){
-      AF_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AF'
-      VAFs <- strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][AF_loc]
-      if (length(grep(',', VAFs))){
-        maf[i, 'VAF'] <- as.numeric(strsplit(VAFs, ',')[[1]][1])
-      }else{
-        maf[i, 'VAF'] <- as.numeric(VAFs)
-      }
-    }
+    #if (length(grep('AF', strsplit(vcf_additional[i, 1], ":")[[1]]))){
+      #AF_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AF'
+      #VAFs <- strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][AF_loc]
+      #if (length(grep(',', VAFs))){
+        #maf[i, 'VAF'] <- as.numeric(strsplit(VAFs, ',')[[1]][1])
+      #}else{
+        #maf[i, 'VAF'] <- as.numeric(VAFs)
+      #}
+    #}
       
     ## get AD and DP in INFO or FORMAT
     AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
@@ -235,9 +235,9 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     maf[i, "t_depth"] <- tDP
     maf[i, "n_depth"] <- nDP
     
-    if (is.na(maf[i, 'VAF'])){
+    #if (is.na(maf[i, 'VAF'])){
       maf[i, 'VAF'] <- as.numeric(AD)/DP
-    }
+    #}
     
     
     ## fill in dbSNP_RS
@@ -349,7 +349,7 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   maf_arr <- arrange(maf, Chromosome, Variant_Type, Start_Position)
   chroms <- unique(maf_arr$Chromosome)
   for (c in 1:length(chroms)) {
-    mafdat <- maf_arr[which(maf_arr$Chromosome == chroms[c]), ]
+    mafdat <- maf[which(maf$Chromosome == chroms[c]), ]
     if(any(mafdat$Variant_Type %in% c('INS', 'DEL'))) {
       mafIndel <- mafdat[which(mafdat$Variant_Type %in% c('INS', 'DEL')), ]
       mafSNP <- mafdat[which(!(mafdat$Variant_Type %in% c('INS', 'DEL'))), ]
@@ -359,7 +359,7 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
                                                   mafIndel$Start_Position)) <= 5) |
              any(abs(mafSNP$End_Position[i] - c(mafIndel$End_Position, 
                                                 mafIndel$Start_Position)) <= 5)) {
-            maf_arr[which(rownames(maf_arr) == rownames(mafSNP[i, ])), 
+            maf[which(rownames(maf) == rownames(mafSNP[i, ])), 
                     'isIndelAround'] <- 1
           }
         }
@@ -369,16 +369,16 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   }  
   
   if (filterGene){
-    maf_arr <- maf_arr[which(maf_arr$Hugo_Symbol != ''), ]
+    maf <- maf[which(maf$Hugo_Symbol != ''), ]
   }
   
   if (writeFile) {
     message('The generated MAF file has been saved.')
-    write.table(maf_arr, paste0(MAFdir, MAFfile), sep = "\t", 
+    write.table(maf, paste0(MAFdir, MAFfile), sep = "\t", 
                 quote = FALSE, row.names = FALSE)
     
   } else{
-    return(maf_arr)
+    return(maf)
   }
   
 }
