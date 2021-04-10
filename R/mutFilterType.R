@@ -5,7 +5,9 @@
 #' @param types A group of variant classifications will be filtered, 
 #' including 'nonExonic' and 'synonymous'. Default: 'nonExonic'. 
 #' 
-#' @return An MAF data frame after variant type filtering.
+#' @return An MAF data frame after variant type filtration.
+#' 
+#' @export mutFilterType
 
 mutFilterType <- function(maf, types = 'nonExonic') {
   
@@ -19,15 +21,15 @@ mutFilterType <- function(maf, types = 'nonExonic') {
                "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", 
                "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
   } else {
-    stop('Please select one group of types from nonExonic and synonymous.')
+    stop('Please select one category of types from nonExonic and synonymous.')
   }
   
   maf_filtered <- as.data.frame(maf[which(!(maf$Variant_Classification 
                                             %in% types)), ])
   if (nrow(maf_filtered) == 0){
-    message('No mutation left after variant type filtering.')
+    message('No mutation left after variant type filtration.')
   } else {
-    rownames(maf_filtered) <- 1:nrow(maf_filtered)
+    rownames(maf_filtered) <- seq_len(nrow(maf_filtered))
   }
   return(maf_filtered)
 }
