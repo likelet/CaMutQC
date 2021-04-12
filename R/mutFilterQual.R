@@ -8,33 +8,30 @@
 #' @param VAF Threshold of VAF value. Default: 0.05
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
 #' 
-#' @return An MAF data frame after filtration for sequencing quality
+#' @import dplyr
+#' 
+#' @return An MAF data frame where some variants 
+#' has Q tag in CaTag column for sequencing quality filtration
 #' 
 #' @export mutFilterQual
 
 mutFilterQual <- function(maf, tumorDP = 20, normalDP = 10, 
                           tumorAD = 10, VAF = 0.05, VAFratio = 5) {
   
+  tags <- c()
   ## VAF filtering
-  maf_filtered <- as.data.frame(maf[which(maf$VAF > VAF), ])
-  if (nrow(maf_filtered) == 0) {
-    return(maf_filtered)
-  }
-  
+  tags <- c(tags, rownames(maf[maf$VAF < VAF, ]))
+ 
   ## tumorAD, tumorDP, normalDP, VAF ratio filtering
-  maf_filtered <- maf_filtered[which((maf_filtered$t_alt_count >= tumorAD) & 
-                                       (maf_filtered$t_depth >= tumorDP) &
-                                       (maf_filtered$n_ref_count >= normalDP)),]
-  VAFr <- (maf_filtered$t_alt_count/maf_filtered$t_depth)/
-    (maf_filtered$n_alt_count/maf_filtered$n_depth)
-  maf_filtered <- maf_filtered[VAFr >= VAFratio, ]
+  tags <- union(tags, rownames(maf[((maf$t_alt_count < tumorAD) | 
+                                 (maf$t_depth < tumorDP) | 
+                                 (maf$n_ref_count < normalDP)), ]))
   
+  VAFr <- (maf$t_alt_count/maf$t_depth)/(maf$n_alt_count/maf$n_depth)
+  tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
   
-  if (nrow(maf_filtered) == 0){
-    message('No mutation left after sequencing quality filtration.')
-  }else{
-    rownames(maf_filtered) <- seq_len(nrow(maf_filtered))
-  }
-  return(maf_filtered)
+  maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')
+  
+  return(maf)
 }
 

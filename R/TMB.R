@@ -16,7 +16,6 @@
 #' @param bedFilter Whether to filter the information in bed file or not, which 
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
 #' 
-#' @import stringr
 #' @return A TMB value.
 #' 
 #' @export calTMB
@@ -34,14 +33,13 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
   if (nrow(bed) < 3 | any(substring(bed$V1, 1,3) != 'chr') | 
       typeof(bed$V2) != 'integer' | typeof(bed$V3) != 'integer'){
     stop(paste0('Invaild bed file. Please input vaild bed file',
-                ' with at least 3 columns of porper type.'))
-  }
+                ' with at least 3 columns of porper type.'))  }
   
   if(any(!(bed$V1 %in% chromVaild))){
     if (!bedFilter){
       stop(paste0('Invaild chrom in bed File. Please turn on bedFiler',
                   ' if you want to filter the bed file'))
-      } else {
+    } else {
       bed <- bed[which(bed$V1 %in% chromVaild), ]
     }
   }
@@ -72,8 +70,7 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     
     # filter for non-/hotspot genes (COSMIC genes)
     maf_c <- maf[grep('COSV', maf[, 'Existing_variation']), ]
-    maf_nonc <- maf[-as.numeric(rownames(
-      maf[grep('COSV', maf[, 'Existing_variation']), ])),]
+    maf_nonc <- maf[setdiff(rownames(maf_c), rownames(maf)),]
     
     maf_c_f <- mutFilterQual(maf_c, tumorDP = 20, tumorAD = 8, normalDP = 0, 
                              VAF = 0.02, VAFratio = 0)
@@ -88,19 +85,19 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     
     # filter noncoding variants
     noncoding <- read.table('../inst/extdata/noncoding.txt', header = TRUE)
-    maf <- as.data.frame(maf[which(!(maf$One_Consequence %in% 
-                                       noncoding$Noncoding_Variant_Types)), ])
+    maf <- maf[which(!(maf$One_Consequence %in% 
+                         noncoding$Noncoding_Variant_Types)), ]
     
     # filter germline variants(deprecated)
     
     # filter dbsnp variants
-    maf <- maf[-as.numeric(rownames(maf[grep('rs', 
-                                             maf[, 'Existing_variation']), ])),]
+    tags1 <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
+    maf <- maf[setdiff(rownames(maf), tags1), ]
     
     # filter variants with ExAC >= 2
-    ## detect whether the VCF file has Exac annotation or not
+    ## detect whether the VCF file has ExAc annotation or not
     if ('AC' %in% colnames(maf)){
-      maf <- maf[which(maf$AC < 2), ]
+      maf <- maf[maf$AC < 2, ]
     }else{
       warning(paste0('ExAc information cannot be found in VCF file.',
                      ' No variants will be filtered based on ExAc.'))
@@ -110,22 +107,22 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     TSGs <- read.table('../inst/extdata/TSGenelist.txt', 
                        sep = "\t", header = TRUE)
     TSGs_all <- c(TSGs$GeneSymbol, unique(unlist(strsplit(TSGs$Alias, "\\|"))))
-    maf <- maf[which(!((maf$Hugo_Symbol %in% TSGs_all) & 
-                         (maf$One_Consequence == 'stop_gained'))), ]
+    maf <- maf[(!((maf$Hugo_Symbol %in% TSGs_all) & 
+                    (maf$One_Consequence == 'stop_gained'))), ]
     
     # filter variants in COSMIC
-    maf <- maf[-as.numeric(rownames(maf[grep('COSV', 
-                                             maf[, 'Existing_variation']), ])),]
+    tags2 <- rownames(maf[grep('COSV', maf[, 'Existing_variation']), ])
+    maf <- maf[setdiff(rownames(maf), tags2), ]
     
     if (assay == 'FoundationOne') {
       # filter based on genelist
       FoundationOne <- read.table('../inst/extdata/Panel_gene
                                 /FoundationOne_genelist.txt')
-      maf <- maf[which(maf$Hugo_Symbol %in% FoundationOne$V1), ]
+      maf <- maf[maf$Hugo_Symbol %in% FoundationOne$V1, ]
     }else{
       pan <- read.table('../inst/extdata/Panel_gene/TMB_panel_genelist.txt', 
                         header = TRUE)
-      maf <- maf[which(maf$Hugo_Symbol %in% pan$Gene_Symbol), ]
+      maf <- maf[maf$Hugo_Symbol %in% pan$Gene_Symbol, ]
       maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0, 
                            tumorAD = 0, VAF = 0.05, VAFratio = 0)
     }
@@ -134,15 +131,15 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     
     ## genelist
     if (!(is.null(genelist))){
-      maf <- maf[which(maf$Hugo_Symbol %in% genelist), ]
+      maf <- maf[(maf$Hugo_Symbol %in% genelist), ]
       
     }
     ## select certain variant type
-    maf <- mutFilterType(maf, types = mutType)
+    maf <- mutFilterType(maf, keepType = mutType)
     
     ## VAF and AD filtering (using mutFilterQual)
-    maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0, 
-                         tumorAD = AD, VAF = VAF, VAFratio = 0)
+    maf <- mutFilterQual(maf, tumorDP = 20, normalDP = 10, 
+                         tumorAD = AD, VAF = VAF, VAFratio = 5)
   }else{
     stop(paste0('Invalid assay detected.', 
                 ' Please select from \'MSKCC-v3\', \'MSKCC-v2\',', 
@@ -150,34 +147,41 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
                 ' and \'Customized\'. '))
   }
   
+  # filter based on CaTag
+  maf <- maf[maf$CaTag == '0', ]
   
-  ## sort bed object
-  bedProc <- bed[, 1:3]
-  colnames(bedProc) <- c('chrom', 'chromStart', 'chromEnd')
-  bedProc <- unique(cbind(bedProc, 
-                          interval = bedProc$chromEnd - bedProc$chromStart, 
-                          Num = 0))
-  rownames(bedProc) <- seq_len(nrow(bedProc))
-  ## count mutation
-  # maf <- arrange(maf, Chromosome, Start_Position)
-  # group_by(Chromosome)
-  
-  # bedSorted <- arrange(bedProc, chrom, chromStart)
-  maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
-  chrs <- unique(maf$Chromosome)
-  # nums <- rep(0, length(chrs))
-  for (c in seq_len(length(chrs))) {
-    maf_target <- maf[which(maf$Chromosome == chrs[c]), ]
-    bed_target <- bedProc[which(bedProc$chrom == chrs[c]), ]
-    l <- rep(0, nrow(bed_target))
-    for(i in seq_len(nrow(bed_target))) {
-      l[i] <- mutCountRegion(maf_target, bed_target[i, ])
+  # return 0 if no variants left
+  if (nrow(maf) == 0){
+    return(0)
+  }else{
+    ## sort bed object
+    bedProc <- unique(bed[, 1:3])
+    colnames(bedProc) <- c('chrom', 'chromStart', 'chromEnd')
+    bedProc <- unique(cbind(bedProc, 
+                            interval = bedProc$chromEnd - bedProc$chromStart, 
+                            Num = 0))
+    rownames(bedProc) <- seq_len(nrow(bedProc))
+    ## count mutation
+    # maf <- arrange(maf, Chromosome, Start_Position)
+    # group_by(Chromosome)
+    
+    # bedSorted <- arrange(bedProc, chrom, chromStart)
+    maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
+    chrs <- unique(maf$Chromosome)
+    # nums <- rep(0, length(chrs))
+    for (c in seq_len(length(chrs))) {
+      maf_target <- maf[which(maf$Chromosome == chrs[c]), ]
+      bed_target <- bedProc[which(bedProc$chrom == chrs[c]), ]
+      l <- rep(0, nrow(bed_target))
+      for(i in seq_len(nrow(bed_target))) {
+        l[i] <- mutCountRegion(maf_target, bed_target[i, ])
+      }
+      bedProc[which(bedProc$chrom == chrs[c]), 'Num'] <- l
     }
-    bedProc[which(bedProc$chrom == chrs[c]), 'Num'] <- l
+    
+    TMB <- round(mean(bedProc$Num/bedProc$interval) * 1000000, 3)
+    return(TMB)
   }
-  
-  TMB <- round(mean(bedProc$Num/bedProc$interval) * 1000000, 3)
-  return(TMB)
 }
 
 
@@ -187,6 +191,7 @@ mutCountRegion <- function(mutLoc, bedSingle){
   for (i in seq_len(nrow(mutLoc))) {
     if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] & 
         mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
+      # print(rownames(mutLoc[i, ]))
       count <- count  + 1
     }
   }

@@ -9,16 +9,17 @@
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio 
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
 #' StrandOddsRatio)
-#' @param threshold Cutoff strand bias score used to filter variants.
+#' @param SBscore Cutoff strand bias score used to filter variants.
 #' Default: 3
 #' 
-#' @return An MAF data frame after strand bias filtration
+#' @return An MAF data frame where some variants 
+#' has S tag in CaTag column for strand bias filtration
 #' 
 #' @export mutFilterSB
 #'  
 
 mutFilterSB <- function(maf, tumorSampleName = 'Extracted', 
-                        method = 'SOR', threshold = 3) {
+                        method = 'SOR', SBscore = 3) {
   
   ## get tumorSampleName and normalSampleName
   if (tumorSampleName == 'Extracted'){
@@ -27,7 +28,6 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
     stop('Invaild tumorSampleName.')
   }
   
-  discard <- c()
   # use for loop to get the SB score for each variation
   if (method == 'Fisher') {
     for (i in seq_len(nrow(maf))) {
@@ -38,8 +38,8 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
       }
       SBcharmatix <- strsplit(maf[i, tumorSampleName], 
                               ':')[[1]][SBindex]
-      if (SBscore(SBcharmatix, method) > threshold) {
-        discard <- c(discard, i)
+      if (calSBscore(SBcharmatix, method) < SBscore) {
+        maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
       }
     }
   }else if (method == 'SOR'){
@@ -49,27 +49,17 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
       F1R2 <- strsplit(maf[i, tumorSampleName], ':')[[1]][F1R2index]
       F2R1 <- strsplit(maf[i, tumorSampleName], ':')[[1]][F2R1index]
       SBcharmatix <- paste(F1R2, F2R1, sep = ',')
-      if (SBscore(SBcharmatix, method) > threshold) {
-        discard <- c(discard, i)
+      if (calSBscore(SBcharmatix, method) > SBscore) {
+        maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
       }
     }
   }
-
-  if (is.null(discard)){
+    # maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'] , 'S')
     return(maf)
-  }else {
-    maf_filtered <- as.data.frame(maf[-discard, ])
-    if (nrow(maf_filtered) == 0){
-      message('No mutation left after strand bias filtering.\n')
-    }else{
-      rownames(maf_filtered) <- seq_len(nrow(maf_filtered))
-    }
-    return(maf_filtered)
-  }
 }
 
 ## construct function to calculate the SB score for strand bias detection
-SBscore <- function(charmatrix, method = 'SOR'){
+calSBscore <- function(charmatrix, method = 'SOR'){
   depths <- as.numeric(strsplit(charmatrix, ",")[[1]])
   if (method == 'SOR') {
     refFw <- depths[1] + 1
