@@ -49,7 +49,9 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
     stop('Please input file in .vcf or .gz.vcf format')
   }
   
-  Anno_Vcf <- read.vcfR(vcfFile)
+  message('Loading VCF data...')
+  invisible(capture.output(Anno_Vcf <- read.vcfR(vcfFile)))
+  message('VCF data has been loaded successfully!')
   
   ## convert to data frames and store useful information
   vcf_header <- as.data.frame(Anno_Vcf@meta)
@@ -77,6 +79,7 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
                      'all_effects'
   )
   
+  message('VCF to MAF conversion is in process...')
   # assign chromosome, Start_Position, Reference_Allele, Tumor_Seq_Allele1 info
   maf[, 5] <- vcf_main$CHROM
   maf[, 6] <- vcf_main$POS
@@ -342,31 +345,35 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   maf <- cbind(maf, vcf_additional)
   
   ## add column isIndelAround
-  maf <- cbind(maf, isIndelAround = 0)
-  maf$Start_Position <- as.numeric(maf$Start_Position)
-  maf$End_Position <- as.numeric(maf$End_Position)
-  
-  maf_arr <- arrange(maf, Chromosome, Variant_Type, Start_Position)
-  chroms <- unique(maf_arr$Chromosome)
-  for (c in 1:length(chroms)) {
-    mafdat <- maf[which(maf$Chromosome == chroms[c]), ]
-    if(any(mafdat$Variant_Type %in% c('INS', 'DEL'))) {
-      mafIndel <- mafdat[which(mafdat$Variant_Type %in% c('INS', 'DEL')), ]
-      mafSNP <- mafdat[which(!(mafdat$Variant_Type %in% c('INS', 'DEL'))), ]
-      if(nrow(mafSNP) != 0) {
-        for (i in 1:nrow(mafSNP)){
-          if(any(abs(mafSNP$Start_Position[i] - c(mafIndel$End_Position, 
-                                                  mafIndel$Start_Position)) <= 5) |
-             any(abs(mafSNP$End_Position[i] - c(mafIndel$End_Position, 
-                                                mafIndel$Start_Position)) <= 5)) {
-            maf[which(rownames(maf) == rownames(mafSNP[i, ])), 
-                    'isIndelAround'] <- 1
-          }
-        }
-      }
-      
-    }
-  }  
+  # maf <- cbind(maf, isIndelAround = 0)
+  # maf$Start_Position <- as.numeric(maf$Start_Position)
+  # maf$End_Position <- as.numeric(maf$End_Position)
+  # 
+  # maf_arr <- arrange(maf, Chromosome, Variant_Type, Start_Position)
+  # chroms <- unique(maf_arr$Chromosome)
+  # for (c in 1:length(chroms)) {
+  #   mafdat <- maf[which(maf$Chromosome == chroms[c]), ]
+  #   if(any(mafdat$Variant_Type %in% c('INS', 'DEL'))) {
+  #     mafIndel <- mafdat[which(mafdat$Variant_Type %in% c('INS', 'DEL')), ]
+  #     mafSNP <- mafdat[which(!(mafdat$Variant_Type %in% c('INS', 'DEL'))), ]
+  #     if(nrow(mafSNP) != 0) {
+  #       for (i in 1:nrow(mafSNP)){
+  #         if(any(abs(mafSNP$Start_Position[i] - c(mafIndel$End_Position, 
+  #                                                 mafIndel$Start_Position)) 
+  # <= 5) |
+  #            any(abs(mafSNP$End_Position[i] - c(mafIndel$End_Position, 
+  #                                               mafIndel$Start_Position))
+  # <= 5)) {
+  #           maf[which(rownames(maf) == rownames(mafSNP[i, ])), 
+  #                   'isIndelAround'] <- 1
+  #         }
+  #       }
+  #     }
+  #     
+  #   }
+  # }  
+  maf <- cbind(maf, CaTag = '0')
+  message('VCF to MAF conversion has been done successfully!')
   
   if (filterGene){
     maf <- maf[which(maf$Hugo_Symbol != ''), ]

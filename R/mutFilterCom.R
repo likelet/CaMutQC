@@ -2,28 +2,71 @@
 #' @description Apply common filter strategies on a MAF data frame.
 #'
 #' @param maf An MAF data frame.
+#' @param tumorDP Threshold of tumor total depth. Default: 20
+#' @param normalDP Threshold of normal total depth. Default: 10
+#' @param tumorAD Threshold of tumor alternative allele depth. Default: 10
+#' @param VAF Threshold of VAF value. Default: 0.05
+#' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
 #' @param tumorSampleName Label of the tumor sample, should be one of the 
-#' column names of MAF. If it is set as 'Extracted', tumorSampleName would be
-#' extracted automatically from the MAF data frame. Default: 'Extracted'.
-#' @param mut.filter Whether to directly return a filtered MAF data frame. 
-#' If FALSE, a simulation filtration process will be run,  and only a filter 
-#' report will be generated. If TRUE, a new MAF data frame and a filter report 
-#' will be generated. Default: TRUE
-#' @param filterParam Value in FILTER field used to filter variants.
+#' column names of maf. If it is set as 'Extracted', tumorSampleName would be
+#' extracted automatically from the maf data frame. Default: 'Extracted'.
+#' @param SBmethod Method will be used to detect strand bias, 
+#' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio 
+#' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
+#' StrandOddsRatio)
+#' @param SBscore Cutoff strand bias score used to filter variants.
+#' Default: 3
+#' @param maxindelLen Maximum length of indel accepted to be included. 
+#' Default: 50
+#' @param maxInterval Maximum length of interval between an SNV and an indel 
+#' accepted to be included. Default: 10
+#' @param tagFILTER Variants with spcific tag in the FILTER column will be kept,
 #' Default: 'PASS'
-#' @param report.dir Path to the output report file. Default: './'
-#' @param TMB Whether to calculate TMB. Default: FALSE
-#' @param bedFile A bed File used to calculate TMB. Default: NULL
-#' @import rmarkdown, ggplot2
+#' @param dbVAF Threshold of VAF of certain population for variants
+#'  in database. Default: 0.01
+#' @param ExAc Whether to filter variants listed in ExAc with VAF higher than
+#' cutoff(set in VAF parameter). Default: TRUE.
+#' @param Genomesprojects1000 Whether to filter variants listed in 
+#' Genomesprojects1000 with VAF higher than cutoff(set in VAF parameter). 
+#' Default: TRUE.
+#' @param ESP6500 Whether to filter variants listed in ESP6500 with VAF higher 
+#' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
+#' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
+#' @param keepType A group of variant classifications will be kept, 
+#' including 'exonic' and 'nonsynonymous'. Default: 'exonic'. 
+#' @param bedFile A file in bed format that contains region information.
+#' Default: NULL
+#' @param bedFilter Whether to filter the information in bed file or not, which 
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' @param mutFilter Whether to directly return a filtered MAF data frame. 
+#' If FALSE, a simulation filtration process will be run, and the original MAF 
+#' data frame with tags in CaTag column, and  a filter report will be returned. 
+#' If TRUE, a filtered MAF data frame and a filter report will be generated. 
+#' Default: FALSE
+#' @param selectCols Columns will be contained in the filtered data frame.
+#' By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.
+#' Or a vector contains column names will be kept.
+#' @param reportFile File name of the report. Default: 'FilterReport.html'
+#' @param reportDir Path to the output report file. Default: './'
+#' @param TMB Whether to calculate TMB. Default: TRUE
 #' 
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
 #' 
 #' @export mutFilterCom
 
-mutFilterCom <- function(maf, tumorSampleName = 'Extracted', mut.filter = TRUE, 
-                         filterParam = 'PASS', report.dir = './', TMB = FALSE,
-                         bedFile = NULL) {
+mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10, 
+                         VAF = 0.05, VAFratio = 5, tumorSampleName = 'Extracted', 
+                         SBmethod = 'SOR', SBscore = 3, maxindelLen = 50, 
+                         maxInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01, 
+                         ExAc = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
+                         gnomAD = TRUE, COSMIConly = TRUE, keepType = 'exonic',
+                         bedFile = NULL, bedFilter = TRUE, mutFilter = FALSE, 
+                         selectCols = TRUE, filterParam = 'PASS', 
+                         reportFile = 'FilterReport.html', reportDir = './', 
+                         TMB = FALSE) {
   
   # process tumorSampleName
   if (tumorSampleName == 'Extracted'){
@@ -32,77 +75,22 @@ mutFilterCom <- function(maf, tumorSampleName = 'Extracted', mut.filter = TRUE,
     stop('Invaild tumorSampleName.')
   }
   
-  # start filtration 
-  ## FILTER field
-  cat('Variants filtration based on FILTER field is in process.')
-  maf_filtered <- maf[maf$FILTER ==  filterParam, ]
-  if (nrow(maf_filtered) == 0) {
-    message('No variation left after FILTER field filtration.')
-  }else{
-    
-    ## sequencing quality
-    cat('\nVariants filtration for sequencing quality is in process.')
-    maf_filtered <- mutFilterQual(maf_filtered)
-    if (nrow(maf_filtered) == 0) {
-      message('No variation left after filtration variants in low 
-              sequencing quality.')
-    }else{
-      
-      ## PON
-      cat('\nVariants filtration for PON is in process.\n')
-      maf_filtered <- mutFilterPON(maf_filtered)
-      if (nrow(maf_filtered) == 0) {
-        message('No variation left after filtration variants in PON.')
-      }else{
-        
-        ## SNP
-        cat('\nVariants filtration of SNP variants is in process.')
-        maf_filtered <- mutFilterSNP(maf_filtered)
-        if (nrow(maf_filtered) == 0) {
-          message('No variation left after filtration SNP variants.')
-        }else{
-          ## variant types
-          cat('\nVariants filtration of variant types.\n')
-          maf_filtered <- mutFilterType(maf_filtered)
-          if (nrow(maf_filtered) == 0) {
-            message('No variation left after filtration variants of certain types.')
-          }else{
-            ## Strand Bias
-            cat('\nVariants filtration of strand bias is in process.\n')
-            #cat(tumorSample %in% colnames(maf_type))
-            maf_filtered <- mutFilterSB(maf_filtered, 
-                                        tumorSampleName = tumorSample)
-            if (nrow(maf_filtered) == 0) {
-              message('No variation left after filtration SB variants.')
-            }else{
-              ## normal depth
-              cat('\nVariants filtration of normal depth is in process.')
-              maf_filtered <- mutFilterNormalDP(maf_filtered)
-              if (nrow(maf_filtered) == 0) {
-                message('No variation left after filtration variants through normal depth.')
-              }else{
-                ## COSMIC
-                cat('\nVariants filtration of non-COSMIC variants is in process.\n')
-                maf_filtered <- mutFilterCOSMIC(maf_filtered)
-                if (nrow(maf_filtered) == 0) {
-                  message('No variation left after filtration variants not 
-                          in COSMIC.')
-                }else{
-                  ## mutFilterAdj
-                  cat('\nVariants filtration of Adjacent indel is in process.\n')
-                  maf_filtered <- mutFilterAdj(maf_filtered)
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  # run mutFilterTech
+  mafFilteredT <- mutFilterTech(maf, tumorDP = tumorDP, normalDP = normalDP, 
+                               tumorAD = tumorAD, VAF = VAF, VAFratio = VAFratio, 
+                               tumorSampleName = tumorSampleName, 
+                               SBmethod = SBmethod, SBscore = SBscore, 
+                               maxindelLen = maxindelLen, 
+                               maxInterval = maxInterval, tagFILTER = tagFILTER)
   
-  if (nrow(maf_filtered) == 0){
-    stop('No variant left after filtration.')
-  }
+  # run mutSelection
+  mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAc = ExAc, 
+                              Genomesprojects1000 = Genomesprojects1000, 
+                              ESP6500 = ESP6500, gnomAD = gnomAD, 
+                              COSMIConly = COSMIConly, keepType = keepType,
+                              bedFile = bedFile, bedFilter = bedFilter)
+  
+  mafFilteredF <- mafFilteredS[mafFilteredS$CaTag == '0', ]
   
   if (TMB){
     # check bed file
@@ -112,14 +100,22 @@ mutFilterCom <- function(maf, tumorSampleName = 'Extracted', mut.filter = TRUE,
     }else{
       bed <- read.table(bedFile)
       bedLen <- as.character(round(sum(bed$V3 - bed$V2)/1000000, 2))
-      TMBvalue <- calTMB(maf_filtered, bedFile = bedFile)
+      TMBvalue <- calTMB(mafFilteredF, bedFile = bedFile)
     }
   }
   
   # report generation
-  rmarkdown::render('./report/FilterReport.Rmd', 
-                    output_file = paste0(report.dir, 'filterReport.html'))
-  if (mut.filter) {
-    return(maf_filtered)
+  rmarkdown::render('./report/FilterReport.Rmd', output_file = reportFile,
+                    output_dir = reportDir)
+  if (mutFilter) {
+    if (selectCols){
+      if (isTRUE(selectCols)){
+        return(mafFilteredF[, c(1:12, 16)])
+      }else{
+        return(mutfilterF[, selectCols])
+      }
+    }
+  }else{
+    return(mafFilteredS)
   }
 }

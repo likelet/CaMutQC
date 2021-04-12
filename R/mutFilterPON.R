@@ -23,8 +23,8 @@ mutFilterPON <- function(maf) {
   # joint useful information for matching
   if (unique(maf$NCBI_Build) == 'GRCh37') {
     message('Loading PON data...')
-    somatic37 <- read.vcfR(
-      '../inst/extdata/somatic-b37_Mutect2-exome-panel.vcf')
+    invisible(capture.output(somatic37 <- read.vcfR(
+      '../inst/extdata/somatic-b37_Mutect2-exome-panel.vcf')))
     message('PON data has been loaded successfully!')
     ext37 <- rep(NA, nrow(somatic37@fix))
     for (k in seq_len(nrow(somatic37@fix))) {
@@ -41,8 +41,8 @@ mutFilterPON <- function(maf) {
     }
   } else if (unique(maf$NCBI_Build) == 'GRCh38') {
     message('Loading PON data...')
-    somatic38 <- read.vcfR(
-      '../inst/extdata/somatic-hg38_1000g_pon.hg38.vcf')
+    invisible(capture.output(somatic38 <- read.vcfR(
+      '../inst/extdata/somatic-hg38_1000g_pon.hg38.vcf')))
     message('PON data has been loaded successfully!')
         ext38 <- rep(NA, nrow(somatic38@fix))
     for (k in seq_len(nrow(somatic38@fix))) {
@@ -64,16 +64,7 @@ mutFilterPON <- function(maf) {
     stop('There are more than one version of genome in this dataset.')
   }
   
-  # discard somatic mutation
-  if (is.null(discard)){
-    return(maf)
-  }else {
-    maf_filtered <- as.data.frame(maf[-discard, ])
-    if (nrow(maf_filtered) == 0){
-      message('No mutation left after PON filtration.')
-    }else{
-      rownames(maf_filtered) <- seq_len(nrow(maf_filtered))
-    }
-    return(maf_filtered)
-  }
+  # add tag
+  maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'], 'P')
+  return(maf)
 }
