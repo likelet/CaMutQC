@@ -16,9 +16,9 @@
 #' StrandOddsRatio)
 #' @param SBscore Cutoff strand bias score used to filter variants.
 #' Default: 3
-#' @param maxindelLen Maximum length of indel accepted to be included. 
+#' @param maxIndelLen Maximum length of indel accepted to be included. 
 #' Default: 50
-#' @param maxInterval Maximum length of interval between an SNV and an indel 
+#' @param minInterval Maximum length of interval between an SNV and an indel 
 #' accepted to be included. Default: 10
 #' @param tagFILTER Variants with spcific tag in the FILTER column will be kept,
 #' Default: 'PASS'
@@ -59,14 +59,14 @@
 
 mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10, 
                          VAF = 0.05, VAFratio = 5, tumorSampleName = 'Extracted', 
-                         SBmethod = 'SOR', SBscore = 3, maxindelLen = 50, 
-                         maxInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01, 
+                         SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
+                         minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01, 
                          ExAc = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
                          gnomAD = TRUE, COSMIConly = TRUE, keepType = 'exonic',
                          bedFile = NULL, bedFilter = TRUE, mutFilter = FALSE, 
                          selectCols = TRUE, filterParam = 'PASS', 
                          reportFile = 'FilterReport.html', reportDir = './', 
-                         TMB = FALSE) {
+                         TMB = TRUE) {
   
   # process tumorSampleName
   if (tumorSampleName == 'Extracted'){
@@ -80,8 +80,11 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                                tumorAD = tumorAD, VAF = VAF, VAFratio = VAFratio, 
                                tumorSampleName = tumorSampleName, 
                                SBmethod = SBmethod, SBscore = SBscore, 
-                               maxindelLen = maxindelLen, 
-                               maxInterval = maxInterval, tagFILTER = tagFILTER)
+                               maxIndelLen = maxIndelLen, 
+                               minInterval = minInterval, tagFILTER = tagFILTER)
+  
+  # filter first for report usage
+  mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == '0', ]
   
   # run mutSelection
   mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAc = ExAc, 
@@ -90,13 +93,24 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                               COSMIConly = COSMIConly, keepType = keepType,
                               bedFile = bedFile, bedFilter = bedFilter)
   
-  mafFilteredF <- mafFilteredS[mafFilteredS$CaTag == '0', ]
+  # filter first for report usage
+  mafFilteredS2 <- suppressMessages(
+    mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAc = ExAc, 
+                 Genomesprojects1000 = Genomesprojects1000, 
+                 ESP6500 = ESP6500, gnomAD = gnomAD, COSMIConly = COSMIConly, 
+                 keepType = keepType, bedFile = bedFile, bedFilter = bedFilter))
+  
+  mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
+  # print(nrow(mafFilteredF))
+  if (nrow(mafFilteredF) == 0){
+    stop('No variants left after filtration.')
+  }
   
   if (TMB){
     # check bed file
     if (is.null(bedFile)){
-      stop('A bed file is missing, which is required for TMB calculation.
-           If you don\'t want to calculate TMB, please set TMB as FALSE.')
+      stop(paste0('A bed file is missing, which is required for TMB calculation.',
+          ' If you don\'t want to calculate TMB, please set TMB to FALSE.'))
     }else{
       bed <- read.table(bedFile)
       bedLen <- as.character(round(sum(bed$V3 - bed$V2)/1000000, 2))
@@ -112,7 +126,11 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
       if (isTRUE(selectCols)){
         return(mafFilteredF[, c(1:12, 16)])
       }else{
-        return(mutfilterF[, selectCols])
+        if (all(selectCols %in% colnames(mafFilteredF))){
+          return(mafFilteredF[, selectCols])
+        }else{
+          stop('Not all selected columns can be found in MAF columns. ')
+        }
       }
     }
   }else{
