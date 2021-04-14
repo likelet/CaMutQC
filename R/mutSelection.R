@@ -55,6 +55,8 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAc = TRUE,
   message('Filtration for variants in specific region is in process.')
   maf <- mutFilterReg(maf, bedFile = bedFile, bedFilter = bedFilter)
   
+  # complete selection
+  message('Cancer variant selection is done!')
   return(maf)
 }
 
