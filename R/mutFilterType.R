@@ -14,10 +14,10 @@ mutFilterType <- function(maf, keepType = 'exonic') {
   
   # process keepType
   if (keepType == 'exonic') {
-    keepType <- c('RNA', 'Intron', 'IGR', '5\'Flank', '3\'Flank', 
+    flterType <- c('RNA', 'Intron', 'IGR', '5\'Flank', '3\'Flank', 
                '5\'UTR', '3\'UTR')
   } else if (keepType == 'nonsynonymous') {
-    keepType <- c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", 
+    flterType <- c("3'UTR", "5'UTR", "3'Flank", "Targeted_Region", "Silent", 
                "Intron", "RNA", "IGR", "Splice_Region", "5'Flank", "lincRNA", 
                "De_novo_Start_InFrame", "De_novo_Start_OutOfFrame", 
                "Start_Codon_Ins", "Start_Codon_SNP", "Stop_Codon_Del")
@@ -26,7 +26,7 @@ mutFilterType <- function(maf, keepType = 'exonic') {
   }
   
   # add T tag
-  tags <- rownames(maf[maf$Variant_Classification %in% keepType, ])
+  tags <- rownames(maf[maf$Variant_Classification %in% flterType, ])
   maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'T')
 
   return(maf)

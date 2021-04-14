@@ -8,7 +8,9 @@
 #' @param method Method will be used to detect strand bias, 
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio 
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
-#' StrandOddsRatio)
+#' StrandOddsRatio) Fisher's Exat Test: Switch to Phred socre
+#' (https://gatk.broadinstitute.org/hc/en-us/articles/360035532152-Fisher-
+#' s-Exact-Test)
 #' @param SBscore Cutoff strand bias score used to filter variants.
 #' Default: 3
 #' 
@@ -69,8 +71,8 @@ calSBscore <- function(charmatrix, method = 'SOR'){
     symmetricalRatio <- (refFw * altRv)/(refRv * altFw) + 
       (refRv * altFw) / (refFw * altRv)
     
-    refRatio <- refRv / refFw
-    altRatio <- altFw / altRv
+    refRatio <- min(refRv, refFw) / max(refRv, refFw)
+    altRatio <- min(altRv, altFw) / max(altRv, altFw)
     score <- log(symmetricalRatio) + log(refRatio) - log(altRatio)
     
   }else if (method == 'Fisher')   {
@@ -78,11 +80,53 @@ calSBscore <- function(charmatrix, method = 'SOR'){
     refRv <- depths[2]
     altFw <- depths[3]
     altRv <- depths[4]
-    matrix <- rbind(c(refFw, refRv), c(altFw, altRv))
-    score <- 1 - fisher.test(matrix)$p.value 
+    Row1 <- refRv + refFw
+    Row2 <- altRv + altFw
+    Col1 <- refFw + altFw
+    Col2 <- refRv + altRv
+    
+    P1 <- calP(refFw, refRv, altFw, altRv)
+    
+    # check P1 whether it is over the depth
+    if (is.na(NaN)){
+      stop('Your data is in higher coverage, please use \'SOR\' method instead.')
+    }
+    
+    # probability of observing more extreme data
+    vaildP <- c()
+    
+    # get the range of refFw
+    maxR <- min(Row1, Col1)
+    minR <- max(0, Row1-Col2)
+    for (i in minR:maxR){
+      exP <- calP(i, Row1-i, Col1-i, Col2 - Row1 + i)
+      if(exP <= P1){
+        vaildP <- c(vaildP, exP)
+      }
+    }
+    
+    # get sum of P
+    Pt <- sum(P1, vaildP)
+    
+    # get Phred score
+    score <- -10 * log10(Pt)
   }else {
     stop('Please select a method from SOR and Fisher')
   }
-  
   return(score)
 }
+
+
+calP <- function(refFw, refRv, altFw, altRv){
+  R1 <- refRv + refFw
+  R2 <- altRv + altFw
+  C1 <- refFw + altFw
+  C2 <- refRv + altRv
+  
+  # probability P
+  P <- (factorial(R1) * factorial(R2) * factorial(C1) * factorial(C2))/
+    (factorial(R1 + R2) * factorial(refRv) * factorial(refFw) * 
+       factorial(altFw) * factorial(altRv))
+  return(P)
+}
+
