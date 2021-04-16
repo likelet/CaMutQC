@@ -13,9 +13,10 @@
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
 #' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: TRUE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
 #' @param keepType A group of variant classifications will be kept, 
-#' including 'exonic' and 'nonsynonymous'. Default: 'exonic'. 
+#' including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'. 
 #' @param bedFile A file in bed format that contains region information.
 #' Default: NULL
 #' @param bedFilter Whether to filter the information in bed file or not, which 
@@ -30,14 +31,15 @@
 
 mutSelection <- function(maf, dbVAF = 0.01, ExAc = TRUE, 
                          Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
-                         gnomAD = TRUE, COSMIConly = TRUE, keepType = 'exonic',
+                         gnomAD = TRUE, dbSNP = TRUE, 
+                         COSMIConly = TRUE, keepType = 'exonic',
                          bedFile = NULL, bedFilter = TRUE){
   
   # database filtration
   message('Filtration for germline variant database is in process.')
   maf <- mutFilterDB(maf, VAF = dbVAF, ExAc = ExAc, 
                      Genomesprojects1000 = Genomesprojects1000, ESP6500 = ESP6500,
-                     gnomAD = gnomAD, COSMIConly = COSMIConly)
+                     gnomAD = gnomAD, dbSNP = dbSNP, COSMIConly = COSMIConly)
   
   # variant type filtration
   message('Filtration for variant type is in process.')

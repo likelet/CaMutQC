@@ -13,6 +13,7 @@
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
 #' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: TRUE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
 #' 
 #' @return An MAF data frame after filtration for database 
@@ -21,7 +22,8 @@
 #' @export mutFilterDB
 
 mutFilterDB <- function(maf, VAF = 0.01, ExAc = TRUE, Genomesprojects1000 = TRUE,
-                        ESP6500 = TRUE, gnomAD = TRUE, COSMIConly = TRUE){
+                        ESP6500 = TRUE, gnomAD = TRUE, dbSNP = TRUE, 
+                        COSMIConly = TRUE){
   
   # ExAc filtration
   if (ExAc){
@@ -83,8 +85,17 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAc = TRUE, Genomesprojects1000 = TRUE
     tags6 <- NULL
   }
   
+  # dbSNP filtration
+  if (dbSNP){
+    n_tags <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
+    tags7 <- setdiff(rownames(maf), n_tags)
+  }else{
+    tags7 <- NULL
+  }
+  
   tags <- union(union(union(tags1, tags2), union(tags3, tags4)), 
                 union(tags5, tags6))
+  tags <- union(tags, tags7)
   
   tags <- intersect(tags, setdiff(rownames(maf), 
                                   as.character(grep('athogenic', maf$CLIN_SIG))))

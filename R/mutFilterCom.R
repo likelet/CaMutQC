@@ -33,6 +33,7 @@
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
 #' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: TRUE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
 #' @param keepType A group of variant classifications will be kept, 
 #' including 'exonic' and 'nonsynonymous'. Default: 'exonic'. 
@@ -48,6 +49,7 @@
 #' @param selectCols Columns will be contained in the filtered data frame.
 #' By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.
 #' Or a vector contains column names will be kept.
+#' @param report Whether to generate report automatically. Default: TRUE
 #' @param reportFile File name of the report. Default: 'FilterReport.html'
 #' @param reportDir Path to the output report file. Default: './'
 #' @param TMB Whether to calculate TMB. Default: TRUE
@@ -62,9 +64,9 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01, 
                          ExAc = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
-                         gnomAD = TRUE, COSMIConly = TRUE, keepType = 'exonic',
-                         bedFile = NULL, bedFilter = TRUE, mutFilter = FALSE, 
-                         selectCols = TRUE, filterParam = 'PASS', 
+                         gnomAD = TRUE, dbSNP = TRUE, COSMIConly = TRUE, 
+                         keepType = 'exonic', bedFile = NULL, bedFilter = TRUE, 
+                         mutFilter = FALSE, selectCols = TRUE, report = TRUE, 
                          reportFile = 'FilterReport.html', reportDir = './', 
                          TMB = TRUE) {
   
@@ -89,14 +91,14 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
   # run mutSelection
   mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAc = ExAc, 
                               Genomesprojects1000 = Genomesprojects1000, 
-                              ESP6500 = ESP6500, gnomAD = gnomAD, 
+                              ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
                               COSMIConly = COSMIConly, keepType = keepType,
                               bedFile = bedFile, bedFilter = bedFilter)
   
   # filter first for report usage
   mafFilteredS2 <- suppressMessages(
     mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAc = ExAc, 
-                 Genomesprojects1000 = Genomesprojects1000, 
+                 Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
                  ESP6500 = ESP6500, gnomAD = gnomAD, COSMIConly = COSMIConly, 
                  keepType = keepType, bedFile = bedFile, bedFilter = bedFilter))
   
@@ -119,8 +121,11 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
   }
   
   # report generation
-  rmarkdown::render('./report/FilterReport.Rmd', output_file = reportFile,
-                    output_dir = reportDir)
+  if (report){
+    rmarkdown::render('./report/FilterReport.Rmd', output_file = reportFile,
+                      output_dir = reportDir)
+  }
+  
   if (mutFilter) {
     if (selectCols){
       if (isTRUE(selectCols)){
