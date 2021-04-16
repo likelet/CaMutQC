@@ -18,9 +18,9 @@
 #' StrandOddsRatio)
 #' @param SBscore Cutoff strand bias score used to filter variants.
 #' Default: 3
-#' @param maxindelLen Maximum length of indel accepted to be included. 
+#' @param maxIndelLen Maximum length of indel accepted to be included. 
 #' Default: 50
-#' @param maxInterval Maximum length of interval between an SNV and an indel 
+#' @param minInterval Minimum length of interval between an SNV and an indel 
 #' accepted to be included. Default: 10
 #' @param tagFILTER Variants with spcific tag in the FILTER column will be kept,
 #' Default: 'PASS'
@@ -34,8 +34,8 @@
 
 mutFilterTech <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10, 
                           VAF = 0.05, VAFratio = 5, tumorSampleName = 'Extracted', 
-                          SBmethod = 'SOR', SBscore = 3, maxindelLen = 50, 
-                          maxInterval = 10, tagFILTER = 'PASS'){
+                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
+                          minInterval = 10, tagFILTER = 'PASS'){
   
   # sequencing quality filtration
   message('Filtration for sequencing quality is in process.')
@@ -49,7 +49,7 @@ mutFilterTech <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
   
   # adjacent indel tag filtration
   message('Filtration for adjacent indel is in process.')
-  maf <- mutFilterAdj(maf, maxindelLen = maxindelLen, maxInterval = maxInterval)
+  maf <- mutFilterAdj(maf, maxIndelLen = maxIndelLen, minInterval = minInterval)
   
   # FILTER field filtration
   message('Filtration for FILTER column is in process.')
@@ -57,6 +57,8 @@ mutFilterTech <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                                (maf$FILTER != tagFILTER)), ])
   maf[tagFilter, 'CaTag'] <-  paste0(maf[tagFilter, 'CaTag'], 'F')
   
+  # complete filtration
+  message('Filtration for technical issue is done!')
   return(maf)
 }
 

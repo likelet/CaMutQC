@@ -49,13 +49,13 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     
     # filter based on genelist
     if (assay == 'MSKCC-v3') {
-      mskcc_v3 <- read.table('../inst/extdata/Panel_gene/MSK-IMPACT_gene_v3_468.txt')
+      mskcc_v3 <- read.table('../Data/TMB/MSK-IMPACT_gene_v3_468.txt')
       maf <- maf[which(maf$Hugo_Symbol %in% mskcc_v3$V1), ]
     }else if (assay == 'MSKCC-v2') {
-      mskcc_v2 <- read.table('../inst/extdata/Panel_gene/MSK-IMPACT_gene_v2_410.txt')
+      mskcc_v2 <- read.table('../Data/TMB/MSK-IMPACT_gene_v2_410.txt')
       maf <- maf[which(maf$Hugo_Symbol %in% mskcc_v2$V1), ]
     }else if (assay == 'MSKCC-v1') {
-      mskcc_v1 <- read.table('../inst/extdata/Panel_gene/MSK-IMPACT_gene_v1_341.txt')
+      mskcc_v1 <- read.table('../Data/TMB/MSK-IMPACT_gene_v1_341.txt')
       maf <- maf[which(maf$Hugo_Symbol %in% mskcc_v1$V1), ]
     }else{
       stop(paste0('Invalid assay detected.', 
@@ -70,7 +70,7 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     
     # filter for non-/hotspot genes (COSMIC genes)
     maf_c <- maf[grep('COSV', maf[, 'Existing_variation']), ]
-    maf_nonc <- maf[setdiff(rownames(maf_c), rownames(maf)),]
+    maf_nonc <- maf[setdiff(rownames(maf), rownames(maf_c)), ]
     
     maf_c_f <- mutFilterQual(maf_c, tumorDP = 20, tumorAD = 8, normalDP = 0, 
                              VAF = 0.02, VAFratio = 0)
@@ -84,9 +84,9 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
   }else if (assay %in% c('FoundationOne', 'Pan-Cancer Panel')) {
     
     # filter noncoding variants
-    noncoding <- read.table('../inst/extdata/noncoding.txt', header = TRUE)
+    noncoding <- read.table('../Data/noncoding.txt', header = TRUE)
     maf <- maf[which(!(maf$One_Consequence %in% 
-                         noncoding$Noncoding_Variant_Types)), ]
+                                      noncoding$Noncoding_Variant_Types)), ]
     
     # filter germline variants(deprecated)
     
@@ -104,11 +104,11 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     }
     
     # filter stop-gain variants in tumor suppressor genes
-    TSGs <- read.table('../inst/extdata/TSGenelist.txt', 
+    TSGs <- read.table('../Data/TSGenelist.txt', 
                        sep = "\t", header = TRUE)
     TSGs_all <- c(TSGs$GeneSymbol, unique(unlist(strsplit(TSGs$Alias, "\\|"))))
     maf <- maf[(!((maf$Hugo_Symbol %in% TSGs_all) & 
-                    (maf$One_Consequence == 'stop_gained'))), ]
+                         (maf$One_Consequence == 'stop_gained'))), ]
     
     # filter variants in COSMIC
     tags2 <- rownames(maf[grep('COSV', maf[, 'Existing_variation']), ])
@@ -116,12 +116,10 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     
     if (assay == 'FoundationOne') {
       # filter based on genelist
-      FoundationOne <- read.table('../inst/extdata/Panel_gene
-                                /FoundationOne_genelist.txt')
+      FoundationOne <- read.table('../Data/TMB/FoundationOne_genelist.txt')
       maf <- maf[maf$Hugo_Symbol %in% FoundationOne$V1, ]
     }else{
-      pan <- read.table('../inst/extdata/Panel_gene/TMB_panel_genelist.txt', 
-                        header = TRUE)
+      pan <- read.table('../Data/TMB/TMB_panel_genelist.txt', header = TRUE)
       maf <- maf[maf$Hugo_Symbol %in% pan$Gene_Symbol, ]
       maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0, 
                            tumorAD = 0, VAF = 0.05, VAFratio = 0)

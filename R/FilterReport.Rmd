@@ -1,0 +1,718 @@
+---
+title: 'Filter Report by CaMutQC'
+output:
+  html_document:
+    df_print: paged
+    highlight: pygments
+    self_contained: yes
+    theme: united
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+date: "`r Sys.Date()`"
+
+---
+
+<style type="text/css">
+  body{
+  font-size: 11pt;
+}
+</style>
+
+
+## Settings  
+
+### Metadata
+
+* Tumor sample name: <span style="color:#ED6F3E">**`r tumorSample`**</span>
+* Normal Sample name: <span style="color:#ED6F3E">**`r unique(maf$Matched_Norm_Sample_Barcode)`**</span>
+* Size of MAF data: <span style="color:#ED6F3E">**`r paste0(as.character(round(object.size(maf)/1024, 2)), ' kb')`**</span>
+
+&nbsp;
+
+### Report configuration 
+
+&nbsp;
+
+#### 1 &nbsp;&nbsp; Potential artifacts filtration
+
+##### a. &nbsp;&nbsp; Sequencing quality thresholds
+
+- tumor depth (tumorDP): <span style="color:#ED6F3E">**`r tumorDP`**</span>
+- tumor allele depth (tumorAD): <span style="color:#ED6F3E">**`r tumorAD`**</span>
+- normal depth (normalDP): <span style="color:#ED6F3E">**`r normalDP`**</span>
+- VAF: <span style="color:#ED6F3E">**`r VAF`**</span>
+- VAF ratio (tumorVAF/normalVAF): <span style="color:#ED6F3E">**`r VAFratio`**</span>
+
+&nbsp;
+
+##### b. &nbsp;&nbsp; Strand of Bias
+
+Strand bias occurs when the genotype inferred from information presented by the forward strand and the reverse strand disagrees. A study showed that post-analysis procedures can cause strand bias, which introduce more SNPs with higher strand bias, which in turn results in more false-positive SNPs [1](#refer). Therefore, it is necessary to detect and minimize strand bias in our data.
+
+At present, there are four methods of strand bias detection that are widely used. In a mitochondria heteroplasmy study [2](#refer), the calculation of SB was put forward. GATK calculates a strand bias score for each SNP identified, and Samtools also computes a strand bias score based on Fisher's exact test. Additionally, GATK introduced an updated form of the Fisher Strand Test, [StrandOddsRatioSOR](https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-StrandOddsRatio) annotation, which is believed to be better at taking into account large amounts of data in high coverage situations.
+
+In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate strand bias and filter variants based on the results. By default, strand bias is detected through SOR algorithm.
+
+* **Method used to detect strand bias**: <span style="color:#ED6F3E">**`r SBmethod`**</span>
+* **Strand Bias score cutoff**: <span style="color:#ED6F3E">**`r SBscore`**</span>
+
+&nbsp;
+
+
+##### c. &nbsp;&nbsp; Adjacent indel tag
+
+The Adjacent Indel tag is used when a somatic variant was possibly caused by misalignment around a germline or somatic insertion/deletion(indel). By default, CaMutQC will filter any SNV which was within 10bp of an indel found in the tumor sample. Also, the maximum length of an indel is set as 50bp.
+
+**Maximum length of an indel**: <span style="color:#ED6F3E">**`r maxIndelLen`**</span>
+
+**Minimum interval between an indel and an SNV**: <span style="color:#ED6F3E">**`r minInterval`**</span>
+
+
+&nbsp;
+
+
+##### d. &nbsp;&nbsp; FILTER tag
+
+Some variant callers add a tag if a variant pass the post-filtration after calling. In CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. `PASS` will be used in CaMutQC by default.
+
+**FILTER tag**: <span style="color:#ED6F3E">**`r tagFILTER`**</span>
+
+&nbsp;
+
+#### 2 &nbsp;&nbsp; Candidate variant selection
+
+##### a. &nbsp;&nbsp; Database filtration
+
+Some database published germline variants and recurrent artifacts in distinct races. In CaMutQC, based on the parameters we collected [3](#refer) [4](#refer) [5](#refer), potential germline variants will be removed using annotation from these database(if available) unless CliVar/OMIM/HGMD flags it as pathogenic.
+
+[COSMIC](https://cancer.sanger.ac.uk/cosmic/), the Catalogue Of Somatic Mutations In Cancer, is the world's largest and most comprehensive resource for exploring the impact of somatic mutations in human cancer. They have assembled a list of genes that are somatically mutated and causally implicated in human cancer [6](#refer), which is called the The Cancer Gene Census and is updated periodically with new genes. In VCF files annotated by VEP, a `Existing_variation` column normally indicates a gene is on this COSMIC list if it has a annotation ID starts with `COSV`, `COSM` or `COSN`. 
+
+In CaMutQC, by default, we use VAF cutoff of 0.01 to remove potential germline variants unless CliVar/OMIM/HGMD flags it as pathogenic. 
+
+```{r echo=FALSE}
+# get database information
+dbs <- paste0(c('ExAc', 'Genomesprojects1000', 
+                'ESP6500', 'gnomAD')[c(isTRUE(ExAc), isTRUE(Genomesprojects1000),
+                                       isTRUE(ESP6500),isTRUE(gnomAD))], 
+              collapse = ', ')
+
+```
+
+- **Database included**: <span style="color:#ED6F3E">**`r dbs`**</span>
+
+- **VAF cutoff**: <span style="color:#ED6F3E">**`r dbVAF`**</span>
+
+- **Only keep variants in COSMIC**: <span style="color:#ED6F3E">**`r COSMIConly`**</span>
+
+&nbsp;
+
+
+##### b. &nbsp;&nbsp; Normal depth threshold
+
+To avoid miscalling germline variants and to ensure the quality of variants [4](#refer), filtration for normal depth is also applied in CaMutQC as follows. 
+
+* **[dbsnp](http://www.bioinfo.org.cn/relative/dbSNP%20Home%20Page.htm) Variants**: <span style="color:#ED6F3E">**19**</span>
+* **Non-dbsnp variants**: <span style="color:#ED6F3E">**8**</span>
+
+&nbsp;
+
+
+##### c. &nbsp;&nbsp; Panel of normals
+
+
+A Panel of normal or PON is a type of resource used in somatic variant analysis. Basically, if a variant is found in a panel of normals, or is found in more than two normal samples, it is unlikely to be a driven variant during cancer development. PON filtration has been widely used in many researches and projects to discard non-driven variants [3](#refer) [7](#refer)
+[8](#refer).
+
+A PON can be generated by users through sequencing a number of normal samples that are as technically similar as possible to the tumor (same exome or genome preparation methods, sequencing technology and so on). Or, a PON can be directly obtained from GATK, which is viewed as one of the most effective filters of false-positive, contamination, and germline variants filter [4](#refer).
+
+In CaMutQC, PON filtration dependents on GATK PON datasets, and variant data refers to different versions of genome uses different public GATK panels of normals datasets for filtration.
+
+- GRCh37: <span style="color:#ED6F3E">**somatic-b37_Mutect2-exome-panel.vcf**</span>
+- GRCh38: <span style="color:#ED6F3E">**somatic-hg38_1000g_pon.hg38.vcf**</span>
+
+**NCBI build version of this dataset**: <span style="color:#ED6F3E">**`r unique(mafFilteredF$NCBI_Build)`**</span>
+
+&nbsp;
+
+##### d. &nbsp;&nbsp; Types of variants
+
+Most studies relate to cancer somatic mutations remove certain types of variants in order to better target driven variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
+
+In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
+
+- Variant classifications viewed as exonic: **`RNA`, `Intron`, `IGR`, `5\'Flank`, `3\'Flank`, `5\'UTR`, `3\'UTR`**
+
+- Variant classifications viewed as nonsynonymous: **`3'UTR`, `5\'UTR`, `3\'Flank`, `Targeted_Region`, `Silent`, `Intron`, `RNA`, `IGR`, `Splice_Region`, `5\'Flank`, `lincRNA`,`De_novo_Start_InFrame`, `De_novo_Start_OutOfFrame`, `Start_Codon_Ins`, `Start_Codon_SNP`, `Stop_Codon_Del`**
+
+**Type chose for this filtration**: <span style="color:#ED6F3E">**`r keepType`**</span>
+
+&nbsp;
+
+##### e. &nbsp;&nbsp; Region selection
+
+In this selection, users are able to further select variants related to cancer development by providing a bed file. Variants will be searched only in target regions.
+
+**Bed file provided**: <span style="color:#ED6F3E">**`r !(is.null(bedFile))`**</span>
+
+&nbsp;
+
+#### 3 &nbsp;&nbsp; Filters and flags 
+
+| Filter | Flag | Filter | Flag |
+| :----- | :---- | :----- | :---- |
+| mutFilterQual | **Q** | mutFilterPON | **P** |
+| mutFilterSB | **S** | mutFilterType | **T** |
+| mutFilterAdj | **A** | mutFilterReg | **R** |
+| mutFilterDB | **D** | FILTER | **F** |
+| mutFilterNormalDP | **N** |  |  |
+
+&nbsp;
+
+## Potential artifacts filtration
+
+### Statistics
+
+| Item   | Before filtration | After filtration |
+| :----- | :---------------- | :--------------- |
+| **# Variants** | `r nrow(maf)` | `r nrow(mafFilteredTs)` |
+| **# Genes** | `r length(unique(maf$Hugo_Symbol))` | `r length(unique(mafFilteredTs$Hugo_Symbol))` |
+
+```{r, echo=FALSE}
+# build table
+t1 <- matrix(nrow = 6)
+rownames(t1) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
+t1[names(table(maf$Variant_Type)),1] <- table(maf$Variant_Type)
+t1[which(is.na(t1[, 1])),1] <- 0
+
+t2 <- matrix(nrow = 6)
+rownames(t2) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
+t2[names(table(mafFilteredTs$Variant_Type)),1] <- table(mafFilteredTs$Variant_Type)
+t2[which(is.na(t2[, 1])),1] <- 0
+```
+
+| Type of variants | Before selection | After selection |
+| :----- | :---- | :---- |
+| **SNP** | `r as.numeric(t1[1,1])` | `r as.numeric(t2[1,1])` |
+| **DNP** | `r as.numeric(t1[2,1])` | `r as.numeric(t2[2,1])` |
+| **TNP** | `r as.numeric(t1[3,1])` | `r as.numeric(t2[3,1])` |
+| **ONP** | `r as.numeric(t1[4,1])` | `r as.numeric(t2[4,1])` |
+| **INS** | `r as.numeric(t1[5,1])` | `r as.numeric(t2[5,1])` |
+| **DEL** | `r as.numeric(t1[6,1])` | `r as.numeric(t2[6,1])` |
+
+&nbsp;
+
+### Visualization
+
+&nbsp;
+
+#### 1 &nbsp;&nbsp; Flag barplot
+
+
+```{r piechart-of-types, echo=FALSE, fig.width=6, fig.height=6, fig.align='center'}
+cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946", 
+           "#f2cc8f", "#e7ecef", "#f5cac3")
+
+library(ggplot2)
+
+flagDat <- data.frame(table(mafFilteredT$CaTag))
+#flagDat <- flagDat[order(flagDat$Freq, decreasing = TRUE),]
+# calculate percent 
+piepercent = paste(round(100*flagDat$Freq/sum(flagDat$Freq), 1), "%", 
+                   sep = '')
+
+# creat label
+if (flagDat$Var1[1] != '0'){
+  lbls <- paste('With ', substr(flagDat$Var1, 2, 5), ' flag, ', 
+                piepercent, sep="")
+}else{
+  lbls <- paste('With ', c('no', substr(flagDat$Var1[2:nrow(flagDat)], 2, 5)), 
+                ' flag, ', piepercent, sep="")
+}
+
+# pie plot
+pie1 <- ggplot(flagDat, aes(x="", y=Freq, fill=Var1)) + 
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  scale_fill_manual(values=cols0, labels = lbls) +
+  labs(x = NULL, y = NULL, fill = NULL, 
+       title = "Pie Chart of variants after selection") + 
+  theme_classic() + theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(color = "black", vjust = 5),
+          plot.margin = unit(c(0, 1, 0, 1), 'cm'))
+pie1
+```
+
+#### 2 &nbsp;&nbsp; Type of variants
+
+&nbsp;
+
+```{r barplot-of-types, echo=FALSE, fig.width=4, fig.height=4}
+cols1 <- c(SNP = "#e07a5f", INS = "#f2cc8f", DEL =  "#81b29a", 
+          ONP = "#3d405b", DNP = "#f4f1de", TNP = "#cb997e")
+
+library(ggplot2)
+
+dat_before <- data.frame(table(maf$Variant_Type))
+dat_after <- data.frame(table(mafFilteredTs$Variant_Type))
+
+ggplot(dat_before, aes(x = Var1, y = Freq, fill = Var1)) + 
+    geom_bar(stat = 'identity') +
+    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+    labs(title = 'Barplot of Variant Types before filtration', 
+         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
+    scale_fill_manual(values = cols1[as.character(unique(dat_before$Var1))]) +
+    theme_bw() + 
+    theme(axis.text.x = element_text(face = 'bold'), 
+          plot.title = element_text(size = 11, face = 'bold'), 
+          panel.border = element_blank())
+
+ggplot(dat_after, aes(x = Var1, y = Freq, fill = Var1)) + 
+    geom_bar(stat = 'identity') +
+    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+    labs(title = 'Barplot of Variant Types after filtration', 
+         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
+    scale_fill_manual(values = cols1[as.character(unique(dat_after$Var1))]) +
+    theme_bw() + 
+    theme(axis.text.x = element_text(face = 'bold'), 
+          plot.title = element_text(size = 11, face = 'bold'), 
+          panel.border = element_blank())
+
+```
+
+&nbsp;
+
+#### 3 &nbsp;&nbsp; Distribution of variants in genome
+
+```{r distribution-1, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
+cols2 = c('chr1' = '#0060AF', 'chr2' = '#0664B1', 'chr3' = '#0D69B4', 
+          'chr4' = '#136DB6', 'chr5' = '#1A71B8', 'chr6' = '#2075BA', 
+          'chr7' = '#277ABD', 'chr8' = '#2D7EBF', 'chr9' = '#3482C1', 
+          'chr10' = '#3A87C3', 'chr11' = '#418BC6', 'chr12' = '#478FC8', 
+          'chr13' = '#4E94CA', 'chr14' = '#5498CC', 'chr15' = '#5B9CCF', 
+          'chr16' = '#61A0D1', 'chr17' = '#68A5D3', 'chr18' = '#6EA9D5', 
+          'chr19' = '#75ADD8', 'chr20' = '#7BB2DA', 'chr21' = '#82B6DC',
+          'chr22' = '#88BADE', 'chrX' = '#8FBFE1', 'chrY' = '#A2CBE7',
+          'chrM' = '#AFD4EC')
+
+dat_before <- data.frame(table(maf$Chromosome))
+dat_after <- data.frame(table(mafFilteredTs$Chromosome))
+
+# define helper function to order chromosome
+helper <- function(x) {
+  x <- substring(x, 4, 6)
+  if (str_detect(x, '[[a-zA-Z]]')){
+    return(utf8ToInt(x))
+  }else{
+    return(as.numeric(x))
+  }
+}
+
+dat_before <- dat_before[order(unlist(lapply(as.character(dat_before$Var1)
+                                             , helper))), ]
+dat_after <- dat_after[order(unlist(lapply(as.character(dat_after$Var1)
+                                           , helper))), ]
+
+ggplot(dat_before, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
+  geom_bar(stat = 'identity', fill = cols2[as.character(dat_before$Var1)]) +
+  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+  labs(title = 'Barplot of Variant Position before filtration', 
+       x = 'Variant Type', y = 'Count') +
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = 'bold'), 
+        plot.title = element_text(size = 11, face = 'bold'), 
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+```{r distribution-2, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
+ggplot(dat_after, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
+  geom_bar(stat = 'identity', fill = cols2[as.character(dat_after$Var1)]) +
+  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+  labs(title = 'Barplot of Variant Position after filtration', 
+       x = 'Variant Type', y = 'Count') +
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = 'bold'), 
+        plot.title = element_text(size = 11, face = 'bold'), 
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+#### 4 &nbsp;&nbsp; VAF Distribution
+
+```{r echo=FALSE, fig.width=6, fig.height=4.5}
+maf_ext <- maf[, c('Variant_Type', 'VAF')]
+
+helper <- function(num) {
+  if(round(num, 1) <= num){
+    return(round(num, 1))
+  }else{
+    return(round(num, 1) - 0.1)
+  }
+}
+
+maf_ext <- cbind(maf_ext, group = unlist(lapply(maf_ext$VAF, helper)))
+
+maf_ext$group <- as.character(maf_ext$group)
+maf_ext$Num <- as.character(table(maf_ext$group)[maf_ext$group])
+
+ggplot(data = maf_ext, mapping = aes(group)) +
+  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
+  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
+                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
+                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
+  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, color = "black", size = 3) +
+  scale_fill_manual(values = cols1[unique(maf_ext$Variant_Type)]) +
+  labs(x = 'VAF', y = 'Number of Variants', 
+       title = 'Distribution of VAF before filtration', fill = 'Variant Type') +
+  theme_bw() +
+  theme(axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'),
+        plot.title = element_text(face = 'bold', size = 11),
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+```{r echo=FALSE, fig.width=6}
+mafFilteredTs_ext <- mafFilteredTs[, c('Variant_Type', 'VAF')]
+
+mafFilteredTs_ext <- cbind(mafFilteredTs_ext, 
+                          group = unlist(lapply(mafFilteredTs_ext$VAF, helper)))
+
+mafFilteredTs_ext$group <- as.character(mafFilteredTs_ext$group)
+mafFilteredTs_ext$Num <- as.character(table(mafFilteredTs_ext$group)[mafFilteredTs_ext$group])
+
+ggplot(data = mafFilteredTs_ext, mapping = aes(group)) +
+  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
+  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
+                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
+                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
+  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, 
+            color = "black", size = 3) +
+  scale_fill_manual(values = cols1[unique(mafFilteredTs_ext$Variant_Type)]) +
+  labs(x = 'VAF', y = 'Number of Variants', 
+       title = 'Distribution of VAF after filtration', fill = 'Variant Type') +
+  theme_bw() +
+  theme(axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'),
+        plot.title = element_text(face = 'bold', size = 11),
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+
+##  Candidate variant selection 
+
+### Statistics
+
+| Item | Before selection | After selection |
+| :----- | :---- | :---- |
+| **# Variants** | `r nrow(mafFilteredS2)` | `r nrow(mafFilteredF)` |
+| **# Genes** | `r length(unique(mafFilteredS2$Hugo_Symbol))` | `r length(unique(mafFilteredF$Hugo_Symbol))` |
+
+```{r, echo=FALSE}
+# build table
+t1 <- matrix(nrow = 6)
+rownames(t1) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
+t1[names(table(mafFilteredS2$Variant_Type)),1] <- table(mafFilteredS2$Variant_Type)
+t1[which(is.na(t1[, 1])),1] <- 0
+
+t2 <- matrix(nrow = 6)
+rownames(t2) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
+t2[names(table(mafFilteredF$Variant_Type)),1] <- table(mafFilteredF$Variant_Type)
+t2[which(is.na(t2[, 1])),1] <- 0
+```
+
+| Type of variants | Before selection | After selection |
+| :----- | :---- | :---- |
+| **SNP** | `r as.numeric(t1[1,1])` | `r as.numeric(t2[1,1])` |
+| **DNP** | `r as.numeric(t1[2,1])` | `r as.numeric(t2[2,1])` |
+| **TNP** | `r as.numeric(t1[3,1])` | `r as.numeric(t2[3,1])` |
+| **ONP** | `r as.numeric(t1[4,1])` | `r as.numeric(t2[4,1])` |
+| **INS** | `r as.numeric(t1[5,1])` | `r as.numeric(t2[5,1])` |
+| **DEL** | `r as.numeric(t1[6,1])` | `r as.numeric(t2[6,1])` |
+
+&nbsp;
+
+### Visualization
+
+&nbsp;
+
+#### 1 &nbsp;&nbsp; Flag barplot
+
+```{r piechart-of-types-2, echo=FALSE, fig.width=6, fig.height=6, fig.align='center'}
+cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946", 
+           "#f2cc8f", "#e7ecef", "#f5cac3", "#006d77", "#83c5be", "#edf6f9", 
+           "#ffddd2", "#e29578", "#f6bd60", "#84a59d", "#f28482", 
+           "#bdb2ff", "#ff6392", "#14213d", "#b5838d", "#168aad")
+flagDat <- data.frame(table(mafFilteredS2$CaTag))
+
+# calculate percent 
+piepercent = paste(round(100*flagDat$Freq/sum(flagDat$Freq), 1), "%", 
+                   sep = '')
+
+# creat label
+if (flagDat$Var1[1] != '0'){
+  lbls <- paste('With ', substr(flagDat$Var1, 2, 5), ' flag, ', 
+                piepercent, sep="")
+}else{
+  lbls <- paste('With ', c('no', substr(flagDat$Var1[2:nrow(flagDat)], 2, 5)), 
+                ' flag, ', piepercent, sep="")
+}
+
+# pie plot
+pie2 <- ggplot(flagDat, aes(x="", y=Freq, fill=Var1)) + 
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  scale_fill_manual(values=cols0, labels = lbls) +
+  labs(x = NULL, y = NULL, fill = NULL, 
+       title = "Pie Chart of variants after selection") + 
+  theme_classic() + theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(color = "black", vjust = 20),
+          plot.margin = unit(c(0, 1, 0, 1), 'cm'))
+pie2
+```
+
+#### 2 &nbsp;&nbsp; Type of variants
+
+&nbsp;
+
+```{r barplot-of-types-2, echo=FALSE, fig.width=4, fig.height=4}
+cols1 <- c(SNP = "#e07a5f", INS = "#f2cc8f", DEL =  "#81b29a", 
+          ONP = "#3d405b", DNP = "#f4f1de", TNP = "#cb997e")
+
+library(ggplot2)
+
+dat_before <- data.frame(table(mafFilteredS2$Variant_Type))
+dat_after <- data.frame(table(mafFilteredF$Variant_Type))
+
+ggplot(dat_before, aes(x = Var1, y = Freq, fill = Var1)) + 
+    geom_bar(stat = 'identity') +
+    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+    labs(title = 'Barplot of Variant Types before selection', 
+         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
+    scale_fill_manual(values = cols1[as.character(unique(dat_before$Var1))]) +
+    theme_bw() + 
+    theme(axis.text.x = element_text(face = 'bold'), 
+          plot.title = element_text(size = 11, face = 'bold'), 
+          panel.border = element_blank())
+
+ggplot(dat_after, aes(x = Var1, y = Freq, fill = Var1)) + 
+    geom_bar(stat = 'identity') +
+    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+    labs(title = 'Barplot of Variant Types after selection', 
+         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
+    scale_fill_manual(values = cols1[as.character(unique(dat_after$Var1))]) +
+    theme_bw() + 
+    theme(axis.text.x = element_text(face = 'bold'), 
+          plot.title = element_text(size = 11, face = 'bold'), 
+          panel.border = element_blank())
+
+```
+
+&nbsp;
+
+#### 3 &nbsp;&nbsp; Distribution of variants in genome
+
+```{r distribution-1-2, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
+dat_before <- data.frame(table(mafFilteredS2$Chromosome))
+dat_after <- data.frame(table(mafFilteredF$Chromosome))
+
+# define helper function to order chromosome
+helper <- function(x) {
+  x <- substring(x, 4, 6)
+  if (str_detect(x, '[[a-zA-Z]]')){
+    return(utf8ToInt(x))
+  }else{
+    return(as.numeric(x))
+  }
+}
+
+dat_before <- dat_before[order(unlist(lapply(as.character(dat_before$Var1)
+                                             , helper))), ]
+dat_after <- dat_after[order(unlist(lapply(as.character(dat_after$Var1)
+                                           , helper))), ]
+
+ggplot(dat_before, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
+  geom_bar(stat = 'identity', fill = cols2[as.character(dat_before$Var1)]) +
+  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+  labs(title = 'Barplot of Variant Position before selection', 
+       x = 'Variant Type', y = 'Count') +
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = 'bold'), 
+        plot.title = element_text(size = 11, face = 'bold'), 
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+```{r distribution-2-2, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
+ggplot(dat_after, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
+  geom_bar(stat = 'identity', fill = cols2[as.character(dat_after$Var1)]) +
+  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+  labs(title = 'Barplot of Variant Position after selection', 
+       x = 'Variant Type', y = 'Count') +
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = 'bold'), 
+        plot.title = element_text(size = 11, face = 'bold'), 
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+#### 4 &nbsp;&nbsp; VAF Distribution
+
+```{r echo=FALSE, fig.width=5, fig.height=4.5}
+maf_ext <- mafFilteredS2[, c('Variant_Type', 'VAF')]
+
+helper <- function(num) {
+  if(round(num, 1) <= num){
+    return(round(num, 1))
+  }else{
+    return(round(num, 1) - 0.1)
+  }
+}
+
+maf_ext <- cbind(maf_ext, group = unlist(lapply(maf_ext$VAF, helper)))
+
+maf_ext$group <- as.character(maf_ext$group)
+maf_ext$Num <- as.character(table(maf_ext$group)[maf_ext$group])
+
+ggplot(data = maf_ext, mapping = aes(group)) +
+  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
+  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
+                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
+                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
+  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, color = "black", size = 3) +
+  scale_fill_manual(values = cols1[unique(maf_ext$Variant_Type)]) +
+  labs(x = 'VAF', y = 'Number of Variants', 
+       title = 'Distribution of VAF before selection', fill = 'Variant Type') +
+  theme_bw() +
+  theme(axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'),
+        plot.title = element_text(face = 'bold', size = 11),
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+```{r echo=FALSE, fig.width=5}
+mafFilteredTs_ext <- mafFilteredF[, c('Variant_Type', 'VAF')]
+
+mafFilteredTs_ext <- cbind(mafFilteredTs_ext, 
+                          group = unlist(lapply(mafFilteredTs_ext$VAF, helper)))
+
+mafFilteredTs_ext$group <- as.character(mafFilteredTs_ext$group)
+mafFilteredTs_ext$Num <- as.character(table(mafFilteredTs_ext$group)[mafFilteredTs_ext$group])
+
+ggplot(data = mafFilteredTs_ext, mapping = aes(group)) +
+  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
+  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
+                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
+                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
+  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, 
+            color = "black", size = 3) +
+  scale_fill_manual(values = cols1[unique(mafFilteredTs_ext$Variant_Type)]) +
+  labs(x = 'VAF', y = 'Number of Variants', 
+       title = 'Distribution of VAF after selection', fill = 'Variant Type') +
+  theme_bw() +
+  theme(axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'),
+        plot.title = element_text(face = 'bold', size = 11),
+        panel.border = element_blank())
+```
+
+&nbsp;
+
+
+## TMB
+
+Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mutations per megabase pair (Mb) in a specific genomic region. In 2015, tumor non-synonymous mutation burden was first confirmed to be related to PD1/PD-L1 cancer immunotherapy [11](#refer). Through the analysis of mutation burden of patients with non-small cell lung cancer, the clinical response and survival rate and other indicators, researcherst confirmed that the higher the TMB of cancer patients have, the better the effect of tumor immunotherapy would get. This conclusion was subsequently verified in other cancer types, such as malignant melanoma [12](#refer) and small cell lung cancer [13](#refer). Therefore, TMB has become one of the predictive biomarkers of immune checkpoint and inhibitor immunotherapy in cancer treatment [14](#refer).
+
+There are many calculation methods for TMB, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, the conventional method of determining TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
+
+In CaMutQC, three methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist) and Pan-cancer panel [16](#refer). By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes).
+
+**Size of the targeted genomic region**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste(bedLen, ' Mbp'))}else{return('Calculation not asked.')}`**</span>
+
+**Estimated tumor mutational burden (TMB)**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste0(as.character(TMBvalue), ' mutations/Mbp'))}else{return('Calculation not asked.')}`**</span>
+
+&nbsp;
+
+## Specific Inspection
+  
+&nbsp;
+  
+```{r, echo=FALSE}
+library(DT)
+if (isTRUE(selectCols) | isFALSE(selectCols)){
+  showCols <- c('Hugo_Symbol', 'Variant_Classification', 'Variant_Type',
+                    'Consequence', 'Existing_variation', 'SIFT', 'PolyPhen',
+                    'CLIN_SIG')
+}else{
+  showCols <- unique(c(c('Hugo_Symbol', 'Variant_Classification', 'Variant_Type',
+                    'Consequence', 'Existing_variation', 'SIFT', 'PolyPhen',
+                    'CLIN_SIG'), selectCols))
+}
+datatable(mafFilteredF[, showCols], filter = 'top', 
+          extensions = c('Buttons', 'FixedHeader'),
+          options = list(dom = 'Bfirtp', autoWidth = TRUE,
+                         buttons = c('csv', 'excel', 'pdf', 'print'),
+                         scrollX = TRUE, fixedHeader = TRUE))
+```
+
+
+
+## SessionInfo
+```{r}
+sessionInfo()
+```
+
+&nbsp;
+
+## Reference {#refer}
+
+&nbsp;
+
+1. Guo Y, Li J, Li CI, Long J, Samuels DC, Shyr Y. The effect of strand bias in Illumina short-read sequencing data. BMC Genomics. 2012;13:666. Published 2012 Nov 24. doi:10.1186/1471-2164-13-666
+
+2. Guo Y, Cai Q, Samuels DC, et al. The use of next generation sequencing technology to study the effect of radiation therapy on mitochondrial DNA mutation. Mutat Res. 2012;744(2):154-160. doi:10.1016/j.mrgentox.2012.02.006
+
+3. Pereira B, Chin SF, Rueda OM, et al. The somatic mutation profiles of 2,433 breast cancers refines their genomic and transcriptomic landscapes. Nat Commun. 2016;7:11479. Published 2016 May 10. doi:10.1038/ncomms11479
+
+4. Ellrott K, Bailey MH, Saksena G, et al. Scalable Open Science Approach for Mutation Calling of Tumor Exomes Using Multiple Genomic Pipelines. Cell Syst. 2018;6(3):271-281.e7. doi:10.1016/j.cels.2018.03.002
+
+5. Xue R, Chen L, Zhang C, et al. Genomic and Transcriptomic Profiling of Combined Hepatocellular and Intrahepatic Cholangiocarcinoma Reveals Distinct Molecular Subtypes. Cancer Cell. 2019;35(6):932-947.e8. doi:10.1016/j.ccell.2019.04.007
+
+6. Futreal PA, Coin L, Marshall M, et al. A census of human cancer genes. Nat Rev Cancer. 2004;4(3):177-183. doi:10.1038/nrc1299
+
+7. Brastianos PK, Carter SL, Santagata S, et al. Genomic Characterization of Brain Metastases Reveals Branched Evolution and Potential Therapeutic Targets. Cancer Discov. 2015;5(11):1164-1177. doi:10.1158/2159-8290.CD-15-0369
+
+8. Sethi NS, Kikuchi O, Duronio GN, et al. Early TP53 alterations engage environmental exposures to promote gastric premalignancy in an integrative mouse model. Nat Genet. 2020;52(2):219-230. doi:10.1038/s41588-019-0574-9
+
+9. Cheng DT, Mitchell TN, Zehir A, et al. Memorial Sloan Kettering-Integrated Mutation Profiling of Actionable Cancer Targets (MSK-IMPACT): A Hybridization Capture-Based Next-Generation Sequencing Clinical Assay for Solid Tumor Molecular Oncology. J Mol Diagn. 2015;17(3):251-264. doi:10.1016/j.jmoldx.2014.12.006
+
+10. Sakamoto H, Attiyeh MA, Gerold JM, et al. The Evolutionary Origins of Recurrent Pancreatic Cancer. Cancer Discov. 2020;10(6):792-805. doi:10.1158/2159-8290.CD-19-1508
+
+11. Rizvi NA, Hellmann MD, Snyder A, et al. Cancer immunology. Mutational landscape determines sensitivity to PD-1 blockade in non-small cell lung cancer. Science. 2015;348(6230):124-128. doi:10.1126/science.aaa1348
+
+12. Snyder A, Makarov V, Merghoub T, et al. Genetic basis for clinical response to CTLA-4 blockade in melanoma [published correction appears in N Engl J Med. 2018 Nov 29;379(22):2185]. N Engl J Med. 2014;371(23):2189-2199. doi:10.1056/NEJMoa1406498
+
+13. Hellmann MD, Callahan MK, Awad MM, et al. Tumor Mutational Burden and Efficacy of Nivolumab Monotherapy and in Combination with Ipilimumab in Small-Cell Lung Cancer [published correction appears in Cancer Cell. 2019 Feb 11;35(2):329]. Cancer Cell. 2018;33(5):853-861.e4. doi:10.1016/j.ccell.2018.04.001
+
+14. Lee M, Samstein RM, Valero C, Chan TA, Morris LGT. Tumor mutational burden as a predictive biomarker for checkpoint inhibitor immunotherapy. Hum Vaccin Immunother. 2020;16(1):112-115. doi:10.1080/21645515.2019.1631136
+
+15. Stenzinger A, Allen JD, Maas J, et al. Tumor mutational burden standardization initiatives: Recommendations for consistent tumor mutational burden assessment in clinical samples to guide immunotherapy treatment decisions. Genes Chromosomes Cancer. 2019;58(8):578-588. doi:10.1002/gcc.22733
+
+16. Xu Z, Dai J, Wang D, et al. Assessment of tumor mutation burden calculation from gene panel sequencing data. Onco Targets Ther. 2019;12:3401-3409. Published 2019 May 6. doi:10.2147/OTT.S196638
+
+
+
