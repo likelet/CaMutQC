@@ -35,8 +35,15 @@ mutFilterSB <- function(maf, tumorSampleName = 'Extracted',
     for (i in seq_len(nrow(maf))) {
       SBindex <- strsplit(maf$FORMAT[i], ':')[[1]] == 'SB'
       if (all(SBindex == FALSE)){
-        stop(paste0('No SB annotation found in FORMAT column, ', 
-                    'so strand bias cannot be measured by Fisher exact test.'))
+        F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F1R2'
+        F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F2R1'
+        F1R2 <- strsplit(maf[i, tumorSampleName], ':')[[1]][F1R2index]
+        F2R1 <- strsplit(maf[i, tumorSampleName], ':')[[1]][F2R1index]
+        rf <- strsplit(F1R2, ',')[[1]][1]
+        af <- strsplit(F1R2, ',')[[1]][2]
+        rv <- strsplit(F2R1, ',')[[1]][1]
+        av <- strsplit(F2R1, ',')[[1]][2]
+        SBcharmatix <- paste(rf, rv, af, av, sep = ',')
       }
       SBcharmatix <- strsplit(maf[i, tumorSampleName], 
                               ':')[[1]][SBindex]
@@ -88,8 +95,10 @@ calSBscore <- function(charmatrix, method = 'SOR'){
     P1 <- calP(refFw, refRv, altFw, altRv)
     
     # check P1 whether it is over the depth
-    if (is.na(NaN)){
-      stop('Your data is in higher coverage, please use \'SOR\' method instead.')
+    if (is.na(P1)){
+      stop(paste0('Your data is in high coverage that ', 
+                  'the factorial of its depth can not be obtained, ', 
+                  'please use \'SOR\' method instead.'))
     }
     
     # probability of observing more extreme data
