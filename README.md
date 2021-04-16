@@ -4,7 +4,7 @@ The quality control of cancer somatic mutations has a great significance in the 
 
 Therefore, we present this R package, CaMutQC, for the comprehensive filtration and selection of cancer somatic mutations. CaMutQC is able to filter false positive mutations generated due to technical issues, as well as to select candidate cancer mutations through a series of well-structured functions by labeling mutations with various flags.
 
-Also, a detailed and vivid filter report will be provided offered after completing a whole filtration or selection section.
+Also, a detailed and vivid filter report will be offered after completing a whole filtration or selection section.
 
 ## Installation
 
