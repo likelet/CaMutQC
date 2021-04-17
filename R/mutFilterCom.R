@@ -24,7 +24,7 @@
 #' Default: 'PASS'
 #' @param dbVAF Threshold of VAF of certain population for variants
 #'  in database. Default: 0.01
-#' @param ExAc Whether to filter variants listed in ExAc with VAF higher than
+#' @param ExAC Whether to filter variants listed in ExAC with VAF higher than
 #' cutoff(set in VAF parameter). Default: TRUE.
 #' @param Genomesprojects1000 Whether to filter variants listed in 
 #' Genomesprojects1000 with VAF higher than cutoff(set in VAF parameter). 
@@ -63,7 +63,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                          VAF = 0.05, VAFratio = 5, tumorSampleName = 'Extracted', 
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01, 
-                         ExAc = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
+                         ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
                          gnomAD = TRUE, dbSNP = TRUE, COSMIConly = TRUE, 
                          keepType = 'exonic', bedFile = NULL, bedFilter = TRUE, 
                          mutFilter = FALSE, selectCols = TRUE, report = TRUE, 
@@ -89,7 +89,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
   mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == '0', ]
   
   # run mutSelection
-  mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAc = ExAc, 
+  mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAC = ExAC, 
                               Genomesprojects1000 = Genomesprojects1000, 
                               ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
                               COSMIConly = COSMIConly, keepType = keepType,
@@ -97,7 +97,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
   
   # filter first for report usage
   mafFilteredS2 <- suppressMessages(
-    mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAc = ExAc, 
+    mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC, 
                  Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
                  ESP6500 = ESP6500, gnomAD = gnomAD, COSMIConly = COSMIConly, 
                  keepType = keepType, bedFile = bedFile, bedFilter = bedFilter))
