@@ -35,7 +35,7 @@
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
 #' than cutoff(set in VAF parameter). Default: TRUE.
-#' @param dbSNP Whether to filter variants listed in dbSNP. Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
 #' @param keepType A group of variant classifications will be kept, 
 #' including 'exonic' and 'nonsynonymous'. Default: 'exonic'. 
@@ -67,7 +67,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 20, normalDP = 10,
                          SBscore = 3, maxIndelLen = 50, minInterval = 10, 
                          tagFILTER = 'PASS', dbVAF = 0.01, ExAC = TRUE, 
                          Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
-                         gnomAD = TRUE, dbSNP = TRUE, COSMIConly = TRUE, 
+                         gnomAD = TRUE, dbSNP = FALSE, COSMIConly = TRUE, 
                          keepType = 'exonic', bedFile = NULL, bedFilter = TRUE, 
                          mutFilter = FALSE, selectCols = TRUE, report = TRUE, 
                          reportFile = 'FilterReport.html', reportDir = './', 
@@ -77,13 +77,12 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 20, normalDP = 10,
   withType <- TRUE
   # BLCA 
   if (cancerType == 'BLCA'){
-    mafFiltered <- mutfilterCom(maf, SBmethod = 'Fisher', SBscore = 20, 
+    mafFiltered <- mutFilterCom(maf, SBmethod = 'Fisher', SBscore = 20, 
                                 minInterval = 30, dbVAF = 0, tumorDP = 10,
                                 Genomesprojects1000 = TRUE, ExAC = TRUE, 
                                 normalDP = 10, tumorAD = 5, VAF = 0,
                                 VAFratio = 0, maxIndelLen = Inf, keepType = 'ALL',
-                                tagFILTER = NULL, Genomesprojects1000 = TRUE, 
-                                ESP6500 = FALSE, gnomAD = FALSE, dbSNP = FALSE)
+                                tagFILTER = NULL, ESP6500 = FALSE, gnomAD = FALSE)
   # BRCA
   }else if(cancerType == 'BRCA'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, VAF = 0.1, dbVAF = 0,
@@ -107,17 +106,17 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 20, normalDP = 10,
                                 Genomesprojects1000 = TRUE, VAF = 0, SBscore = 0,
                                 VAFratio = 0, maxIndelLen = Inf, minInterval = 0, 
                                 tagFILTER = NULL, ExAC = FALSE, ESP6500 = FALSE, 
-                                gnomAD = FALSE, dbSNP = FALSE)
+                                gnomAD = FALSE)
   
   # UCS
   }else if(cancerType == 'UCS'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
-                                dbVAF = 0, dbSNP = FALSE, COSMIConly = TRUE,
+                                dbVAF = 0, COSMIConly = TRUE,
                                 Genomesprojects1000 = FALSE, VAF = 0, 
                                 keepType = 'ALL', VAFratio = 0, SBscore = 0,
                                 maxIndelLen = Inf, minInterval = 0, 
                                 tagFILTER = NULL, ExAC = FALSE, ESP6500 = FALSE, 
-                                gnomAD = FALSE, dbSNP = FALSE)
+                                gnomAD = FALSE)
   # KIRC
   }else if(cancerType == 'KIRC'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 0, normalDP = 0, VAF = 0,
@@ -137,7 +136,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 20, normalDP = 10,
   # LCML
   }else if(cancerType == 'LCML'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 0, normalDP = 0, VAF = 0.2,
-                                dbVAF = 0, dbSNP = FALSE, COSMIConly = FALSE,
+                                dbVAF = 0, COSMIConly = FALSE,
                                 Genomesprojects1000 = TRUE, tumorAD = 0, 
                                 VAFratio = 0, maxIndelLen = Inf, minInterval = 0, 
                                 tagFILTER = NULL, ExAC = FALSE, ESP6500 = FALSE, 

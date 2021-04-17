@@ -13,7 +13,7 @@
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
 #' than cutoff(set in VAF parameter). Default: TRUE.
-#' @param dbSNP Whether to filter variants listed in dbSNP. Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
 #' @param keepType A group of variant classifications will be kept, 
 #' including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'. 
@@ -31,30 +31,30 @@
 
 mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE, 
                          Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
-                         gnomAD = TRUE, dbSNP = TRUE, 
+                         gnomAD = TRUE, dbSNP = FALSE, 
                          COSMIConly = TRUE, keepType = 'exonic',
                          bedFile = NULL, bedFilter = TRUE){
   
-  # database filtration
-  message('Filtration for germline variant database is in process.')
+  # database selection
+  message('Selection for germline variant database is in process.')
   maf <- mutFilterDB(maf, VAF = dbVAF, ExAC = ExAC, 
                      Genomesprojects1000 = Genomesprojects1000, ESP6500 = ESP6500,
                      gnomAD = gnomAD, dbSNP = dbSNP, COSMIConly = COSMIConly)
   
-  # variant type filtration
-  message('Filtration for variant type is in process.')
+  # variant type selection
+  message('Selection for variant type is in process.')
   maf <- mutFilterType(maf, keepType = keepType)
   
-  # normal DP filtration
-  message('Filtration for normal DP is in process.')
+  # normal DP selection
+  message('Selection for normal DP is in process.')
   maf <- mutFilterNormalDP(maf)
   
-  # PON filtration 
-  message('Filtration for panel of normals is in process.')
+  # PON selection 
+  message('Selection for panel of normals is in process.')
   maf <- mutFilterPON(maf)
   
-  # region filtration
-  message('Filtration for variants in specific region is in process.')
+  # region selection
+  message('Selection for variants in specific region is in process.')
   maf <- mutFilterReg(maf, bedFile = bedFile, bedFilter = bedFilter)
   
   # complete selection

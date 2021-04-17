@@ -33,7 +33,7 @@
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
 #' than cutoff(set in VAF parameter). Default: TRUE.
-#' @param dbSNP Whether to filter variants listed in dbSNP. Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
 #' @param keepType A group of variant classifications will be kept, 
 #' including 'exonic' and 'nonsynonymous'. Default: 'exonic'. 
@@ -64,7 +64,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01, 
                          ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE, 
-                         gnomAD = TRUE, dbSNP = TRUE, COSMIConly = TRUE, 
+                         gnomAD = TRUE, dbSNP = FALSE, COSMIConly = TRUE, 
                          keepType = 'exonic', bedFile = NULL, bedFilter = TRUE, 
                          mutFilter = FALSE, selectCols = TRUE, report = TRUE, 
                          reportFile = 'FilterReport.html', reportDir = './', 
