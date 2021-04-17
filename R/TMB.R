@@ -95,12 +95,12 @@ calTMB <- function(maf, bedFile, assay = 'MSKCC-v3', genelist = NULL,
     maf <- maf[setdiff(rownames(maf), tags1), ]
     
     # filter variants with ExAC >= 2
-    ## detect whether the VCF file has ExAc annotation or not
-    if ('AC' %in% colnames(maf)){
-      maf <- maf[maf$AC < 2, ]
+    ## detect whether the VCF file has ExAC annotation or not
+    if ('ExAC_AF' %in% colnames(maf)){
+      maf <- maf[maf$ExAC_AF < 2, ]
     }else{
-      warning(paste0('ExAc information cannot be found in VCF file.',
-                     ' No variants will be filtered based on ExAc.'))
+      warning(paste0('ExAC information cannot be found in VCF file.',
+                     ' No variants will be filtered based on ExAC.'))
     }
     
     # filter stop-gain variants in tumor suppressor genes
