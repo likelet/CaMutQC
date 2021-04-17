@@ -346,8 +346,8 @@ vcfToMAF <- function(vcfFile, writeFile = FALSE, MAFfile = 'MAF.maf',
   
   ## add column isIndelAround
   # maf <- cbind(maf, isIndelAround = 0)
-  # maf$Start_Position <- as.numeric(maf$Start_Position)
-  # maf$End_Position <- as.numeric(maf$End_Position)
+  maf$Start_Position <- as.numeric(maf$Start_Position)
+  maf$End_Position <- as.numeric(maf$End_Position)
   # 
   # maf_arr <- arrange(maf, Chromosome, Variant_Type, Start_Position)
   # chroms <- unique(maf_arr$Chromosome)
