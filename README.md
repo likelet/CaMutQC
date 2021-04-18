@@ -18,7 +18,7 @@ devtools::install_github("likelet/CaMutQC")
 This is a simple workflow of CaMutQC.   
 <div  align="left">   
 
-<img src="https://github.com/likelet/CaMutQC/blob/WX/vignettes/CaMutQC-workflow.png" height="500" width="600" alt = "MesKit Workflow"/>
+<img src="https://github.com/likelet/CaMutQC/blob/WX/vignettes/CaMutQC-workflow.png" height="500" width="600" alt = "CaMutQC framework"/>
 
 </div>
 
