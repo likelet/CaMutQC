@@ -131,5 +131,5 @@ cancer types.
 \examples{
 maf <- vcfToMAF(system.file("extdata/Multi-sample",
 "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
-mafF <- mutFilterCan(maf, cancerType = 'BRCA')
+mafF <- mutFilterCan(maf, cancerType = 'BRCA', TMB = FALSE)
 }

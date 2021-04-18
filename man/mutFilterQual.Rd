@@ -36,5 +36,5 @@ Filter variants in low sequencing quality or low confidence.
 \examples{
 maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
 package = "CaMutQC"))
-mafF <- mutFilterQUal(maf)
+mafF <- mutFilterQual(maf)
 }

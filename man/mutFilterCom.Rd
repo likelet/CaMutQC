@@ -125,7 +125,7 @@ A filter report in HTML format
 Apply common filter strategies on a MAF data frame.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
-package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata/Multi-sample",
+"SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
 mafF <- mutFilterCom(maf, TMB = FALSE)
 }
