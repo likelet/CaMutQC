@@ -137,7 +137,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
 
   # report generation
   if (report){
-    rmarkdown::render(system.file("vignettes", "CaMutQC-FilterReport.Rmd",
+    rmarkdown::render(system.file("rmd", "CaMutQC-FilterReport.Rmd",
                                   package = "CaMutQC"), output_file = reportFile,
                       output_dir = reportDir)
   }
