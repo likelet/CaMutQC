@@ -7,31 +7,36 @@
 #' @param tumorAD Threshold of tumor alternative allele depth. Default: 10
 #' @param VAF Threshold of VAF value. Default: 0.05
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
-#' 
+#'
 #' @import dplyr
-#' 
-#' @return An MAF data frame where some variants 
+#'
+#' @return An MAF data frame where some variants
 #' has Q tag in CaTag column for sequencing quality filtration
-#' 
+#'
 #' @export mutFilterQual
+#' @examples
+#' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
+#' package = "CaMutQC"))
+#' mafF <- mutFilterQual(maf)
 
-mutFilterQual <- function(maf, tumorDP = 20, normalDP = 10, 
+
+mutFilterQual <- function(maf, tumorDP = 20, normalDP = 10,
                           tumorAD = 10, VAF = 0.05, VAFratio = 5) {
-  
+
   tags <- c()
   ## VAF filtering
   tags <- c(tags, rownames(maf[maf$VAF < VAF, ]))
- 
+
   ## tumorAD, tumorDP, normalDP, VAF ratio filtering
-  tags <- union(tags, rownames(maf[((maf$t_alt_count < tumorAD) | 
-                                 (maf$t_depth < tumorDP) | 
+  tags <- union(tags, rownames(maf[((maf$t_alt_count < tumorAD) |
+                                 (maf$t_depth < tumorDP) |
                                  (maf$n_ref_count < normalDP)), ]))
-  
+
   VAFr <- (maf$t_alt_count/maf$t_depth)/(maf$n_alt_count/maf$n_depth)
   tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
-  
+
   maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')
-  
+
   return(maf)
 }
 
