@@ -1,8 +1,6 @@
-library(stringr)
-
 ## select the proper transcript
 selectMut <- function(charMatrix) {
-  
+
   if (nrow(charMatrix) == 1 ) {
     return(1)
   } else {
@@ -12,14 +10,14 @@ selectMut <- function(charMatrix) {
     }
     Biotypefreq <- data.frame(table(numMatrix[, 1]))
     Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing = FALSE), ]
-    
+
     if (Biotypefreq[1, 2] == 1){
-      
+
       # return the one with the highest biofunction priority
-      return(as.numeric(rownames(numMatrix[which(numMatrix$V1 
+      return(as.numeric(rownames(numMatrix[which(numMatrix$V1
                                                  == Biotypefreq[1, 1]), ])))
     } else {
-      
+
       # keep the rows with the highest biofunction priority, sort by consequence
       remMatrix <- charMatrix[which(numMatrix[, 1] == Biotypefreq[1, 1]), ]
       remNumMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(remMatrix)))
@@ -32,37 +30,37 @@ selectMut <- function(charMatrix) {
         }
         remNumMatrix[r, 1] <- conseqPriority
       }
-      
+
       Conseqfreq <- data.frame(table(remNumMatrix[, 1]))
       Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing = FALSE), ]
-      
+
       if (Conseqfreq[1, 2] == 1){
-        
+
         # return the one with the highest consequence priority
-        return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1] 
+        return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1]
                                           == Conseqfreq[1, 1]), ])))
       } else {
-        
+
         # work on length
-        finalMatrix <- remMatrix[which(remNumMatrix[, 1] 
+        finalMatrix <- remMatrix[which(remNumMatrix[, 1]
                                        == Conseqfreq[1, 1]), ]
         #rownames(finalMatrix) <- rownames(remMatrix)
-        
+
         ## choose the first transcript if all cDNA position info is missing
-        if (all(finalMatrix$cDNA_position == 'Missing') | 
+        if (all(finalMatrix$cDNA_position == 'Missing') |
             length(unique(finalMatrix$cDNA_position)) == 1) {
           return(as.numeric(rownames(finalMatrix)[1]))
-          
+
           ## choose the only one transcript with cDNA position info
         } else if (sum(finalMatrix$cDNA_position != 'Missing') == 1) {
-          return(as.numeric(rownames(finalMatrix[which(finalMatrix[, 3] 
+          return(as.numeric(rownames(finalMatrix[which(finalMatrix[, 3]
                                                        != 'Missing'), ])))
         } else {
-          
+
           ## length of transcript
-          finalMatrix <- finalMatrix[which(finalMatrix$cDNA_position 
+          finalMatrix <- finalMatrix[which(finalMatrix$cDNA_position
                                            != 'Missing'), ]
-          
+
           if (length(grep('/', finalMatrix$cDNA_position))){
             Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "/")[[1]][2])
             selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
@@ -70,96 +68,96 @@ selectMut <- function(charMatrix) {
             for (l in 2:nrow(finalMatrix)) {
               Tend <- as.numeric(strsplit(finalMatrix[l, 3], "/")[[1]][2])
               if (Tend > Toplength) {
-                Toplength <- Tend 
+                Toplength <- Tend
                 selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
                 #concurrent <- FALSE
-              } 
+              }
             }
           }else{
             selectedTranscript <- as.numeric(rownames(
               finalMatrix[which.max(finalMatrix$cDNA_position), ]))
           }
-          
+
           return(selectedTranscript)
         }
       }
     }
-    
+
   }
 }
 
 
 ## order biotype
 GetBiotypePriority <- function(biotype) {
-  switch(biotype, 
-         'protein_coding' = 1, 
+  switch(biotype,
+         'protein_coding' = 1,
          # Contains an open reading frame (ORF)
-         'LRG_gene' = 2, 
-         # Gene in a "Locus Reference Genomic" region known to have 
+         'LRG_gene' = 2,
+         # Gene in a "Locus Reference Genomic" region known to have
          # disease-related sequence variations
-         'IG_C_gene' = 2, 
-         # Immunoglobulin (Ig) variable chain genes imported or 
+         'IG_C_gene' = 2,
+         # Immunoglobulin (Ig) variable chain genes imported or
          # annotated according to the IMGT
-         'IG_D_gene' = 2, 
-         # Immunoglobulin (Ig) variable chain genes imported or 
+         'IG_D_gene' = 2,
+         # Immunoglobulin (Ig) variable chain genes imported or
          # annotated according to the IMGT
-         'IG_J_gene' = 2, 
-         # Immunoglobulin (Ig) variable chain genes imported or 
+         'IG_J_gene' = 2,
+         # Immunoglobulin (Ig) variable chain genes imported or
          # annotated according to the IMGT
-         'IG_LV_gene' = 2, # Immunoglobulin (Ig) variable chain genes imported 
+         'IG_LV_gene' = 2, # Immunoglobulin (Ig) variable chain genes imported
          # or annotated according to the IMGT
-         'IG_V_gene' = 2, # Immunoglobulin (Ig) variable chain genes imported 
+         'IG_V_gene' = 2, # Immunoglobulin (Ig) variable chain genes imported
          # or annotated according to the IMGT
-         'TR_C_gene' = 2, # T-cell receptor (TcR) genes imported or annotated 
+         'TR_C_gene' = 2, # T-cell receptor (TcR) genes imported or annotated
          # according to the IMGT
-         'TR_D_gene' = 2, # T-cell receptor (TcR) genes imported or annotated 
+         'TR_D_gene' = 2, # T-cell receptor (TcR) genes imported or annotated
          # according to the IMGT
-         'TR_J_gene' = 2, # T-cell receptor (TcR) genes imported or annotated 
+         'TR_J_gene' = 2, # T-cell receptor (TcR) genes imported or annotated
          # according to the IMGT
-         'TR_V_gene' = 2, # T-cell receptor (TcR) genes imported or annotated 
+         'TR_V_gene' = 2, # T-cell receptor (TcR) genes imported or annotated
          # according to the IMGT
-         'miRNA' = 3, # Non-coding RNA predicted using sequences 
+         'miRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'snRNA' = 3, # Non-coding RNA predicted using sequences 
+         'snRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'snoRNA' = 3, # Non-coding RNA predicted using sequences 
+         'snoRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'ribozyme' = 3, # Non-coding RNA predicted using sequences 
+         'ribozyme' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
          'tRNA' = 3, #Added by Y. Boursin
-         'sRNA' = 3, # Non-coding RNA predicted using sequences 
+         'sRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'scaRNA' = 3, # Non-coding RNA predicted using sequences 
+         'scaRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'rRNA' = 3, # Non-coding RNA predicted using sequences 
+         'rRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'lincRNA' = 3, # Long, intervening noncoding (linc) RNAs, 
+         'lincRNA' = 3, # Long, intervening noncoding (linc) RNAs,
          # that can be found in evolutionarily conserved, intergenic regions
-         'bidirectional_promoter_lncrna' = 3, # A non-coding locus 
-         # that originates from within the promoter region of 
-         # a protein-coding gene, with transcription proceeding in the 
+         'bidirectional_promoter_lncrna' = 3, # A non-coding locus
+         # that originates from within the promoter region of
+         # a protein-coding gene, with transcription proceeding in the
          # opposite direction on the other strand
-         'bidirectional_promoter_lncRNA' = 3, # A non-coding locus that 
-         # originates from within the promoter region of a protein-coding gene, 
-         # with transcription proceeding in the opposite direction 
+         'bidirectional_promoter_lncRNA' = 3, # A non-coding locus that
+         # originates from within the promoter region of a protein-coding gene,
+         # with transcription proceeding in the opposite direction
          # on the other strand
          'known_ncrna' = 4,
-         'vaultRNA' = 4, # Short non coding RNA genes that form part 
+         'vaultRNA' = 4, # Short non coding RNA genes that form part
          # of the vault ribonucleoprotein complex
          'macro_lncRNA' = 4, # unspliced lncRNAs that are several kb in size
-         'Mt_tRNA' = 4, # Non-coding RNA predicted using sequences 
+         'Mt_tRNA' = 4, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'Mt_rRNA' = 4, # Non-coding RNA predicted using sequences 
+         'Mt_rRNA' = 4, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
-         'antisense' = 5, # Has transcripts that overlap the genomic span 
+         'antisense' = 5, # Has transcripts that overlap the genomic span
          # (exon or introns) of a protein-coding locus on the opposite strand
          'antisense_RNA' = 5, # Alias for antisense (Y. Boursin)
-         'sense_intronic' = 5, # Long non-coding transcript in introns 
+         'sense_intronic' = 5, # Long non-coding transcript in introns
          # of a coding gene that does not overlap any exons
-         'sense_overlapping' = 5, # Long non-coding transcript that 
+         'sense_overlapping' = 5, # Long non-coding transcript that
          # contains a coding gene in its intron on the same strand
-         '3prime_overlapping_ncrna' = 5, # Transcripts where ditag 
-         # and/or published experimental data strongly supports the existence 
+         '3prime_overlapping_ncrna' = 5, # Transcripts where ditag
+         # and/or published experimental data strongly supports the existence
          # of short non-coding transcripts transcribed from the 3'UTR
          '3prime_overlapping_ncRNA' = 5, # Transcripts where ditag and/or published experimental data strongly supports the existence of short non-coding transcripts transcribed from the 3'UTR
          'misc_RNA' = 5, # Non-coding RNA predicted using sequences from RFAM and miRBase
@@ -210,98 +208,98 @@ GetBiotypePriority <- function(biotype) {
 
 ## order consequence
 GetConsequencePriority <- function(consequence) {
-  switch(consequence, 
-         'transcript_ablation' = 1, 
+  switch(consequence,
+         'transcript_ablation' = 1,
          # A feature ablation whereby the deleted region includes a transcript feature
-         'exon_loss_variant' = 1, 
+         'exon_loss_variant' = 1,
          # A sequence variant whereby an exon is lost from the transcript
-         'splice_donor_variant' = 2, 
+         'splice_donor_variant' = 2,
          # A splice variant that changes the 2 base region at the 5' end of an intron
-         'splice_acceptor_variant' = 2, 
+         'splice_acceptor_variant' = 2,
          # A splice variant that changes the 2 base region at the 3' end of an intron
-         'stop_gained' = 3, 
+         'stop_gained' = 3,
          # A sequence variant whereby at least one base of a codon is changed, resulting in a premature stop codon, leading to a shortened transcript
-         'frameshift_variant' = 3, 
+         'frameshift_variant' = 3,
          # A sequence variant which causes a disruption of the translational reading frame, because the number of nucleotides inserted or deleted is not a multiple of three
-         'stop_lost' = 3, 
+         'stop_lost' = 3,
          # A sequence variant where at least one base of the terminator codon (stop) is changed, resulting in an elongated transcript
-         'start_lost' = 4, 
+         'start_lost' = 4,
          # A codon variant that changes at least one base of the canonical start codon
-         'initiator_codon_variant' = 4, 
+         'initiator_codon_variant' = 4,
          # A codon variant that changes at least one base of the first codon of a transcript
-         'disruptive_inframe_insertion' = 5, 
+         'disruptive_inframe_insertion' = 5,
          # An inframe increase in cds length that inserts one or more codons into the coding sequence within an existing codon
-         'disruptive_inframe_deletion' = 5, 
+         'disruptive_inframe_deletion' = 5,
          # An inframe decrease in cds length that deletes bases from the coding sequence starting within an existing codon
-         'inframe_insertion' = 5, 
+         'inframe_insertion' = 5,
          # An inframe non synonymous variant that inserts bases into the coding sequence
-         'inframe_deletion' = 5, 
+         'inframe_deletion' = 5,
          # An inframe non synonymous variant that deletes bases from the coding sequence
-         'protein_altering_variant' = 5, 
+         'protein_altering_variant' = 5,
          # A sequence variant which is predicted to change the protein encoded in the coding sequence
-         'missense_variant' = 6, 
+         'missense_variant' = 6,
          # A sequence variant, that changes one or more bases, resulting in a different amino acid sequence but where the length is preserved
-         'conservative_missense_variant' = 6, 
+         'conservative_missense_variant' = 6,
          # A sequence variant whereby at least one base of a codon is changed resulting in a codon that encodes for a different but similar amino acid. These variants may or may not be deleterious
-         'rare_amino_acid_variant' = 6, 
+         'rare_amino_acid_variant' = 6,
          # A sequence variant whereby at least one base of a codon encoding a rare amino acid is changed, resulting in a different encoded amino acid
-         'transcript_amplification' = 7, 
+         'transcript_amplification' = 7,
          # A feature amplification of a region containing a transcript
-         'splice_region_variant' = 8, 
+         'splice_region_variant' = 8,
          # A sequence variant in which a change has occurred within the region of the splice site, either within 1-3 bases of the exon or 3-8 bases of the intron
-         'stop_retained_variant' = 9, 
+         'stop_retained_variant' = 9,
          # A sequence variant where at least one base in the terminator codon is changed, but the terminator remains
-         'synonymous_variant' = 9, 
+         'synonymous_variant' = 9,
          # A sequence variant where there is no resulting change to the encoded amino acid
-         'incomplete_terminal_codon_variant' = 10, 
+         'incomplete_terminal_codon_variant' = 10,
          # A sequence variant where at least one base of the final codon of an incompletely annotated transcript is changed
-         'coding_sequence_variant' = 11, 
+         'coding_sequence_variant' = 11,
          # A sequence variant that changes the coding sequence
-         'mature_miRNA_variant' = 11, 
+         'mature_miRNA_variant' = 11,
          # A transcript variant located with the sequence of the mature miRNA
-         'exon_variant' = 11, 
+         'exon_variant' = 11,
          # A sequence variant that changes exon sequence
          '5_prime_UTR_variant' = 12, # A UTR variant of the 5' UTR
-         '5_prime_UTR_premature_start_codon_gain_variant' = 12, 
+         '5_prime_UTR_premature_start_codon_gain_variant' = 12,
          # snpEff-specific effect, creating a start codon in 5' UTR
          '3_prime_UTR_variant' = 12, # A UTR variant of the 3' UTR
-         'non_coding_exon_variant' = 13, 
+         'non_coding_exon_variant' = 13,
          # A sequence variant that changes non-coding exon sequence
-         'non_coding_transcript_exon_variant' = 13, 
+         'non_coding_transcript_exon_variant' = 13,
          # snpEff-specific synonym for non_coding_exon_variant
-         'non_coding_transcript_variant' = 14, 
+         'non_coding_transcript_variant' = 14,
          # A transcript variant of a non coding RNA gene
-         'nc_transcript_variant' = 14, 
+         'nc_transcript_variant' = 14,
          # A transcript variant of a non coding RNA gene (older alias for non_coding_transcript_variant)
-         'intron_variant' = 14, 
+         'intron_variant' = 14,
          # A transcript variant occurring within an intron
-         'intragenic_variant' = 14, 
+         'intragenic_variant' = 14,
          # A variant that occurs within a gene but falls outside of all transcript features. This occurs when alternate transcripts of a gene do not share overlapping sequence
          'INTRAGENIC' = 14, # snpEff-specific synonym of intragenic_variant
-         'NMD_transcript_variant' = 15, 
+         'NMD_transcript_variant' = 15,
          # A variant in a transcript that is the target of NMD
          'upstream_gene_variant' = 16, # A sequence variant located 5' of a gene
-         'downstream_gene_variant' = 16, 
+         'downstream_gene_variant' = 16,
          # A sequence variant located 3' of a gene
-         'TFBS_ablation' = 17, 
+         'TFBS_ablation' = 17,
          # A feature ablation whereby the deleted region includes a transcription factor binding site
-         'TFBS_amplification' = 17, 
+         'TFBS_amplification' = 17,
          # A feature amplification of a region containing a transcription factor binding site
-         'TF_binding_site_variant' = 17, 
+         'TF_binding_site_variant' = 17,
          # A sequence variant located within a transcription factor binding site
-         'regulatory_region_ablation' = 17, 
+         'regulatory_region_ablation' = 17,
          # A feature ablation whereby the deleted region includes a regulatory region
-         'regulatory_region_amplification' = 17, 
+         'regulatory_region_amplification' = 17,
          # A feature amplification of a region containing a regulatory region
-         'regulatory_region_variant' = 17, 
+         'regulatory_region_variant' = 17,
          # A sequence variant located within a regulatory region
-         'regulatory_region' = 17, 
+         'regulatory_region' = 17,
          # snpEff-specific effect that should really be regulatory_region_variant
-         'feature_elongation' = 18, 
+         'feature_elongation' = 18,
          # A sequence variant that causes the extension of a genomic feature, with regard to the reference sequence
-         'feature_truncation' = 18, 
+         'feature_truncation' = 18,
          # A sequence variant that causes the reduction of a genomic feature, with regard to the reference sequence
-         'intergenic_variant' = 19, 
+         'intergenic_variant' = 19,
          # A sequence variant located in the intergenic region, between genes
          'intergenic_region' = 19,
          # snpEff-specific effect that should really be intergenic_variant

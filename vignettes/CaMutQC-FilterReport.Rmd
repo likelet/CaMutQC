@@ -9,7 +9,15 @@ output:
     toc: yes
     toc_depth: 5
     toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
 date: "`r Sys.Date()`"
+
+vignette: >
+  %\VignetteIndexEntry{Filter Report}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 
 ---
 
@@ -55,7 +63,7 @@ At present, there are four methods of strand bias detection that are widely used
 In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate strand bias and filter variants based on the results. By default, strand bias is detected through SOR algorithm.
 
 * **Method used to detect strand bias**: <span style="color:#ED6F3E">**`r SBmethod`**</span>
-* **Strand Bias score cutoff**: <span style="color:#ED6F3E">**`r SBscore`**</span>
+* **Strand Bias score cutoff**: <span style="color:#ED6F3E">**`r if(is.finite(SBscore)){return(SBscore)}else{return('Inf')}`**</span>
 
 &nbsp;
 
@@ -64,7 +72,7 @@ In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate s
 
 The Adjacent Indel tag is used when a somatic variant was possibly caused by misalignment around a germline or somatic insertion/deletion(indel). By default, CaMutQC will filter any SNV which was within 10bp of an indel found in the tumor sample. Also, the maximum length of an indel is set as 50bp.
 
-**Maximum length of an indel**: <span style="color:#ED6F3E">**`r maxIndelLen`**</span>
+**Maximum length of an indel**: <span style="color:#ED6F3E">**`r if(is.finite(maxIndelLen)){return(maxIndelLen)}else{return('Inf')}`**</span>
 
 **Minimum interval between an indel and an SNV**: <span style="color:#ED6F3E">**`r minInterval`**</span>
 
@@ -76,7 +84,7 @@ The Adjacent Indel tag is used when a somatic variant was possibly caused by mis
 
 Some variant callers add a tag if a variant pass the post-filtration after calling. In CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. `PASS` will be used in CaMutQC by default.
 
-**FILTER tag**: <span style="color:#ED6F3E">**`r tagFILTER`**</span>
+**FILTER tag**: <span style="color:#ED6F3E">**`r if(is.null(tagFILTER)){return('No tag was given')}else{return(tagFILTER)}`**</span>
 
 &nbsp;
 
@@ -92,8 +100,8 @@ In CaMutQC, by default, we use VAF cutoff of 0.01 to remove potential germline v
 
 ```{r echo=FALSE}
 # get database information
-dbs <- paste0(c('ExAc', 'Genomesprojects1000', 
-                'ESP6500', 'gnomAD')[c(isTRUE(ExAc), isTRUE(Genomesprojects1000),
+dbs <- paste0(c('ExAC', 'Genomesprojects1000', 
+                'ESP6500', 'gnomAD')[c(isTRUE(ExAC), isTRUE(Genomesprojects1000),
                                        isTRUE(ESP6500),isTRUE(gnomAD))], 
               collapse = ', ')
 
@@ -169,6 +177,11 @@ In this selection, users are able to further select variants related to cancer d
 
 &nbsp;
 
+#### 4 &nbsp;&nbsp; Target cancer type
+
+**Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r if (exists('cancerType')){return(cancerType)}else{return('NULL')}`**</span>
+
+
 ## Potential artifacts filtration
 
 ### Statistics
@@ -191,7 +204,7 @@ t2[names(table(mafFilteredTs$Variant_Type)),1] <- table(mafFilteredTs$Variant_Ty
 t2[which(is.na(t2[, 1])),1] <- 0
 ```
 
-| Type of variants | Before selection | After selection |
+| Type of variants | Before filtration | After filtration |
 | :----- | :---- | :---- |
 | **SNP** | `r as.numeric(t1[1,1])` | `r as.numeric(t2[1,1])` |
 | **DNP** | `r as.numeric(t1[2,1])` | `r as.numeric(t2[2,1])` |
@@ -213,7 +226,7 @@ t2[which(is.na(t2[, 1])),1] <- 0
 cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946", 
            "#f2cc8f", "#e7ecef", "#f5cac3")
 
-library(ggplot2)
+# library(ggplot2)
 
 flagDat <- data.frame(table(mafFilteredT$CaTag))
 #flagDat <- flagDat[order(flagDat$Freq, decreasing = TRUE),]
@@ -252,8 +265,6 @@ pie1
 ```{r barplot-of-types, echo=FALSE, fig.width=4, fig.height=4}
 cols1 <- c(SNP = "#e07a5f", INS = "#f2cc8f", DEL =  "#81b29a", 
           ONP = "#3d405b", DNP = "#f4f1de", TNP = "#cb997e")
-
-library(ggplot2)
 
 dat_before <- data.frame(table(maf$Variant_Type))
 dat_after <- data.frame(table(mafFilteredTs$Variant_Type))
@@ -489,8 +500,6 @@ pie2
 cols1 <- c(SNP = "#e07a5f", INS = "#f2cc8f", DEL =  "#81b29a", 
           ONP = "#3d405b", DNP = "#f4f1de", TNP = "#cb997e")
 
-library(ggplot2)
-
 dat_before <- data.frame(table(mafFilteredS2$Variant_Type))
 dat_after <- data.frame(table(mafFilteredF$Variant_Type))
 
@@ -643,6 +652,8 @@ In CaMutQC, three methods are supported for TMB calculation, including Foundatio
 
 **Size of the targeted genomic region**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste(bedLen, ' Mbp'))}else{return('Calculation not asked.')}`**</span>
 
+**Method used to calculate TMB**: <span style="color:#ED6F3E">**`r if(exists('assay')){return(assay)}else{return('Calculation not asked.')}`**</span>
+
 **Estimated tumor mutational burden (TMB)**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste0(as.character(TMBvalue), ' mutations/Mbp'))}else{return('Calculation not asked.')}`**</span>
 
 &nbsp;
@@ -652,7 +663,7 @@ In CaMutQC, three methods are supported for TMB calculation, including Foundatio
 &nbsp;
   
 ```{r, echo=FALSE}
-library(DT)
+# library(DT)
 if (isTRUE(selectCols) | isFALSE(selectCols)){
   showCols <- c('Hugo_Symbol', 'Variant_Classification', 'Variant_Type',
                     'Consequence', 'Existing_variation', 'SIFT', 'PolyPhen',

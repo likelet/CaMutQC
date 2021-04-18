@@ -6,39 +6,44 @@
 #' @param VAF Threshold of VAF value. Default: 0.01
 #' @param ExAC Whether to filter variants listed in ExAC with VAF higher than
 #' cutoff(set in VAF parameter). Default: TRUE.
-#' @param Genomesprojects1000 Whether to filter variants listed in 
-#' Genomesprojects1000 with VAF higher than cutoff(set in VAF parameter). 
+#' @param Genomesprojects1000 Whether to filter variants listed in
+#' Genomesprojects1000 with VAF higher than cutoff(set in VAF parameter).
 #' Default: TRUE.
-#' @param ESP6500 Whether to filter variants listed in ESP6500 with VAF higher 
+#' @param ESP6500 Whether to filter variants listed in ESP6500 with VAF higher
 #' than cutoff(set in VAF parameter). Default: TRUE.
-#' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher 
+#' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
 #' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
-#' 
-#' @return An MAF data frame after filtration for database 
+#'
+#' @return An MAF data frame after filtration for database
 #' and clinical significance
-#' 
+#'
 #' @export mutFilterDB
+#' @examples
+#' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
+#' package = "CaMutQC"))
+#' mafF <- mutFilterDB(maf)
+
 
 mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE,
-                        ESP6500 = TRUE, gnomAD = TRUE, dbSNP = FALSE, 
+                        ESP6500 = TRUE, gnomAD = TRUE, dbSNP = FALSE,
                         COSMIConly = TRUE){
-  
+
   # ExAC filtration
   if (ExAC){
     if ('ExAC_AF' %in% colnames(maf)){
-      tags1 <- rownames(maf[((maf$ExAC_AF != '') & 
+      tags1 <- rownames(maf[((maf$ExAC_AF != '') &
                                (as.numeric(maf$ExAC_AF) >= VAF)), ])
     }else{
       tags1 <- NULL
       message(paste0('This VCF file didn\'t annotated by ExAC database.' ,
       ' No variants will be filtered based on ExAC.'))
-    } 
+    }
   }else{
     tags1 <- NULL
   }
-  
+
   # 1000 Genomesprojects filtration
   if (Genomesprojects1000){
     if ('AF' %in% colnames(maf)){
@@ -52,11 +57,11 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE
   }else{
     tags2 <- NULL
   }
-  
+
   # gnomAD filtration
   if (gnomAD){
     if ('gnomAD_AF' %in% colnames(maf)){
-      tags3 <- rownames(maf[((maf$gnomAD_AF != '') & 
+      tags3 <- rownames(maf[((maf$gnomAD_AF != '') &
                                (as.numeric(maf$gnomAD_AF) >= VAF)), ])
     }else{
       tags3 <- NULL
@@ -66,16 +71,16 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE
   }else{
     tags3 <- NULL
   }
-  
+
   # ESP6500 filtration
   if (ESP6500){
     if ('AA_AF' %in% colnames(maf)){
-      tags4 <- rownames(maf[((maf$AA_AF != '') & 
+      tags4 <- rownames(maf[((maf$AA_AF != '') &
                                (as.numeric(maf$AA_AF) >= VAF)), ])
     }else{
       tags4 <- NULL
       if ('EA_AF' %in% colnames(maf)){
-        tags5 <- rownames(maf[((maf$EA_AF != '') & 
+        tags5 <- rownames(maf[((maf$EA_AF != '') &
                                  (as.numeric(maf$EA_AF) >= VAF)), ])
       }else{
         tags5 <- NULL
@@ -87,14 +92,14 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE
     tags4 <- NULL
     tags5 <- NULL
   }
-  
+
   if (COSMIConly) {
     n_tags <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
     tags6 <- setdiff(rownames(maf), n_tags)
   }else{
     tags6 <- NULL
   }
-  
+
   # dbSNP filtration
   if (dbSNP){
     tags7 <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
@@ -102,12 +107,12 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE
   }else{
     tags7 <- NULL
   }
-  
-  tags <- union(union(union(tags1, tags2), union(tags3, tags4)), 
+
+  tags <- union(union(union(tags1, tags2), union(tags3, tags4)),
                 union(tags5, tags6))
   tags <- union(tags, tags7)
-  
-  tags <- intersect(tags, setdiff(rownames(maf), 
+
+  tags <- intersect(tags, setdiff(rownames(maf),
                                   as.character(grep('athogenic', maf$CLIN_SIG))))
   maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'D')
   return(maf)
