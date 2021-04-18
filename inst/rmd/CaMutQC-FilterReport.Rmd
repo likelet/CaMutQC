@@ -9,9 +9,6 @@ output:
     toc: yes
     toc_depth: 5
     toc_float: yes
-  pdf_document:
-    toc: yes
-    toc_depth: '5'
 date: "`r Sys.Date()`"
 
 vignette: >
