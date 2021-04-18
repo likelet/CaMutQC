@@ -17,7 +17,7 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
 #' package = "CaMutQC"))
-#' mafF <- mutFilterQUal(maf)
+#' mafF <- mutFilterQual(maf)
 
 
 mutFilterQual <- function(maf, tumorDP = 20, normalDP = 10,
