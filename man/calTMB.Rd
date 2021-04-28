@@ -9,8 +9,6 @@ calTMB(
   bedFile,
   assay = "MSK-v3",
   genelist = NULL,
-  VAF = 0.05,
-  AD = 5,
   mutType = "nonsynonymous",
   bedFilter = TRUE
 )
@@ -26,10 +24,6 @@ calTMB(
 
 \item{genelist}{A vector of panel gene list, only useful when assay is set to
 'Customized'.}
-
-\item{VAF}{VAF threshold used for filtering variants. Default: 0.05.}
-
-\item{AD}{Allele read count threshold used for filtering. Default: 10.}
 
 \item{mutType}{A group of variant classifications that will be kept,
 only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',

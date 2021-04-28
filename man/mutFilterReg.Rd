@@ -25,6 +25,6 @@ Filter variants in specific regions.
 \examples{
 maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
 package = "CaMutQC"))
-mafF <- mutFilterDB(maf, bedFile = system.file("extdata/bed",
+mafF <- mutFilterReg(maf, bedFile = system.file("extdata/bed",
 "Twist_Exome_Target_hg19.bed",package = "CaMutQC"))
 }
