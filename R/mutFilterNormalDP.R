@@ -23,7 +23,7 @@ mutFilterNormalDP <- function(maf) {
 
   for (i in seq_len(nrow(maf))) {
     # variants in dbsnp
-    if(length(grep('rs', maf[, 'Existing_variation']))) {
+    if(length(grep('rs', maf[i, 'Existing_variation']))) {
       if(maf$n_depth[i] < 19) {
         discard <- c(discard, i)
       }

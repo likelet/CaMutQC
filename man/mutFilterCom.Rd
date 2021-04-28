@@ -30,6 +30,9 @@ mutFilterCom(
   mutFilter = FALSE,
   selectCols = TRUE,
   report = TRUE,
+  assay = "MSK-v3",
+  genelist = NULL,
+  mutType = "nonsynonymous",
   reportFile = "FilterReport.html",
   reportDir = "./",
   TMB = TRUE
@@ -109,6 +112,17 @@ By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.
 Or a vector contains column names will be kept.}
 
 \item{report}{Whether to generate report automatically. Default: TRUE}
+
+\item{assay}{Methodology and assay will be applied as a reference, including
+'MSK-v3', 'MSK-v2', 'MSK-v1', 'FoundationOne', 'Pan-Cancer Panel' and
+'Customized'. Default: 'MSK-v3'.}
+
+\item{genelist}{A vector of panel gene list, only useful when assay is set to
+'Customized'.}
+
+\item{mutType}{A group of variant classifications that will be kept,
+only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
+including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{reportFile}{File name of the report. Default: 'FilterReport.html'}
 

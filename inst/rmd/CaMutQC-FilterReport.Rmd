@@ -98,10 +98,9 @@ In CaMutQC, by default, we use VAF cutoff of 0.01 to remove potential germline v
 ```{r echo=FALSE}
 # get database information
 dbs <- paste0(c('ExAC', 'Genomesprojects1000', 
-                'ESP6500', 'gnomAD')[c(isTRUE(ExAC), isTRUE(Genomesprojects1000),
-                                       isTRUE(ESP6500),isTRUE(gnomAD))], 
+                'ESP6500', 'gnomAD', 'dbSNP')[c(isTRUE(ExAC), isTRUE(Genomesprojects1000),
+                                       isTRUE(ESP6500),isTRUE(gnomAD), isTRUE(dbSNP))], 
               collapse = ', ')
-
 ```
 
 - **Database included**: <span style="color:#ED6F3E">**`r dbs`**</span>
@@ -576,7 +575,7 @@ ggplot(dat_after, aes(x = factor(Var1, levels = Var1), y = Freq)) +
 
 #### 4 &nbsp;&nbsp; VAF Distribution
 
-```{r echo=FALSE, fig.width=5, fig.height=4.5}
+```{r echo=FALSE, fig.width=6, fig.height=4.5}
 maf_ext <- mafFilteredS2[, c('Variant_Type', 'VAF')]
 
 helper <- function(num) {
