@@ -8,8 +8,6 @@
 #' 'Customized'. Default: 'MSK-v3'.
 #' @param genelist A vector of panel gene list, only useful when assay is set to
 #' 'Customized'.
-#' @param VAF VAF threshold used for filtering variants. Default: 0.05.
-#' @param AD Allele read count threshold used for filtering. Default: 10.
 #' @param mutType A group of variant classifications that will be kept,
 #' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
@@ -27,8 +25,7 @@
 
 
 calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
-                   VAF = 0.05, AD = 5, mutType = 'nonsynonymous',
-                   bedFilter = TRUE) {
+                   mutType = 'nonsynonymous', bedFilter = TRUE) {
 
   # bed <- read.table('../Data/test-bed')
   bed <- read.table(bedFile)

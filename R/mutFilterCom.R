@@ -53,6 +53,14 @@
 #' @param reportFile File name of the report. Default: 'FilterReport.html'
 #' @param reportDir Path to the output report file. Default: './'
 #' @param TMB Whether to calculate TMB. Default: TRUE
+#' @param assay Methodology and assay will be applied as a reference, including
+#' 'MSK-v3', 'MSK-v2', 'MSK-v1', 'FoundationOne', 'Pan-Cancer Panel' and
+#' 'Customized'. Default: 'MSK-v3'.
+#' @param genelist A vector of panel gene list, only useful when assay is set to
+#' 'Customized'.
+#' @param mutType A group of variant classifications that will be kept,
+#' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
+#' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
 #'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
@@ -72,7 +80,9 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                          ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE, COSMIConly = TRUE,
                          keepType = 'exonic', bedFile = NULL, bedFilter = TRUE,
-                         mutFilter = FALSE, selectCols = TRUE, report = TRUE,
+                         mutFilter = FALSE, selectCols = TRUE, report = TRUE, 
+                         assay = 'MSK-v3', genelist = NULL,
+                         mutType = 'nonsynonymous',
                          reportFile = 'FilterReport.html', reportDir = './',
                          TMB = TRUE) {
 
@@ -131,7 +141,9 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
     }else{
       bed <- read.table(bedFile)
       bedLen <- as.character(round(sum(bed$V3 - bed$V2)/1000000, 2))
-      TMBvalue <- calTMB(mafFilteredF, bedFile = bedFile)
+      TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay, 
+                         genelist = genelist, mutType = mutType, 
+                         bedFilter = bedFilter)
     }
   }
 
