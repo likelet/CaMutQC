@@ -31,7 +31,7 @@ vignette: >
 
 * Tumor sample name: <span style="color:#ED6F3E">**`r tumorSample`**</span>
 * Normal Sample name: <span style="color:#ED6F3E">**`r unique(maf$Matched_Norm_Sample_Barcode)`**</span>
-* Size of MAF data: <span style="color:#ED6F3E">**`r paste0(as.character(round(object.size(maf)/1024, 2)), ' kb')`**</span>
+* Size of MAF data frame: <span style="color:#ED6F3E">**`r paste0(as.character(round(object.size(maf)/1024, 2)), ' kb')`**</span>
 
 &nbsp;
 
@@ -43,9 +43,9 @@ vignette: >
 
 ##### a. &nbsp;&nbsp; Sequencing quality thresholds
 
-- tumor depth (tumorDP): <span style="color:#ED6F3E">**`r tumorDP`**</span>
+- tumor total depth (tumorDP): <span style="color:#ED6F3E">**`r tumorDP`**</span>
 - tumor allele depth (tumorAD): <span style="color:#ED6F3E">**`r tumorAD`**</span>
-- normal depth (normalDP): <span style="color:#ED6F3E">**`r normalDP`**</span>
+- normal total depth (normalDP): <span style="color:#ED6F3E">**`r normalDP`**</span>
 - VAF: <span style="color:#ED6F3E">**`r VAF`**</span>
 - VAF ratio (tumorVAF/normalVAF): <span style="color:#ED6F3E">**`r VAFratio`**</span>
 
@@ -53,9 +53,9 @@ vignette: >
 
 ##### b. &nbsp;&nbsp; Strand of Bias
 
-Strand bias occurs when the genotype inferred from information presented by the forward strand and the reverse strand disagrees. A study showed that post-analysis procedures can cause strand bias, which introduce more SNPs with higher strand bias, which in turn results in more false-positive SNPs [1](#refer). Therefore, it is necessary to detect and minimize strand bias in our data.
+Strand bias occurs when the genotype inferred from information presented by the forward strand and the reverse strand disagrees. A study showed that post-analysis procedures can cause strand bias, which introduce more SNPs with higher strand bias, and in turn results in more false-positive SNPs [1](#refer). Therefore, it is necessary to detect and minimize the strand bias of our data.
 
-At present, there are four methods of strand bias detection that are widely used. In a mitochondria heteroplasmy study [2](#refer), the calculation of SB was put forward. GATK calculates a strand bias score for each SNP identified, and Samtools also computes a strand bias score based on Fisher's exact test. Additionally, GATK introduced an updated form of the Fisher Strand Test, [StrandOddsRatioSOR](https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-StrandOddsRatio) annotation, which is believed to be better at taking into account large amounts of data in high coverage situations.
+At present, there are four methods of strand bias detection that are widely used. In a mitochondria heteroplasmy study [2](#refer), the calculation of SB was put forward. GATK calculates a strand bias score for each SNP identified, and Samtools also computes a strand bias score based on Fisher's exact test. Additionally, GATK introduced an updated form of the Fisher Strand Test, [StrandOddsRatioSOR](https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-StrandOddsRatio) annotation, which is believed to be better at measuring strand bias for data in high coverage.
 
 In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate strand bias and filter variants based on the results. By default, strand bias is detected through SOR algorithm.
 
@@ -67,7 +67,7 @@ In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate s
 
 ##### c. &nbsp;&nbsp; Adjacent indel tag
 
-The Adjacent Indel tag is used when a somatic variant was possibly caused by misalignment around a germline or somatic insertion/deletion(indel). By default, CaMutQC will filter any SNV which was within 10bp of an indel found in the tumor sample. Also, the maximum length of an indel is set as 50bp.
+The Adjacent Indel tag is used when a somatic variant was possibly caused by misalignment around a germline or somatic insertion/deletion(indel). By default, CaMutQC will filter any SNV which that was within 10bp of an indel found in the tumor sample. Also, the maximum length of an indel is set as 50bp.
 
 **Maximum length of an indel**: <span style="color:#ED6F3E">**`r if(is.finite(maxIndelLen)){return(maxIndelLen)}else{return('Inf')}`**</span>
 
@@ -79,7 +79,7 @@ The Adjacent Indel tag is used when a somatic variant was possibly caused by mis
 
 ##### d. &nbsp;&nbsp; FILTER tag
 
-Some variant callers add a tag if a variant pass the post-filtration after calling. In CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. `PASS` will be used in CaMutQC by default.
+Some variant callers add a tag if a variant pass the post-filtration after calling. In CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. `PASS` is used in CaMutQC by default.
 
 **FILTER tag**: <span style="color:#ED6F3E">**`r if(is.null(tagFILTER)){return('No tag was given')}else{return(tagFILTER)}`**</span>
 
@@ -89,12 +89,11 @@ Some variant callers add a tag if a variant pass the post-filtration after calli
 
 ##### a. &nbsp;&nbsp; Database filtration
 
-Some database published germline variants and recurrent artifacts in distinct races. In CaMutQC, based on the parameters we collected [3](#refer) [4](#refer) [5](#refer), potential germline variants will be removed using annotation from these database(if available) unless CliVar/OMIM/HGMD flags it as pathogenic.
+Some database published germline variants and recurrent artifacts in distinct races. In CaMutQC, based on the parameters we collected [3](#refer) [4](#refer) [5](#refer), potential germline variants will be removed using annotation from those database(if available) unless the allele frequency of a mutation is lower than the VAF threshold (0.01) or CliVar/OMIM/HGMD flags it as pathogenic.
 
 [COSMIC](https://cancer.sanger.ac.uk/cosmic/), the Catalogue Of Somatic Mutations In Cancer, is the world's largest and most comprehensive resource for exploring the impact of somatic mutations in human cancer. They have assembled a list of genes that are somatically mutated and causally implicated in human cancer [6](#refer), which is called the The Cancer Gene Census and is updated periodically with new genes. In VCF files annotated by VEP, a `Existing_variation` column normally indicates a gene is on this COSMIC list if it has a annotation ID starts with `COSV`, `COSM` or `COSN`. 
-
-In CaMutQC, by default, we use VAF cutoff of 0.01 to remove potential germline variants unless CliVar/OMIM/HGMD flags it as pathogenic. 
-
+   
+   
 ```{r echo=FALSE}
 # get database information
 dbs <- paste0(c('ExAC', 'Genomesprojects1000', 
@@ -122,10 +121,10 @@ To avoid miscalling germline variants and to ensure the quality of variants [4](
 &nbsp;
 
 
-##### c. &nbsp;&nbsp; Panel of normals
+##### c. &nbsp;&nbsp; Panel of Normals
 
 
-A Panel of normal or PON is a type of resource used in somatic variant analysis. Basically, if a variant is found in a panel of normals, or is found in more than two normal samples, it is unlikely to be a driven variant during cancer development. PON filtration has been widely used in many researches and projects to discard non-driven variants [3](#refer) [7](#refer)
+Panel of Normals or PON is a type of resource used in somatic variant analysis. Basically, if a variant is found in a panel of normals, or is found in more than two normal samples, it is unlikely to be a driven variant during cancer development. PON filtration has been widely used in many researches and projects to discard non-driven variants [3](#refer) [7](#refer)
 [8](#refer).
 
 A PON can be generated by users through sequencing a number of normal samples that are as technically similar as possible to the tumor (same exome or genome preparation methods, sequencing technology and so on). Or, a PON can be directly obtained from GATK, which is viewed as one of the most effective filters of false-positive, contamination, and germline variants filter [4](#refer).
@@ -141,7 +140,7 @@ In CaMutQC, PON filtration dependents on GATK PON datasets, and variant data ref
 
 ##### d. &nbsp;&nbsp; Types of variants
 
-Most studies relate to cancer somatic mutations remove certain types of variants in order to better target driven variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
+Most studies relate to cancer somatic mutations remove certain types of variants in order to better target candidate variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
 
 In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
 
@@ -155,9 +154,9 @@ In CaMutQC, two categories can be chosen during this filtration step. **`exonic`
 
 ##### e. &nbsp;&nbsp; Region selection
 
-In this selection, users are able to further select variants related to cancer development by providing a bed file. Variants will be searched only in target regions.
+In this section, users are able to further select variants related to cancer development by providing a BED file. Variants will be searched only in target regions.
 
-**Bed file provided**: <span style="color:#ED6F3E">**`r !(is.null(bedFile))`**</span>
+**BED file provided**: <span style="color:#ED6F3E">**`r !(is.null(bedFile))`**</span>
 
 &nbsp;
 
@@ -174,9 +173,13 @@ In this selection, users are able to further select variants related to cancer d
 &nbsp;
 
 #### 4 &nbsp;&nbsp; Target cancer type
+   
+In CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types. `mutFilterCan` function integrates ten cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
+
 
 **Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r if (exists('cancerType')){return(cancerType)}else{return('NULL')}`**</span>
 
+&nbsp;
 
 ## Potential artifacts filtration
 
@@ -215,7 +218,7 @@ t2[which(is.na(t2[, 1])),1] <- 0
 
 &nbsp;
 
-#### 1 &nbsp;&nbsp; Flag barplot
+#### 1 &nbsp;&nbsp; Flag pie chart
 
 
 ```{r piechart-of-types, echo=FALSE, fig.width=6, fig.height=6, fig.align='center'}
@@ -239,7 +242,7 @@ if (flagDat$Var1[1] != '0'){
                 ' flag, ', piepercent, sep="")
 }
 
-# pie plot
+# pie chart
 pie1 <- ggplot(flagDat, aes(x="", y=Freq, fill=Var1)) + 
   geom_bar(stat="identity", width=1) +
   coord_polar("y", start=0) +
@@ -451,7 +454,7 @@ t2[which(is.na(t2[, 1])),1] <- 0
 
 &nbsp;
 
-#### 1 &nbsp;&nbsp; Flag barplot
+#### 1 &nbsp;&nbsp; Flag pie chart
 
 ```{r piechart-of-types-2, echo=FALSE, fig.width=6, fig.height=6, fig.align='center'}
 cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946", 
@@ -473,7 +476,7 @@ if (flagDat$Var1[1] != '0'){
                 ' flag, ', piepercent, sep="")
 }
 
-# pie plot
+# pie chart
 pie2 <- ggplot(flagDat, aes(x="", y=Freq, fill=Var1)) + 
   geom_bar(stat="identity", width=1) +
   coord_polar("y", start=0) +
@@ -644,7 +647,7 @@ Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mut
 
 There are many calculation methods for TMB, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, the conventional method of determining TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
 
-In CaMutQC, three methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist) and Pan-cancer panel [16](#refer). By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes).
+In CaMutQC, four methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`.
 
 **Size of the targeted genomic region**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste(bedLen, ' Mbp'))}else{return('Calculation not asked.')}`**</span>
 
