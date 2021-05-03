@@ -643,7 +643,7 @@ ggplot(data = mafFilteredTs_ext, mapping = aes(group)) +
 
 ## TMB
 
-Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mutations per megabase pair (Mb) in a specific genomic region. In 2015, tumor non-synonymous mutation burden was first confirmed to be related to PD1/PD-L1 cancer immunotherapy [11](#refer). Through the analysis of mutation burden of patients with non-small cell lung cancer, the clinical response and survival rate and other indicators, researcherst confirmed that the higher the TMB of cancer patients have, the better the effect of tumor immunotherapy would get. This conclusion was subsequently verified in other cancer types, such as malignant melanoma [12](#refer) and small cell lung cancer [13](#refer). Therefore, TMB has become one of the predictive biomarkers of immune checkpoint and inhibitor immunotherapy in cancer treatment [14](#refer).
+Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mutations per megabase pair (Mb) in a specific genomic region. In 2015, tumor non-synonymous mutation burden was first confirmed to be related to PD1/PD-L1 cancer immunotherapy [11](#refer). Through the analysis of mutation burden of patients with non-small cell lung cancer, the clinical response and survival rate and other indicators, researchers confirmed that the higher the TMB of cancer patients have, the better the effect of tumor immunotherapy would get. This conclusion was subsequently verified in other cancer types, such as malignant melanoma [12](#refer) and small cell lung cancer [13](#refer). Therefore, TMB has become one of the predictive biomarkers of immune checkpoint and inhibitor immunotherapy in cancer treatment [14](#refer).
 
 There are many calculation methods for TMB, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, the conventional method of determining TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
 
@@ -651,7 +651,7 @@ In CaMutQC, four methods are supported for TMB calculation, including Foundation
 
 **Size of the targeted genomic region**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste(bedLen, ' Mbp'))}else{return('Calculation not asked.')}`**</span>
 
-**Method used to calculate TMB**: <span style="color:#ED6F3E">**`r if(exists('assay')){return(assay)}else{return('Calculation not asked.')}`**</span>
+**Method used to calculate TMB**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(assay)}else{return('Calculation not asked.')}`**</span>
 
 **Estimated tumor mutational burden (TMB)**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste0(as.character(TMBvalue), ' mutations/Mbp'))}else{return('Calculation not asked.')}`**</span>
 
