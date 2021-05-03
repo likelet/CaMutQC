@@ -61,6 +61,7 @@
 #' @param mutType A group of variant classifications that will be kept,
 #' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
+#' @param cancerType Type of cancer sample whose params needed to be referred to.
 #'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
@@ -80,11 +81,11 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                          ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE, COSMIConly = TRUE,
                          keepType = 'exonic', bedFile = NULL, bedFilter = TRUE,
-                         mutFilter = FALSE, selectCols = TRUE, report = TRUE, 
+                         mutFilter = FALSE, selectCols = TRUE, report = TRUE,
                          assay = 'MSK-v3', genelist = NULL,
                          mutType = 'nonsynonymous',
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = TRUE) {
+                         TMB = TRUE, cancerType = NULL) {
 
   # process tumorSampleName
   if (tumorSampleName == 'Extracted'){
@@ -141,8 +142,8 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
     }else{
       bed <- read.table(bedFile)
       bedLen <- as.character(round(sum(bed$V3 - bed$V2)/1000000, 2))
-      TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay, 
-                         genelist = genelist, mutType = mutType, 
+      TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay,
+                         genelist = genelist, mutType = mutType,
                          bedFilter = bedFilter)
     }
   }
@@ -155,7 +156,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
   }
 
   if (mutFilter) {
-    if (selectCols){
+    if (is.character(selectCols)){
       if (isTRUE(selectCols)){
         return(mafFilteredF[, c(1:12, 16)])
       }else{

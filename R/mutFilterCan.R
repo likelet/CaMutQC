@@ -94,7 +94,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 bedFilter = bedFilter, mutFilter = mutFilter,
                                 selectCols = selectCols, report = report,
                                 reportFile = reportFile, reportDir = reportDir,
-                                TMB = TMB)
+                                TMB = TMB, cancerType = cancerType)
   # BRCA
   }else if(cancerType == 'BRCA'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, VAF = 0.1,
@@ -110,7 +110,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 bedFilter = bedFilter, mutFilter = mutFilter,
                                 selectCols = selectCols, report = report,
                                 reportFile = reportFile, reportDir = reportDir,
-                                TMB = TMB)
+                                TMB = TMB, cancerType = cancerType)
   # COADREAD
   }else if(cancerType == 'COADREAD'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 5, VAF = 0.2,
@@ -126,36 +126,129 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 bedFile = bedFile, bedFilter = bedFilter,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
-                                reportDir = reportDir, TMB = TMB)
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
   # UCEC
   }else if(cancerType == 'UCEC'){
-    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE)
+    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
+                                tumorDP = tumorDP, VAF = VAF,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                COSMIConly = COSMIConly, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
 
   # UCS
   }else if(cancerType == 'UCS'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
-                                COSMIConly = TRUE)
+                                COSMIConly = TRUE, dbSNP = dbSNP,
+                                Genomesprojects1000 = Genomesprojects1000,
+                                VAF = VAF, VAFratio = VAFratio,
+                                SBmethod = SBmethod, keepType = keepType,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
   # KIRC
   }else if(cancerType == 'KIRC'){
-    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE)
+    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE,
+                                Genomesprojects1000 = Genomesprojects1000,
+                                tumorDP = tumorDP, VAF = VAF,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                COSMIConly = COSMIConly, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
   # KIRP
   }else if(cancerType == 'KIRP'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
                                 dbSNP = TRUE, COSMIConly = TRUE,
-                                Genomesprojects1000 = TRUE, ExAC = TRUE)
+                                Genomesprojects1000 = TRUE, ExAC = TRUE,
+                                tumorAD = tumorAD, keepType = keepType,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
   # LCML
   }else if(cancerType == 'LCML'){
-    mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE)
+    mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE,
+                                dbSNP = dbSNP, tumorDP = tumorDP,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                COSMIConly = COSMIConly, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
   # LAML
   }else if(cancerType == 'LAML'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, tumorAD = 3,
-                                ExAC = TRUE, ESP6500 = TRUE, tagFILTER = 'PASS')
+                                ExAC = TRUE, ESP6500 = TRUE, tagFILTER = 'PASS',
+                                tumorDP = tumorDP, VAF = VAF,
+                                normalDP = normalDP, dbVAF = dbVAF,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, gnomAD = gnomAD,
+                                COSMIConly = COSMIConly, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
 
   # LIHC
   }else if(cancerType == 'LIHC'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 15, normalDP = 15, VAF = 0.1,
                                 dbSNP = TRUE, COSMIConly = TRUE,
-                                Genomesprojects1000 = TRUE)
+                                Genomesprojects1000 = TRUE,
+                                tumorAD = tumorAD, keepType = keepType,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                tumorSampleName = tumorSampleName,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                cancerType = cancerType)
   }else{
     # turn off the switch for report
     # withType <- FALSE
