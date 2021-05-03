@@ -35,7 +35,8 @@ mutFilterCom(
   mutType = "nonsynonymous",
   reportFile = "FilterReport.html",
   reportDir = "./",
-  TMB = TRUE
+  TMB = TRUE,
+  cancerType = NULL
 )
 }
 \arguments{
@@ -129,6 +130,8 @@ including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 \item{reportDir}{Path to the output report file. Default: './'}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE}
+
+\item{cancerType}{Type of cancer sample whose params needed to be referred to.}
 }
 \value{
 An MAF data frame after common strategy filtration
