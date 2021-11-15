@@ -3,9 +3,9 @@ Type: Package
 Title: An R Package for Comprehensive Flitration and Selection of Cancer Somatic Mutations
 Version: 0.1.0
 Author: c(
-  person('Xin', 'Wang', email = 'wangx555@mail2.sysu.edu.cn', role = c('aut', 'cre'), comment = c(ORCID = '0000-0002-6072-599X'))
+  person('Xin', 'Wang', email = 'sylviawang555@gmail.com', role = c('aut', 'cre'), comment = c(ORCID = '0000-0002-6072-599X'))
   )
-Maintainer: Xin Wang <wangx555@mail2.sysu.edu.cn>
+Maintainer: Xin Wang <sylviawang555@gmail.com>
 Description: CaMutQC is able to filter false positive mutations generated due to 
     technical issues, as well as to select candidate cancer mutations through a 
     series of well-structured functions by labeling mutations with various flags.
