@@ -27,7 +27,7 @@ This is a simple workflow of CaMutQC.
 
 This software was mainly developed by:
 
-* Xin Wang, wangx555@mail2.sysu.edu.cn, Sun Yat-sen university
+* Xin Wang, sylviawang555@gmail.com, Sun Yat-sen university
 
 ## Supervised by 
 
@@ -35,4 +35,4 @@ This software was mainly developed by:
 * [Qi Zhao](zhaoqi@sysucc.org.cn) from Bioinformatic Center of Sun Yat-sen University Cancer Center 
 
 ## Maintainer
-[Xin Wang](wangx555@mail2.sysu.edu.cn), Sun Yat-sen university  <br/>
+[Xin Wang](sylviawang555@gmail.com), Sun Yat-sen university  <br/>
