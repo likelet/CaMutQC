@@ -33,6 +33,7 @@ mutFilterQual <- function(maf, tumorDP = 20, normalDP = 10,
                                  (maf$n_ref_count < normalDP)), ]))
 
   VAFr <- (maf$t_alt_count/maf$t_depth)/(maf$n_alt_count/maf$n_depth)
+  VAFr[which(is.na(VAFr))] <- 0
   tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
 
   maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')

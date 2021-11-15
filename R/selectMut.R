@@ -73,6 +73,18 @@ selectMut <- function(charMatrix) {
                 #concurrent <- FALSE
               }
             }
+          }else if (length(grep('-', finalMatrix$cDNA_position))){
+            Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "-")[[1]][2])
+            selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
+            #concurrent <- FALSE
+            for (l in 2:nrow(finalMatrix)) {
+              Tend <- as.numeric(strsplit(finalMatrix[l, 3], "-")[[1]][2])
+              if (Tend > Toplength) {
+                Toplength <- Tend
+                selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
+                #concurrent <- FALSE
+              }
+            }
           }else{
             selectedTranscript <- as.numeric(rownames(
               finalMatrix[which.max(finalMatrix$cDNA_position), ]))
@@ -133,6 +145,7 @@ GetBiotypePriority <- function(biotype) {
          # from RFAM and miRBase
          'lincRNA' = 3, # Long, intervening noncoding (linc) RNAs,
          # that can be found in evolutionarily conserved, intergenic regions
+         'lncRNA' = 3,
          'bidirectional_promoter_lncrna' = 3, # A non-coding locus
          # that originates from within the promoter region of
          # a protein-coding gene, with transcription proceeding in the

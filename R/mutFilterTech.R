@@ -9,9 +9,6 @@
 #' @param tumorAD Threshold of tumor alternative allele depth. Default: 10
 #' @param VAF Threshold of VAF value. Default: 0.05
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
-#' @param tumorSampleName Label of the tumor sample, should be one of the
-#' column names of maf. If it is set as 'Extracted', tumorSampleName would be
-#' extracted automatically from the maf data frame. Default: 'Extracted'.
 #' @param SBmethod Method will be used to detect strand bias,
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
@@ -36,7 +33,7 @@
 #' mafF <- mutFilterTech(maf)
 
 mutFilterTech <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
-                          VAF = 0.05, VAFratio = 5, tumorSampleName = 'Extracted',
+                          VAF = 0.05, VAFratio = 5,
                           SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50,
                           minInterval = 10, tagFILTER = 'PASS'){
 
@@ -47,8 +44,7 @@ mutFilterTech <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
 
   # strand bias filtration
   message('Filtration for strand bias is in process.')
-  maf <- mutFilterSB(maf, tumorSampleName = tumorSampleName, method = SBmethod,
-                     SBscore = SBscore)
+  maf <- mutFilterSB(maf, method = SBmethod, SBscore = SBscore)
 
   # adjacent indel tag filtration
   message('Filtration for adjacent indel is in process.')
