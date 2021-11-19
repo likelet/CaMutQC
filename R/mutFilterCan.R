@@ -33,7 +33,8 @@
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
-#' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
+#' @param keepCOSMIC Whether to keep variants in COSMIC even
+#' they have are present in germline database. Default: TRUE.
 #' @param keepType A group of variant classifications will be kept,
 #' including 'exonic' and 'nonsynonymous'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
@@ -56,7 +57,6 @@
 #' @return An MAF data frame after common strategy filtration for a cancer type.
 #' @return A filter report in HTML format
 #'
-#' @export mutFilterCan
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata/Multi-sample",
 #' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
@@ -68,7 +68,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                          SBscore = Inf, maxIndelLen = Inf, minInterval = 0,
                          tagFILTER = NULL, dbVAF = 0, ExAC = FALSE,
                          Genomesprojects1000 = FALSE, ESP6500 = FALSE,
-                         gnomAD = FALSE, dbSNP = FALSE, COSMIConly = FALSE,
+                         gnomAD = FALSE, dbSNP = FALSE, keepCOSMIC = TRUE,
                          keepType = 'ALL', bedFile = NULL, bedFilter = TRUE,
                          mutFilter = FALSE, selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',
@@ -85,7 +85,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 VAFratio = VAFratio, maxIndelLen = maxIndelLen,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
-                                dbSNP = dbSNP, COSMIConly = COSMIConly,
+                                dbSNP = dbSNP, keepCOSMIC = keepCOSMIC,
                                 keepType = keepType, bedFile = bedFile,
                                 bedFilter = bedFilter, mutFilter = mutFilter,
                                 selectCols = selectCols, report = report,
@@ -95,7 +95,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
   }else if(cancerType == 'BRCA'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, VAF = 0.1,
                                 dbSNP = TRUE, Genomesprojects1000 = TRUE,
-                                ESP6500 = TRUE, COSMIConly = TRUE,
+                                ESP6500 = TRUE, keepCOSMIC = TRUE,
                                 tumorDP = 6, normalDP = 6, VAFratio = VAFratio,
                                 SBmethod = SBmethod, ExAC = ExAC,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
@@ -116,7 +116,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 minInterval = minInterval, ExAC = ExAC,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
-                                COSMIConly = COSMIConly, keepType = keepType,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
@@ -132,7 +132,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 minInterval = minInterval, ExAC = ExAC,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
-                                COSMIConly = COSMIConly, keepType = keepType,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
@@ -142,7 +142,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
   # UCS
   }else if(cancerType == 'UCS'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
-                                COSMIConly = TRUE, dbSNP = dbSNP,
+                                keepCOSMIC = TRUE, dbSNP = dbSNP,
                                 Genomesprojects1000 = Genomesprojects1000,
                                 VAF = VAF, VAFratio = VAFratio,
                                 SBmethod = SBmethod, keepType = keepType,
@@ -166,7 +166,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 minInterval = minInterval, ExAC = ExAC,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
-                                COSMIConly = COSMIConly, keepType = keepType,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
@@ -175,7 +175,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
   # KIRP
   }else if(cancerType == 'KIRP'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
-                                dbSNP = TRUE, COSMIConly = TRUE,
+                                dbSNP = TRUE, keepCOSMIC = TRUE,
                                 Genomesprojects1000 = TRUE, ExAC = TRUE,
                                 tumorAD = tumorAD, keepType = keepType,
                                 VAFratio = VAFratio, SBmethod = SBmethod,
@@ -198,7 +198,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 minInterval = minInterval, ExAC = ExAC,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
-                                COSMIConly = COSMIConly, keepType = keepType,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
@@ -213,7 +213,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 VAFratio = VAFratio, SBmethod = SBmethod,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
                                 minInterval = minInterval, gnomAD = gnomAD,
-                                COSMIConly = COSMIConly, keepType = keepType,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
@@ -223,7 +223,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
   # LIHC
   }else if(cancerType == 'LIHC'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 15, normalDP = 15, VAF = 0.1,
-                                dbSNP = TRUE, COSMIConly = TRUE,
+                                dbSNP = TRUE, keepCOSMIC = TRUE,
                                 Genomesprojects1000 = TRUE,
                                 tumorAD = tumorAD, keepType = keepType,
                                 VAFratio = VAFratio, SBmethod = SBmethod,
