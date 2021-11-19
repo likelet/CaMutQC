@@ -13,7 +13,8 @@
 #' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher
 #' than cutoff(set in VAF parameter). Default: TRUE.
 #' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
-#' @param COSMIConly Whether to only keep variants in COSMIC. Default: FALSE.
+#' @param keepCOSMIC Whether to keep variants in COSMIC even
+#' they have are present in germline database. Default: TRUE.
 #'
 #' @return An MAF data frame after filtration for database
 #' and clinical significance
@@ -27,7 +28,7 @@
 
 mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE,
                         ESP6500 = TRUE, gnomAD = TRUE, dbSNP = FALSE,
-                        COSMIConly = TRUE){
+                        keepCOSMIC = TRUE){
 
   # ExAC filtration
   if (ExAC){
@@ -92,9 +93,9 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE
     tags5 <- NULL
   }
 
-  if (COSMIConly) {
-    n_tags <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
-    tags6 <- setdiff(rownames(maf), n_tags)
+  if (keepCOSMIC) {
+    # get COSMIC mutations
+    tags6 <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
   }else{
     tags6 <- NULL
   }
@@ -108,8 +109,8 @@ mutFilterDB <- function(maf, VAF = 0.01, ExAC = TRUE, Genomesprojects1000 = TRUE
   }
 
   tags <- union(union(union(tags1, tags2), union(tags3, tags4)),
-                union(tags5, tags6))
-  tags <- union(tags, tags7)
+                union(tags5, tags7))
+  tags <- tags[!(tags %in% tags6)]
 
   tags <- intersect(tags, setdiff(rownames(maf),
                                   as.character(grep('athogenic', maf$CLIN_SIG))))
