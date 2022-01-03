@@ -136,6 +136,8 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
       TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay,
                          genelist = genelist, mutType = mutType,
                          bedFilter = bedFilter)
+      print(paste0("Estimated tumor mutational burden (TMB): ", TMBvalue))
+      print(paste0("Method used to calculate TMB: ", assay))
     }
   }
 
