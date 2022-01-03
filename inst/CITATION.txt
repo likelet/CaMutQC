@@ -1,0 +1,13 @@
+citHeader("CaMutQC can be cited as:")
+
+citEntry(
+   entry = "article",
+   title = "Integrative quality control of cancer somatic mutations with CaMutQC through somatic alterations (abstract)",
+   author = personList(as.person("Xin Wang"),
+                       as.person("Jian Ren"),
+                       as.person(" Qi Zhao")
+                       ),
+   journal = "AACR annual meeting 2022",
+   year = 2022,
+   textVersion = "Xin Wang, Jian Ren, Qi Zhao, Integrative quality control of cancer somatic mutations with CaMutQC through somatic alterations (abstract), AACR annual meeting 2022"
+)
