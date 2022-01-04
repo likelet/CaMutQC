@@ -27,7 +27,7 @@ vignette: >
 
 ## 1. Introduction 
 
-The quality control of cancer somatic mutations is of great significance in tumor genomics. It helps to eliminate false positive mutations arisen during the sequencing process, thereby improving the efficiency and accuracy of downstream analysis. Here, we developed an R package CaMutQC, for the quality control and selection of cancer somatic mutations. It offers both common and customized strategies of filtration for cancer somatic mutation based on the MAF data frame, which is able to select key mutations related to tumorigenesis. In addition, in order to avoid the bias of a single variant caller, The package, source code and documents are freely available through Github (https://github.com/likelet/CaMutQC)
+The quality control of cancer somatic mutations is of great significance in tumor genomics. It helps to eliminate false positive mutations arisen during the sequencing process, thereby improving the efficiency and accuracy of downstream analysis. Here, we developed an R package CaMutQC, for the quality control and selection of cancer somatic mutations. It offers both common and customized strategies for the filtration of cancer somatic mutation based on the MAF data frame, which are able to select key somatic mutations related to tumorigenesis. In addition, we believe that the union of mutations returned by multiple variant caller contains more true positive somatic mutations than that from a single variant caller or the intersection of multiple callers. The package, source code and documents are freely available through Github (https://github.com/likelet/CaMutQC)
 
 
 ### 1.1 Citation
@@ -40,14 +40,12 @@ In R console, enter `citation("CaMutQC")`.
 ## 2. Input File 
 
 
-### 2.1 Single VCF input
+### 2.1 Single VCF
 
-[VCF](https://samtools.github.io/hts-specs/VCFv4.3.pdf) is a widely used format in bioinformatics filed, it specifies the format of a text file used in bioinformatics for storing gene sequence variations. 
-
-All VCF files should be annotated by [VEP](https://useast.ensembl.org/info/docs/tools/vep/index.html) first before analyzing through CaMutQC, because annotated VCF files contain more detailed information that has clinical significance. Information about VEP and how to run VEP on VCF file can be found at [here](https://asia.ensembl.org/info/docs/tools/vep/script/vep_options.html#opt_check_existing).
+[VCF](https://samtools.github.io/hts-specs/VCFv4.3.pdf) is a widely used text file format used in bioinformatics for storing gene sequence variations. All VCF files should be annotated by [VEP](https://useast.ensembl.org/info/docs/tools/vep/index.html) first before analyzing through CaMutQC because annotated VCF files contain more detailed information that has clinical significance. Information about VEP and how to run VEP on VCF file can be found [here](https://asia.ensembl.org/info/docs/tools/vep/script/vep_options.html#opt_check_existing).
 
 
-### 2.2 Multi-sample VCF input
+### 2.2 Multi-sample VCF
 CaMutQC supports annotated multi-sample VCF files as input, which should be under the same file path.
 
 
@@ -70,19 +68,21 @@ devtools::install_github("likelet/CaMutQC")
 
 ## 4. Overview of CaMutQC
 
-For now, there are three main functional modules in CaMutQC. The first section is to filter cancer somatic mutations through common strategies, and the following section offers users customized filtration criteria based on cancer types. And CaMutQC is capable of measuring TMB (Tumor Mutational Burden) through various methods. Input data of most functions in CaMutQC can be obtained by applying `vcfToMAF` function on certain VCF files.
+For now, there are three main functional modules in CaMutQC. The first section is to filter cancer somatic mutations through common strategies, and the following section offers users customized filtration criteria based on cancer types. CaMutQC is also capable of measuring TMB (Tumor Mutational Burden) through various methods. Required input of most functions in CaMutQC can be obtained by applying `vcfToMAF` function on VCF files.
 
-MAF data frame with special labels from CaMutQC will be generated after each filtration. Besides, a filter report will be provided, which gives more detailed, organized and lively information. 
+MAF data frame with special labels from CaMutQC will be returned after each filtration. And a filter report will be provided, giving detailed and organized result information. 
+   
+   
 
+![](CaMutQC-workflow.png){width=70%}
 
-![](CaMutQC-workflow.png)
 
 
 &nbsp;
 
 ## 5. From VCF to MAF
 
-VCF and MAF both are important data format in oncology and bioinformatics, but the transformation between these two formats requires additional tool or software. `vcfToMAF` function in CaMutQC is able to perform this transformation using one line command just in a few seconds. In addition, parameter `filterGene` can filter variants without Hugo Symbol it is set as `TRUE`.
+VCF and MAF both are important formats in oncology and bioinformatics, but additional tools are needed when transforming between these two formats. `vcfToMAF` function in CaMutQC is able to perform this transformation using one line command in a few seconds. In addition, parameter `filterGene` can filter variants without Hugo Symbol when it is set as `TRUE`.
 
 ```{r, message=FALSE}
 library(CaMutQC)
@@ -90,7 +90,7 @@ MAFdat <- vcfToMAF(system.file("extdata/Multi-sample", "SRR3670028.somatic.filte
 MAFdat[1:5, 1:13]
 ```
 
-Load multi-sample data that consists of several VCF files by setting `multiSample` as TRUE.
+Load multi-sample data that consists of several VCF files by setting `multiSample` as `TRUE`.
 
 ```{r, message=FALSE}
 vcfPath <- system.file("extdata/Multi-sample", package = "CaMutQC")
@@ -103,7 +103,7 @@ unique(multiVCF$Tumor_Sample_Barcode)
 
 ## 6. Common filtering strategies
 
-After reading a number of related papers, we extracted, sorted and summarized some widely used parameters and their thresholds when performing cancer somatic mutation filtration. These strategies are implemented through a number of sub-functions that cover widely used criteria like sequencing quality, strand of bias and database selection. Each of the functions takes MAF data frame generated by `vcfToMAF` function in CaMutQC as input, then return a labeled MAF data frame reflecting corresponding filtration results.
+After reading a number of related papers, we extracted, sorted and summarized some widely used parameters and their thresholds when performing cancer somatic mutation filtration. These strategies are implemented through a number of sub-functions that cover widely used criteria like sequencing quality, strand of bias and database selection. Each of the functions takes MAF data frame generated by `vcfToMAF` function in CaMutQC as an input, and returns a labeled MAF data frame mirroring corresponding filtration results.
 
 Besides, sub-functions are integrated into bigger functions to provide more convenient filtration.
 
@@ -126,7 +126,6 @@ Besides, sub-functions are integrated into bigger functions to provide more conv
 |  | mutFilterPON | **P** |
 |  | mutFilterType | **T** |
 |  | mutFilterReg | **R** |
-|  | mutFilterOnco | **C** |
 
 **Note: A variant labeled with certain flag indicates it fails to pass this filter function, and all variants start with tag '0'**
 
@@ -146,7 +145,6 @@ Sequencing quality parameters like `AD`, `DP` and `VAF` are basic indice to filt
 
 
 ```{r, message=FALSE}
-table(MAFdat$CaTag)
 MAF_qual <- mutFilterQual(MAFdat, VAF = 0.01, VAFratio = 4)
 table(MAF_qual$CaTag)
 ```
@@ -155,11 +153,11 @@ table(MAF_qual$CaTag)
 
 #### 6.1.2 Strand of Bias filtration
 
-Strand bias occurs when the genotype inferred from information presented by the forward strand and the reverse strand disagrees. A study showed that post-analysis procedures can cause strand bias, which introduce more SNPs with higher strand bias, and in turn results in more false-positive SNPs [1](#refer). Therefore, it is necessary to detect and minimize the strand bias of our data.
+Strand bias occurs when the genotype inferred from information presented by the forward strand and the reverse strand disagrees. A study showed that post-analysis procedures can cause strand bias, which introduce more SNPs with higher strand bias, and in turn result in more false-positive SNPs [1](#refer). Therefore, it is necessary to detect and minimize the strand bias of data.
 
-At present, there are four methods of strand bias detection that are widely used. In a mitochondria heteroplasmy study [2](#refer), the calculation of SB was put forward. GATK calculates a strand bias score for each SNP identified, and Samtools also computes a strand bias score based on Fisher's exact test. Additionally, GATK introduced an updated form of the Fisher Strand Test, [StrandOddsRatioSOR](https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-StrandOddsRatio) annotation (SOR), which is believed to be better at measuring strand bias for data in high coverage.
+At present, there are four widely-used methods for strand bias detection. One approach was mentionen in a mitochondria heteroplasmy study [2](#refer). And GATK calculates a strand bias score for each SNP identified while Samtools put forwards another strand bias score based on Fisher's exact test. Additionally, GATK introduced an updated form of the Fisher Strand Test, [StrandOddsRatioSOR](https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-StrandOddsRatio) annotation (SOR), which is believed to be better at measuring strand bias of data in high coverage.
 
-In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate strand bias and filter variants based on the results. By default, strand bias is detected through SOR algorithm, and the cutoff for strand of bias score is set as 3.
+In CaMutQC, either Fisher Strand Test or SOR algorithm can be used to evaluate strand bias and filter variants based on the results. By default, strand bias is detected through SOR algorithm and the cutoff for strand of bias score is set as <span style="color:#ED6F3E">**3**</span>.
 
 ```{r, message=FALSE}
 MAF_sb <- mutFilterSB(MAFdat, SBscore = 2)
@@ -170,7 +168,7 @@ table(MAF_sb$CaTag)
 
 #### 6.1.3 Adjacent indel tag filtration
 
-The Adjacent Indel tag is used when a somatic variant was possibly caused by misalignment around a germline or somatic insertion/deletion(indel). By default, CaMutQC will filter any SNV which that was within 10bp of an indel found in the tumor sample. Also, the maximum length of an indel is set as 50bp.
+The Adjacent Indel tag is used when a somatic variant was possibly caused by misalignment around a germline or somatic insertion/deletion (indel). By default, CaMutQC filters any SNV which was within <span style="color:#ED6F3E">**10**</span> bp of an indel found in the tumor sample. Also, the maximum length of an indel is set as <span style="color:#ED6F3E">**50**</span> bp.
 
 ```{r, message=FALSE}
 MAF_adj <- mutFilterAdj(MAFdat, maxIndelLen = 40, minInterval = 15)
@@ -181,14 +179,15 @@ table(MAF_adj$CaTag)
 
 #### 6.1.4 Database filtration
 
-Some database published germline variants and recurrent artifacts in distinct races. In CaMutQC, based on the parameters we collected [3](#refer) [4](#refer) [5](#refer), potential germline variants will be removed using annotation from those database(if available) unless the allele frequency of a mutation is lower than the VAF threshold (0.01) or CliVar/OMIM/HGMD flags it as pathogenic.
+Some database published germline variants and recurrent artifacts in distinct races. In CaMutQC, based on the parameters we collected [3](#refer) [4](#refer) [5](#refer), potential germline variants is removed using annotation from those databases (if available) unless the allele frequency of a mutation recorded in those databases is lower than the VAF threshold (<span style="color:#ED6F3E">**0.01**</span>) or CliVar/OMIM/HGMD flags it as pathogenic.
 
-[COSMIC](https://cancer.sanger.ac.uk/cosmic/), the Catalogue Of Somatic Mutations In Cancer, is the world's largest and most comprehensive resource for exploring the impact of somatic mutations in human cancer. They have assembled a list of genes that are somatically mutated and causally implicated in human cancer [6](#refer), which is called the The Cancer Gene Census and is updated periodically with new genes. In VCF files annotated by VEP, a `Existing_variation` column normally indicates a gene is on this COSMIC list if it has a annotation ID starts with `COSV`, `COSM` or `COSN`. 
+[COSMIC](https://cancer.sanger.ac.uk/cosmic/) (the Catalogue of Somatic Mutations In Cancer) has the most comprehensive resource for exploring the impact of somatic mutations in oncology. The team has assembled a list of genes that are somatically mutated and causally implicated in human cancer [6](#refer), which is called the The Cancer Gene Census and is updated periodically with new genes. In VCF file annotated by VEP, the `Existing_variation` column indicates a gene is in this COSMIC list if it has an annotation ID starts with `COSV`, `COSM` or `COSN`. 
 
-By default, CaMutQC filters variants recorded in **ExAC**, **Genomesprojects1000**, **ESP6500** and **gnomAD**, and only keeps variants in **COSMIC**.
+By default, CaMutQC filters variants recorded in **ExAC**, **Genomesprojects1000**, **ESP6500** and **gnomAD**, and always keeps variants in **COSMIC** even though they are present in other databases.
 
 ```{r, message=FALSE}
-MAF_db <- mutFilterDB(MAFdat, dbSNP = TRUE, COSMIConly = FALSE)
+# labels can be added
+MAF_db <- mutFilterDB(MAF_sb, dbSNP = TRUE)
 table(MAF_db$CaTag)
 ```
 
@@ -196,7 +195,7 @@ table(MAF_db$CaTag)
 
 #### 6.1.5 Normal depth filtration
 
-To avoid miscalling germline variants and to ensure the quality of variants [4](#refer), CaMutQC supports filtration on normal depth for both dbsnp/non-dbsnp variants. Cutoffs are 19 and 8 respectively. 
+To avoid miscalling germline variants and to improve the quality of variants [4](#refer), CaMutQC supports filtration on normal depth for both dbsnp/non-dbsnp variants, where cutoffs are <span style="color:#ED6F3E">**9**</span> and <span style="color:#ED6F3E">**18**</span> respectively. 
 
 ```{r, message=FALSE}
 MAF_normaldp <- mutFilterNormalDP(MAFdat)
@@ -207,14 +206,16 @@ table(MAF_normaldp$CaTag)
 
 #### 6.1.6 Panel of Normals filtration 
 
-Panel of Normals or PON is a type of resource used in somatic variant analysis. Basically, if a variant is found in a panel of normals, or is found in more than two normal samples, it is unlikely to be a driven variant during cancer development. PON filtration has been widely used in many researches and projects to discard non-driven variants [3](#refer) [7](#refer)
+Panel of Normals (PON) is a type of resource used in somatic variant analysis. Basically, if a variant is found in a panel of normals, or is found in more than two normal samples, it is unlikely to be a driven variant during tumorigenesis or tumor development. PON filtration has been widely used in many researches and projects to discard non-driven variants [3](#refer) [7](#refer)
 [8](#refer).
 
-A PON can be generated by users through sequencing a number of normal samples that are as technically similar as possible to the tumor (same exome or genome preparation methods, sequencing technology and so on). Or, a PON can be directly obtained from GATK, which is viewed as one of the most effective filters of false-positive, contamination, and germline variants filter [4](#refer).
+A PON data set can be generated by users through sequencing a number of normal samples that are as technically similar as possible to the tumor (same exome or genome preparation methods, sequencing technology and so on). Or, the PON data set can also be directly obtained from GATK, which is viewed as one of the most effective filters for false-positive, contamination, and germline variants [4](#refer).
 
-In CaMutQC, PON filtration dependents on GATK PON datasets, and variant data refers to different versions of genome uses different public GATK panels of normals dataset for filtration.
+In CaMutQC, PON filtration uses GATK PON data set, and variant data referring different versions of genome uses different public GATK panels of normals data set for filtration.
 
-For GRCh37, panel of normals dataset is `inst/extdata/PON/somatic-b37_Mutect2-exome-panel.vcf`, and panel of normals dataset is `inst/extdata/PON/somatic-hg38_1000g_pon.hg38.vcf` for data built on GRCh38.
+GRCh37: <span style="color:#ED6F3E">**`inst/extdata/PON/somatic-b37_Mutect2-exome-panel.vcf`**</span>
+   
+GRCh38: <span style="color:#ED6F3E">**`inst/extdata/PON/somatic-hg38_1000g_pon.hg38.vcf`**</span>
 
 ```{r, message=FALSE}
 MAF_pon <- mutFilterPON(MAFdat)
@@ -227,7 +228,7 @@ table(MAF_pon$CaTag)
 
 Most studies relate to cancer somatic mutations keep certain types of variants in order to better target candidate variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
 
-In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
+In CaMutQC, these two categories can be chosen in this step and **`exonic`** is the default option, while **`nonsynonymous`** will leave users non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
 
 - Variant classifications filtered when set as exonic: **`RNA`, `Intron`, `IGR`, `5\'Flank`, `3\'Flank`, `5\'UTR`, `3\'UTR`**
 
@@ -243,7 +244,7 @@ table(MAF_type$Variant_Classification[which(MAF_type$CaTag == '0')])
 
 #### 6.1.8 Region selection
 
-In this section, users are able to further select variants related to cancer development by providing a BED file. Variants will be searched only in target regions. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file.
+In this step, users are able to further select variants related to cancer development by providing an additional BED file, and variants will be searched only in target regions covered in the BED file. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file (only leaves segments in `Chr1-Ch22`, `ChrX` and `ChrY`).
 
 ```{r, message=FALSE}
 MAF_reg <- mutFilterReg(MAFdat, bedFile = system.file("extdata/bed/panel_hg19", "hg19_FlCDx.bed", package = "CaMutQC"))
@@ -252,19 +253,20 @@ table(MAF_reg$CaTag)
 
 &nbsp;
 
+
 ### 6.2 Overall filtration
 
-sub-functions above are divided into two groups according to their definitions and the categories they belongs to, which can be controlled through function `mutFilterTech` and `mutSelection` respectively. Each function is composed of more than one sub-functions that apply filtration variants from different aspects but the same category. After passing through a filter function, each variant may be labeled with more than one flag that reflect the filtration results.
+sub-functions mentioned above are divided into two groups according to their definitions and the categories they belong to, which can be reached through advanced function `mutFilterTech` and `mutSelection` respectively. Each advanced function is composed of multiple sub-functions that apply filtration on variants from different aspects but the same category. After passing through the advanced filter function, each variant may be labeled with more than one flag that show the filtration results.
 
-In addition, `mutFilterCom` function is an upper function that combine `mutFilterTech` and `mutSelection`. Any Parameters in all sub-functions can be set in `mutFilterCom` function.
+In addition, `mutFilterCom` function is an upper function that combines `mutFilterTech` and `mutSelection`, so any Parameters in sub-functions can be set in `mutFilterCom`.
 
 &nbsp;
 
 #### 6.2.1 Potential artifacts filtration
 
-Function `mutFilterTech` combines filtration strategies for potential artifacts, including sequencing quality, strand of bias and adjacent indel filtration.
+Function `mutFilterTech` combines filtration strategies for removing potential artifacts, including sequencing quality, strand of bias and adjacent indel filtration.
 
-Some variant callers add a tag if a variant pass the post-filtration after calling. In CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. `PASS` is used in CaMutQC by default.
+Some variant callers add a tag if a variant pass the post-filtration after calling. With CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. <span style="color:#ED6F3E">**`PASS`**</span> is set as the default tag.
 
 ```{r, message=FALSE}
 MAF_tech <- mutFilterTech(MAFdat, tumorDP = 8, minInterval = 9, tagFILTER = NULL)
@@ -275,9 +277,9 @@ table(MAF_tech$CaTag)
 
 #### 6.2.2 Candidate variant selection
 
-In most cases, basic filtration by removing potential artifacts is not enough for selecting candidate variants that participate in the formation and growth of cancer, for a number of germline variants or variants that do not impact any phenotype will be kept. Therefore, candidate variant selection is a necessary step for following analyses.
+In most cases, basic filtration by removing potential artifacts is not enough for selecting candidate variants that participate in the formation and development of tumor, because a number of germline variants or variants that do not influence phenotype are still remained in the data set. Therefore, candidate variant selection is a necessary step for downstream analyses.
 
-In CaMutQC, the whole selection process is comprised of database filtration, normal depth filtration, PON filtration, variant type filtration and region selection, which integrates in function `mutSelection`.
+The whole selection process in CaMutQC is comprised of database filtration, normal depth filtration, PON filtration, variant type filtration and region selection, which implemented in `mutSelection` function.
 
 ```{r, message=FALSE}
 MAF_selec <- mutSelection(MAFdat, dbVAF = 0.02, gnomAD = FALSE, keepType = 'nonsynonymous')
@@ -286,9 +288,9 @@ table(MAF_selec$CaTag)
 
 &nbsp;
 
-#### 6.2.3 Combined function: mutFilerCom
+#### 6.2.3 Combined function: `mutFilerCom`
 
-A main function of CaMutQC is `mutFilterCom`, which integrates all single functions and their parameters into a big function. In addition, it provides other information and function that makes CaMutQC an interactive and powerful tool.
+A main function of CaMutQC is `mutFilterCom`, which integrates all sub-functions into a big function. In addition, it includes other functions that make CaMutQC an interactive and powerful tool.
 
 ```{r, message=FALSE}
 MAFCom <- mutFilterCom(MAFdat, report = FALSE, TMB = FALSE)
@@ -299,16 +301,17 @@ table(MAFCom$CaTag)
 
 ##### 6.2.3.1 Filter report
 
-By default, a vivid and detailed filter report will be saved automatically each time after running `mutFilterCom`. An example filter report can be found at...
+By default, a vivid and detailed filter report will be saved automatically each time after running `mutFilterCom`. An example filter report can be found [here](https://github.com/likelet/CaMutQC/blob/WX/docs/FilterReport.html)
 
 &nbsp;
 
 ##### 6.2.3.2 TMB calculation
 
-`mutFilterCom` also support the calculation of TMB. Details about TMB can be found at [Mutational analysis](#tmb) section.
+`mutFilterCom` also support the calculation of TMB. Details about TMB can be found in [Mutational analysis](#tmb) section.
 
 ```{r, message=FALSE}
-MAFCom_tmb <- mutFilterCom(MAFdat, report = FALSE, TMB = TRUE, bedFile = system.file("extdata/bed", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"))
+MAFCom_tmb <- mutFilterCom(MAFdat, report = FALSE, TMB = TRUE, 
+                           bedFile = system.file("extdata/bed", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"))
 table(MAFCom_tmb$CaTag)
 ```
 
@@ -316,7 +319,7 @@ table(MAFCom_tmb$CaTag)
 
 ## 7. Customized filtering strategies
 
-In CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types, where thresholds for parameters all come from classical studies. `mutFilterCan` function integrates 10 cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
+With CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types, where thresholds for parameters all come from classical studies. `mutFilterCan` function integrates 10 cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
 
 Cancer types supported in CaMutQC: **COADREAD**, **BRCA**, **LIHC**, **LAML**, **LCML**, **UCEC**, **UCS**, **BLCA**, **KIRC** and **KIRP**.
 
@@ -329,24 +332,39 @@ table(MAFCan$CaTag)
 
 ## 8. Mutational analysis {#tmb}
 
-Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mutations per megabase pair (Mb) in a specific genomic region. In 2015, tumor non-synonymous mutation burden was first confirmed to be related to PD1/PD-L1 cancer immunotherapy [11](#refer). Through the analysis of mutation burden of patients with non-small cell lung cancer, the clinical response and survival rate and other indicators, researchers confirmed that the higher the TMB of cancer patients have, the better the effect of tumor immunotherapy would get. This conclusion was subsequently verified in other cancer types, such as malignant melanoma [12](#refer) and small cell lung cancer [13](#refer). Therefore, TMB has become one of the predictive biomarkers of immune checkpoint and inhibitor immunotherapy in cancer treatment [14](#refer).
+Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mutations per megabase pair (Mb) in a specific genomic region. In 2015, tumor non-synonymous mutation burden was first confirmed to be related to PD1/PD-L1 cancer immunotherapy [11](#refer). Through the analysis of mutation burden of patients with non-small cell lung cancer, the clinical response and survival rate and other indicators, researchers confirmed that the higher TMB of cancer patients have, the better effect of tumor immunotherapy would get. This conclusion was subsequently verified in other cancer types such as malignant melanoma [12](#refer) and small cell lung cancer [13](#refer). Therefore, TMB has become one of the predictive biomarkers of immune checkpoint and inhibitor immunotherapy in cancer treatment [14](#refer).
 
-There are many calculation methods for TMB, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, the conventional method of determining TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
+There are many methods for TMB measurement, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, conventional method of calculating TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
 
-In CaMutQC, four methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`.
+CaMutQC supports four methods for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`.
 
 ```{r, message=FALSE}
-tmb_value <- calTMB(MAFdat, bedFile = system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed", package = "CaMutQC"), assay = 'MSK-v1')
+tmb_value <- calTMB(MAFdat, 
+                    bedFile = system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed", package = "CaMutQC"), assay = 'MSK-v1')
 tmb_value
 ```
 
 &nbsp;
 
 
-## 9. Combine CaMutQC filtered multi-callers mutations
+## 9. Process mutations from multiple variant callers
 
-We believed combining CaMutQC filtered mutations called by multiple callers is a great approach to better eliminate the bias of single mutation caller, as well as to rescue potential false negative mutations. In this pipeline, the same dataset processed by three mutation callers ([MuTect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2), [VarScan](http://varscan.sourceforge.net/) and [MuSE](http://bioinformatics.mdanderson.org/main/MuSE)) will go through CaMutQC filtration repectively, then `combineMut` function takes three MAF data frames and return the union of mutations.
+After verifying on published data sets, We believed combining CaMutQC filtered mutations from multiple variant callers is a great approach to better eliminate the bias of single mutation caller while rescuing potential false negative mutations. In this pipeline, the same data set processed by three mutation callers ([MuTect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2), [VarScan](http://varscan.sourceforge.net/) and [MuSE](http://bioinformatics.mdanderson.org/main/MuSE)) first goes through CaMutQC filtration respectively and removes labeled mutations. Then `processMut` function takes three MAF data frames and returns the union or intersection of mutations.
 
+```{r, message=FALSE}
+maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller", 
+                                 "P01_MuSE.vep.vcf",package = "CaMutQC"))
+maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE)
+maf_MuTect2 <- vcfToMAF(system.file("extdata/Multi-caller", 
+                                    "P01_MuTect2.vep.vcf",package = "CaMutQC"))
+maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE)
+maf_VarScan2 <- vcfToMAF(system.file("extdata/Multi-caller", 
+                                     "P01_VarScan2.vep.vcf",package = "CaMutQC")) 
+maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE)
+mafs <- list(maf_MuSE_f, maf_MuTect2_f, maf_VarScan2_f)
+maf_union <- processMut(mafs, processMethod = "union")
+maf_union
+```
 
 &nbsp;
 
