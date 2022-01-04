@@ -42,7 +42,7 @@ processMut <- function(mafList, processMethod = "union") {
 
   ## take union or intersection on filtered mafs
   if ((processMethod == "union") || (processMethod == "intersection")){
-    return(processMafs(mafList, processMethod))
+    return(processMafs(filtered_mafs, processMethod))
   }else{
     stop("please give a vaild process method, either 'union' or 'intersection'.")
   }
@@ -62,11 +62,11 @@ processMafs <- function(mafs, method){
     }
   }else if (length(mafs) == 3){
     if (method == "union"){
-      temp_maf <- union(mafs[[1]][,c(1,5,6,7,9:13)], mafs[[2]][,c(1,5,6,7,9:13)])
-      return(union(temp_maf[,c(1,5,6,7,9:13)], mafs[[3]][,c(1,5,6,7,9:13)]))
+      temp_maf <- dplyr::union(mafs[[1]][,c(1,5,6,7,9:13)], mafs[[2]][,c(1,5,6,7,9:13)])
+      return(dplyr::union(temp_maf[,c(1,5,6,7,9:13)], mafs[[3]][,c(1,5,6,7,9:13)]))
     }else{
-      temp_maf <- intersect(mafs[[1]][,c(1,5,6,7,9:13)], mafs[[2]][,c(1,5,6,7,9:13)])
-      return(intersect(temp_maf[,c(1,5,6,7,9:13)], mafs[[3]][,c(1,5,6,7,9:13)]))
+      temp_maf <- dplyr::intersect(mafs[[1]][,c(1,5,6,7,9:13)], mafs[[2]][,c(1,5,6,7,9:13)])
+      return(dplyr::intersect(temp_maf[,c(1,5,6,7,9:13)], mafs[[3]][,c(1,5,6,7,9:13)]))
     }
   }
 }
