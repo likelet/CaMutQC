@@ -6,6 +6,7 @@
 \usage{
 vcfToMAF(
   vcfFile,
+  multiSample = FALSE,
   writeFile = FALSE,
   MAFfile = "MAF.maf",
   MAFdir = "./",
@@ -14,12 +15,16 @@ vcfToMAF(
   ncbiBuild = "Extracted",
   MAFcenter = ".",
   MAFstrand = "+",
-  filterGene = TRUE
+  filterGene = TRUE,
+  simplified = FALSE
 )
 }
 \arguments{
-\item{vcfFile}{Directory of the VCF file that is going to be transformed.
-It should be in .vcf or .vcf.gz format.}
+\item{vcfFile}{Directory of a VCF file, or the path to several VCF files
+that is going to be transformed. Files should be in .vcf or .vcf.gz format.}
+
+\item{multiSample}{Logical, whether the input is a path that leads to several
+VCFs that come from multi-region/sample sequencing. Default: FALSE}
 
 \item{writeFile}{Whether to directly write MAF file to the disk. If FALSE,
 a MAF data frame will be returned. If TRUE,
@@ -31,7 +36,7 @@ TRUE.}
 \item{MAFdir}{Directory of the exported MAF file, if writeFile is set as
 TRUE.}
 
-\item{tumorSampleName}{Name of the tumor sample in the VCF file.
+\item{tumorSampleName}{Name of the tumor sample(s) in the VCF file(s).
 If it is set as 'Extracted', tumorSampleName would be extracted automatically
 from the VCF file. Default: 'Extracted'.}
 
@@ -50,6 +55,9 @@ presented as value in 'Strand' column in MAF file. Default: '+'.}
 
 \item{filterGene}{Logical. Whether to filter variants without Hugo Symbol.
 Default: TRUE}
+
+\item{simplified}{Logical. Whether to extract the first thirteen columns after
+converting to MAF file. Default: FALSE}
 }
 \value{
 A MAF data frame

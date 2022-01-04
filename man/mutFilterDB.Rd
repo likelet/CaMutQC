@@ -12,7 +12,7 @@ mutFilterDB(
   ESP6500 = TRUE,
   gnomAD = TRUE,
   dbSNP = FALSE,
-  COSMIConly = TRUE
+  keepCOSMIC = TRUE
 )
 }
 \arguments{
@@ -35,15 +35,15 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 
 \item{dbSNP}{Whether to filter variants listed in dbSNP. Default: FALSE.}
 
-\item{COSMIConly}{Whether to only keep variants in COSMIC. Default: FALSE.}
+\item{keepCOSMIC}{Whether to keep variants in COSMIC even
+they have are present in germline database. Default: TRUE.}
 }
 \value{
 An MAF data frame after filtration for database
 and clinical significance
 }
 \description{
-Filter variants in germline database unless they are flagged
-as pathogenic.
+Filter variants in germline database.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",

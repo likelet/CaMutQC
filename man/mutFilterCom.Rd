@@ -11,7 +11,6 @@ mutFilterCom(
   tumorAD = 10,
   VAF = 0.05,
   VAFratio = 5,
-  tumorSampleName = "Extracted",
   SBmethod = "SOR",
   SBscore = 3,
   maxIndelLen = 50,
@@ -23,7 +22,7 @@ mutFilterCom(
   ESP6500 = TRUE,
   gnomAD = TRUE,
   dbSNP = FALSE,
-  COSMIConly = TRUE,
+  keepCOSMIC = TRUE,
   keepType = "exonic",
   bedFile = NULL,
   bedFilter = TRUE,
@@ -51,10 +50,6 @@ mutFilterCom(
 \item{VAF}{Threshold of VAF value. Default: 0.05}
 
 \item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 5}
-
-\item{tumorSampleName}{Label of the tumor sample, should be one of the
-column names of maf. If it is set as 'Extracted', tumorSampleName would be
-extracted automatically from the maf data frame. Default: 'Extracted'.}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -91,7 +86,8 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 
 \item{dbSNP}{Whether to filter variants listed in dbSNP. Default: FALSE.}
 
-\item{COSMIConly}{Whether to only keep variants in COSMIC. Default: FALSE.}
+\item{keepCOSMIC}{Whether to keep variants in COSMIC even
+they have are present in germline database. Default: TRUE.}
 
 \item{keepType}{A group of variant classifications will be kept,
 including 'exonic' and 'nonsynonymous'. Default: 'exonic'.}
