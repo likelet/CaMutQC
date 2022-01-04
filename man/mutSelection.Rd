@@ -12,7 +12,7 @@ mutSelection(
   ESP6500 = TRUE,
   gnomAD = TRUE,
   dbSNP = FALSE,
-  COSMIConly = TRUE,
+  keepCOSMIC = TRUE,
   keepType = "exonic",
   bedFile = NULL,
   bedFilter = TRUE
@@ -39,7 +39,8 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 
 \item{dbSNP}{Whether to filter variants listed in dbSNP. Default: FALSE.}
 
-\item{COSMIConly}{Whether to only keep variants in COSMIC. Default: FALSE.}
+\item{keepCOSMIC}{Whether to keep variants in COSMIC even
+they have are present in germline database. Default: TRUE.}
 
 \item{keepType}{A group of variant classifications will be kept,
 including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'.}

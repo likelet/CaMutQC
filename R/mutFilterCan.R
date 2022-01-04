@@ -57,6 +57,7 @@
 #' @return An MAF data frame after common strategy filtration for a cancer type.
 #' @return A filter report in HTML format
 #'
+#' @export mutFilterCan
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata/Multi-sample",
 #' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
