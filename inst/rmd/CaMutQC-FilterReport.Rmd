@@ -106,7 +106,7 @@ dbs <- paste0(c('ExAC', 'Genomesprojects1000',
 
 - **VAF cutoff**: <span style="color:#ED6F3E">**`r dbVAF`**</span>
 
-- **Only keep variants in COSMIC**: <span style="color:#ED6F3E">**`r COSMIConly`**</span>
+- **Keep variants in COSMIC even though they are present in other databases**: <span style="color:#ED6F3E">**`r keepCOSMIC`**</span>
 
 &nbsp;
 
