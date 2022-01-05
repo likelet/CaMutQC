@@ -59,6 +59,7 @@ processMafs <- function(mafs, method){
       return(dplyr::union(mafs[[1]][,c(1,5,6,7,9:13)], mafs[[2]][,c(1,5,6,7,9:13)]))
     }else{
       return(dplyr::intersect(mafs[[1]][,c(1,5,6,7,9:13)], mafs[[2]][,c(1,5,6,7,9:13)]))
+
     }
   }else if (length(mafs) == 3){
     if (method == "union"){
