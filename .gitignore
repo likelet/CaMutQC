@@ -1,4 +1,5 @@
 *.Rproj 
-inst/docs
+/docs
 LICENSE.md
-*.Rbuildignore
+.Rbuildignore
+.gitignore
