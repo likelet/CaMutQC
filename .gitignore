@@ -1,0 +1,4 @@
+*.Rproj 
+inst/docs
+LICENSE.md
+*.Rbuildignore
