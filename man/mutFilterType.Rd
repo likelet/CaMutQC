@@ -13,8 +13,7 @@ mutFilterType(maf, keepType = "exonic")
 including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'.}
 }
 \value{
-An MAF data frame where some variants
-has T tag in CaTag column for variant type filtration
+An MAF data frame after variant type filtration.
 }
 \description{
 Filter variants of certain types

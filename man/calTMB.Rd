@@ -30,7 +30,7 @@ only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
-only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}
+only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.}
 }
 \value{
 A TMB value.

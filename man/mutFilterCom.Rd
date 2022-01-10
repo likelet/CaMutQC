@@ -41,15 +41,15 @@ mutFilterCom(
 \arguments{
 \item{maf}{An MAF data frame.}
 
-\item{tumorDP}{Threshold of tumor total depth. Default: 20}
+\item{tumorDP}{Threshold of tumor total depth. Default: 20.}
 
-\item{normalDP}{Threshold of normal total depth. Default: 10}
+\item{normalDP}{Threshold of normal total depth. Default: 10.}
 
-\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 10}
+\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 10.}
 
-\item{VAF}{Threshold of VAF value. Default: 0.05}
+\item{VAF}{Threshold of VAF value. Default: 0.05.}
 
-\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 5}
+\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 5.}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -57,19 +57,18 @@ including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
 StrandOddsRatio)}
 
 \item{SBscore}{Cutoff strand bias score used to filter variants.
-Default: 3}
+Default: 3.}
 
 \item{maxIndelLen}{Maximum length of indel accepted to be included.
-Default: 50}
+Default: 50.}
 
 \item{minInterval}{Maximum length of interval between an SNV and an indel
-accepted to be included. Default: 10}
+accepted to be included. Default: 10.}
 
 \item{tagFILTER}{Variants with spcific tag in the FILTER column will be kept,
-Default: 'PASS'}
+Default: 'PASS'.}
 
-\item{dbVAF}{Threshold of VAF of certain population for variants
-in database. Default: 0.01}
+\item{dbVAF}{Threshold of VAF value for databases. Default: 0.01.}
 
 \item{ExAC}{Whether to filter variants listed in ExAC with VAF higher than
 cutoff(set in VAF parameter). Default: TRUE.}
@@ -93,16 +92,16 @@ they have are present in germline database. Default: TRUE.}
 including 'exonic' and 'nonsynonymous'. Default: 'exonic'.}
 
 \item{bedFile}{A file in bed format that contains region information.
-Default: NULL}
+Default: NULL.}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
-only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}
+only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.}
 
 \item{mutFilter}{Whether to directly return a filtered MAF data frame.
 If FALSE, a simulation filtration process will be run, and the original MAF
 data frame with tags in CaTag column, and  a filter report will be returned.
 If TRUE, a filtered MAF data frame and a filter report will be generated.
-Default: FALSE}
+Default: FALSE.}
 
 \item{selectCols}{Columns will be contained in the filtered data frame.
 By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.
@@ -123,9 +122,9 @@ including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{reportFile}{File name of the report. Default: 'FilterReport.html'}
 
-\item{reportDir}{Path to the output report file. Default: './'}
+\item{reportDir}{Path to the output report file. Default: './'.}
 
-\item{TMB}{Whether to calculate TMB. Default: TRUE}
+\item{TMB}{Whether to calculate TMB. Default: TRUE.}
 
 \item{cancerType}{Type of cancer sample whose params needed to be referred to.}
 }

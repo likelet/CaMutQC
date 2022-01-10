@@ -17,11 +17,10 @@ StrandOddsRatio) Fisher's Exat Test: Switch to Phred socre
 s-Exact-Test)}
 
 \item{SBscore}{Cutoff strand bias score used to filter variants.
-Default: 3}
+Default: 3.}
 }
 \value{
-An MAF data frame where some variants
-has S tag in CaTag column for strand bias filtration
+An MAF data frame after strand bias filtration.
 }
 \description{
 Filter variants based on strand bias.
