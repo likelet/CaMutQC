@@ -7,6 +7,7 @@
 vcfToMAF(
   vcfFile,
   multiSample = FALSE,
+  inputStrelka = FALSE,
   writeFile = FALSE,
   MAFfile = "MAF.maf",
   MAFdir = "./",
@@ -25,6 +26,9 @@ that is going to be transformed. Files should be in .vcf or .vcf.gz format.}
 
 \item{multiSample}{Logical, whether the input is a path that leads to several
 VCFs that come from multi-region/sample sequencing. Default: FALSE}
+
+\item{inputStrelka}{The type of variants ('indel' or 'SNV') in VCF file if it is
+from Strelka. Default: FALSE}
 
 \item{writeFile}{Whether to directly write MAF file to the disk. If FALSE,
 a MAF data frame will be returned. If TRUE,
