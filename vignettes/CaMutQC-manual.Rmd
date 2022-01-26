@@ -20,7 +20,23 @@ vignette: >
 
 <style type="text/css">
   body{
-  font-size: 11pt;
+  font-size: 12pt;
+}
+  h1.title {
+  color: #2D84DE;
+}
+  h2 {
+  color: #D96115;
+  font-size: 18pt;
+  font-weight: bold;
+}
+  h3 {
+  color: #EB7A32;
+  font-size: 15pt;
+}
+  h4 {
+  color: #000000;
+  font-size: 13pt;
 }
 </style>
 
