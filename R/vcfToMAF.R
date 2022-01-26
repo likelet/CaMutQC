@@ -232,12 +232,6 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   ## add VAF column
   maf <- cbind(maf, VAF = 0)
 
-  ## Tumor_Seq_Allele2
-  #if (length(strsplit(maf2[i, 13], split = ",")[[1]]) != 1) {
-  #maf2[i, 13] <- selectAlt(maf2[i, ], vcf_additional[i, ],
-  #tumorSampleName, normalSampleName)
-  #}
-
   maf[, c(15, 18:34, 37, 46)] <- '.'
 
   for (i in 1:nrow(maf)) {
@@ -257,7 +251,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
     ## Variant_Class
     ### select consequence in CSQ first
     cons <- strsplit(CSQ_info[i, 2], split = '&')[[1]]
-    CSQ_info[i, 2] <- cons[which.max(unlist(sapply(cons,
+    CSQ_info[i, 2] <- cons[which.min(unlist(sapply(cons,
                                                   GetConsequencePriority)))]
 
     maf[i, 9] <- getVarClass(CSQ_info[i, 2], maf[i, 10], inframe)
