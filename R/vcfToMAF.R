@@ -5,6 +5,8 @@
 #' that is going to be transformed. Files should be in .vcf or .vcf.gz format.
 #' @param multiSample Logical, whether the input is a path that leads to several
 #' VCFs that come from multi-region/sample sequencing. Default: FALSE
+#' @param inputStrelka The type of variants ('indel' or 'SNV') in VCF file if it is
+#' from Strelka. Default: FALSE
 #' @param writeFile Whether to directly write MAF file to the disk. If FALSE,
 #' a MAF data frame will be returned. If TRUE,
 #' a MAF file will be saved in your disk. Default: FALSE.
@@ -38,8 +40,8 @@
 #' package = "CaMutQC"))
 
 
-vcfToMAF <- function(vcfFile, multiSample = FALSE, writeFile = FALSE,
-                     MAFfile = 'MAF.maf', MAFdir = './',
+vcfToMAF <- function(vcfFile, multiSample = FALSE, inputStrelka = FALSE,
+                     writeFile = FALSE, MAFfile = 'MAF.maf', MAFdir = './',
                      tumorSampleName = 'Extracted',
                      normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
                      MAFcenter = '.', MAFstrand = '+', filterGene = TRUE,
@@ -78,7 +80,8 @@ vcfToMAF <- function(vcfFile, multiSample = FALSE, writeFile = FALSE,
     }
     maf <- vcfhelper(vcfFile, tumorSampleName = tumorSampleName,
                      normalSampleName = normalSampleName, ncbiBuild = ncbiBuild,
-                     MAFcenter = MAFcenter, MAFstrand = MAFstrand)
+                     MAFcenter = MAFcenter, MAFstrand = MAFstrand, 
+                     inputStrelka = inputStrelka)
   }
 
   # simplify MAF file
@@ -103,12 +106,11 @@ vcfToMAF <- function(vcfFile, multiSample = FALSE, writeFile = FALSE,
 
 }
 
-
-
+## helper function for the transformation from VCF to MAF
 vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                       normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
-                      MAFcenter = '.', MAFstrand = '+') {
-  message('Loading VCF data...')
+                      MAFcenter = '.', MAFstrand = '+', inputStrelka = FALSE) {
+  # message('Loading VCF data...')
   invisible(capture.output(Anno_Vcf <- read.vcfR(vcfFile)))
   message('VCF data has been loaded successfully!')
 
@@ -191,7 +193,6 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
 
     }else{
       tumorSampleName <- strsplit(tumorSampleLine, split = '=')[[1]][2]
-
     }
   }
 
@@ -207,7 +208,6 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
       normalSampleName <- 'NORMAL'
     }else{
       normalSampleName <- strsplit(normalSampleLine, split = '=')[[1]][2]
-
     }
   }
 
@@ -232,54 +232,29 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   ## add VAF column
   maf <- cbind(maf, VAF = 0)
 
-  ## Tumor_Seq_Allele2
-  #if (length(strsplit(maf2[i, 13], split = ",")[[1]]) != 1) {
-  #maf2[i, 13] <- selectAlt(maf2[i, ], vcf_additional[i, ],
-  #tumorSampleName, normalSampleName)
-  #}
-
   maf[, c(15, 18:34, 37, 46)] <- '.'
 
   for (i in 1:nrow(maf)) {
 
     ## ENTREZID
     maf[i, 2] <- IDs$ENTREZID[which(IDs$ENSEMBL == CSQ_info$Gene[i])][1]
-
-
-    ## endPos and Variant_Type
-    maf[i, 7] <- getVariantType(maf[i, 6], maf[i, 11], maf[i, 13])[1]
-    maf[i, 10] <- getVariantType(maf[i, 6], maf[i, 11], maf[i, 13])[2]
-    inframe <- switch(getVariantType(maf[i, 6], maf[i, 11], maf[i, 13])[3],
-                      'TRUE' = 1,
-                      'FALSE' = 0)
+    
+    ## get correct variant Position, Variant_Type, Ref allele and Alt allele
+    pos_type <- getVarFeature(maf[i, 6], maf[i, 11], maf[i, 13])
+    maf[i, 6] <- pos_type[[1]] # start
+    maf[i, 7] <- pos_type[[2]] # end
+    maf[i, 10] <- pos_type[[3]] # Variant_Type
+    maf[i, 11] <- pos_type[[4]] # correct ref allele
+    maf[i, 13] <- pos_type[[5]] # correct alt allele
+    inframe <- pos_type[[6]] # inframe indicator
 
     ## Variant_Class
     ### select consequence in CSQ first
     cons <- strsplit(CSQ_info[i, 2], split = '&')[[1]]
-    CSQ_info[i, 2] <- cons[which.max(unlist(sapply(cons,
+    CSQ_info[i, 2] <- cons[which.min(unlist(sapply(cons,
                                                   GetConsequencePriority)))]
-    #if (length(strsplit(CSQ_info[i, 2], split = '&')[[1]]) > 1) {
-      #cons1 <- strsplit(CSQ_info[i, 2], split = '&')[[1]][1]
-      #cons2 <- strsplit(CSQ_info[i, 2], split = '&')[[1]][2]
-      #if (GetConsequencePriority(cons1) >= GetConsequencePriority(cons2)) {
-        #CSQ_info[i, 2] <- cons1
-      #} else {
-        #CSQ_info[i, 2] <- cons2
-      #}
-    #}
 
-    maf[i, 9] <- getVariantClassification(CSQ_info[i, 2], maf[i, 10], inframe)
-
-    ## fill in VAF
-    #if (length(grep('AF', strsplit(vcf_additional[i, 1], ":")[[1]]))){
-    #AF_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AF'
-    #VAFs <- strsplit(vcf_additional[i, tumorSampleName], ":")[[1]][AF_loc]
-    #if (length(grep(',', VAFs))){
-    #maf[i, 'VAF'] <- as.numeric(strsplit(VAFs, ',')[[1]][1])
-    #}else{
-    #maf[i, 'VAF'] <- as.numeric(VAFs)
-    #}
-    #}
+    maf[i, 9] <- getVarClass(CSQ_info[i, 2], maf[i, 10], inframe)
 
     ## get AD and DP in INFO or FORMAT
     ## if RD field is contained in the INFO column
@@ -305,50 +280,87 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
         as.numeric(maf[i, "t_depth"])
 
     }else{
-      ## if AD field contains information from both ref and alt
       AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
-      AD <- strsplit(strsplit(vcf_additional[i, tumorSampleName],
-                              ":")[[1]][AD_loc], ",")[[1]][2]
-
-      if (length(grep('DP', strsplit(vcf_additional[i, 1], ":")[[1]]))){
-        DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
-        DP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName],
-                                  ":")[[1]][DP_loc])
-        tDP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName],
-                                   ":")[[1]][DP_loc])
-        nDP <- as.numeric(strsplit(vcf_additional[i, normalSampleName],
-                                   ":")[[1]][DP_loc])
-      }else if('DP' %in% colnames(INFOinfo)){
-        DP <- as.numeric(INFOinfo[i, 'DP'])
-        tDP <- DP
-        nDP <- sum(as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
-                                                ":")[[1]][AD_loc], ",")[[1]]))
-      }
-
-      ## t_depth, n_depth, t_ref_count, t_alt_count, n_ref_count, n_alt_count
-      tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName],
-                                             ":")[[1]][AD_loc], ",")[[1]][1])
-      #tAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName],
-                                             #":")[[1]][AD_loc], ",")[[1]][2])
-      nRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
-                                             ":")[[1]][AD_loc], ",")[[1]][1])
-      nAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
-                                             ":")[[1]][AD_loc], ",")[[1]][2])
-      maf[i, "t_ref_count"] <- tRefAD
-      maf[i, "t_alt_count"] <- as.numeric(AD)
-      maf[i, "n_ref_count"] <- nRefAD
-      maf[i, "n_alt_count"] <- nAltAD
-
-      if (!(exists('tDP'))){
-        maf[i, "t_depth"] <- tRefAD + as.numeric(AD)
-        maf[i, "n_depth"] <- nRefAD + nAltAD
-        maf[i, 'VAF'] <- as.numeric(AD)/maf[i, "t_depth"]
+      ## if AD field contains information from both ref and alt
+      if (any(AD_loc)){
+        AD <- strsplit(strsplit(vcf_additional[i, tumorSampleName],
+                                ":")[[1]][AD_loc], ",")[[1]][2]
+        
+        if (length(grep('DP', strsplit(vcf_additional[i, 1], ":")[[1]]))){
+          DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
+          DP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName],
+                                    ":")[[1]][DP_loc])
+          tDP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName],
+                                     ":")[[1]][DP_loc])
+          nDP <- as.numeric(strsplit(vcf_additional[i, normalSampleName],
+                                     ":")[[1]][DP_loc])
+        }else if('DP' %in% colnames(INFOinfo)){
+          DP <- as.numeric(INFOinfo[i, 'DP'])
+          tDP <- DP
+          nDP <- sum(as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
+                                                  ":")[[1]][AD_loc], ",")[[1]]))
+        }
+        
+        ## t_depth, n_depth, t_ref_count, t_alt_count, n_ref_count, n_alt_count
+        tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName],
+                                               ":")[[1]][AD_loc], ",")[[1]][1])
+        nRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
+                                               ":")[[1]][AD_loc], ",")[[1]][1])
+        nAltAD <- as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
+                                               ":")[[1]][AD_loc], ",")[[1]][2])
+        maf[i, "t_ref_count"] <- tRefAD
+        maf[i, "t_alt_count"] <- as.numeric(AD)
+        maf[i, "n_ref_count"] <- nRefAD
+        maf[i, "n_alt_count"] <- nAltAD
+        
+        if (!(exists('tDP'))){
+          maf[i, "t_depth"] <- tRefAD + as.numeric(AD)
+          maf[i, "n_depth"] <- nRefAD + nAltAD
+          maf[i, 'VAF'] <- as.numeric(AD)/maf[i, "t_depth"]
+        }else{
+          maf[i, "t_depth"] <- tDP
+          maf[i, "n_depth"] <- nDP
+          maf[i, 'VAF'] <- as.numeric(AD)/DP
+        }
       }else{
-        maf[i, "t_depth"] <- tDP
-        maf[i, "n_depth"] <- nDP
-        maf[i, 'VAF'] <- as.numeric(AD)/DP
+        # if no AD field contained in the VCF, it should be output from Strelka
+        if (inputStrelka == 'indel'){
+          TIR_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'TIR'
+          TAR_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'TAR'
+          tTIR <- strsplit(vcf_additional[i, tumorSampleName],":")[[1]][TIR_loc]
+          tTAR <- strsplit(vcf_additional[i, tumorSampleName],":")[[1]][TAR_loc]
+          nTIR <- strsplit(vcf_additional[i, normalSampleName],":")[[1]][TIR_loc]
+          nTAR <- strsplit(vcf_additional[i, normalSampleName],":")[[1]][TAR_loc]
+          # use tire1 information
+          tAltAD <- as.numeric(strsplit(tTIR, ",")[[1]][1])
+          tRefAD <- as.numeric(strsplit(tTAR, ",")[[1]][1])
+          nAltAD <- as.numeric(strsplit(nTIR, ",")[[1]][1])
+          nRefAD <- as.numeric(strsplit(nTAR, ",")[[1]][1])
+        }else if (inputStrelka == 'SNV'){
+          refAllele <- paste0(vcf_main[i, 'REF'], "U")
+          altAllele <- paste0(vcf_main[i, 'ALT'], "U")
+          ref_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == refAllele
+          alt_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == altAllele
+          tRef <- strsplit(vcf_additional[i, tumorSampleName],":")[[1]][ref_loc]
+          tAlt <- strsplit(vcf_additional[i, tumorSampleName],":")[[1]][alt_loc]
+          nRef <- strsplit(vcf_additional[i, normalSampleName],":")[[1]][ref_loc]
+          nAlt <- strsplit(vcf_additional[i, normalSampleName],":")[[1]][alt_loc]
+          tAltAD <- as.numeric(strsplit(tAlt, ",")[[1]][1])
+          tRefAD <- as.numeric(strsplit(tRef, ",")[[1]][1])
+          nAltAD <- as.numeric(strsplit(nAlt, ",")[[1]][1])
+          nRefAD <- as.numeric(strsplit(nRef, ",")[[1]][1])
+        }else{
+          stop(paste0("If your input comes from Strelka,",
+                      " please set 'indel' or 'SNV' for 'inputStrelka' parameter"))
+        }
+        maf[i, "t_ref_count"] <- tRefAD
+        maf[i, "t_alt_count"] <- tAltAD
+        maf[i, "n_ref_count"] <- nRefAD
+        maf[i, "n_alt_count"] <- nAltAD
+        maf[i, "t_depth"] <- tRefAD + tAltAD
+        maf[i, "n_depth"] <- nRefAD + nAltAD
+        maf[i, 'VAF'] <- tAltAD/maf[i, "t_depth"]
       }
-
     }
 
     ## fill in dbSNP_RS
@@ -378,14 +390,13 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
     }
   }
 
-
   ## Transcript_ID
   maf[, 'Transcript_ID'] <- CSQ_info[, 'Feature']
 
   ## Exon_Number
   maf[, 'Exon_Number'] <- CSQ_info[, 'EXON']
 
-  ## Tumor_Seq_Allele1, set Tumor_Seq_Allele1 same as ref
+  ## set Tumor_Seq_Allele1 same as ref
   maf[, 12] <- maf[, 11]
 
   maf[, 'Tumor_Sample_Barcode'] <- tumorSampleName
@@ -395,16 +406,8 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   maf1 <- jointMAF(maf[ ,1:46], CSQ_info, vcf_main)
   maf <- cbind(maf1, VAF = maf[ ,'VAF'], vcf_additional)
 
-
-  # maf <- cbind(maf, isIndelAround = 0)
   maf$Start_Position <- as.numeric(maf$Start_Position)
   maf$End_Position <- as.numeric(maf$End_Position)
-  maf$t_alt_count <- as.numeric(maf$t_alt_count)
-  maf$t_ref_count <- as.numeric(maf$t_ref_count)
-  maf$t_depth <- as.numeric(maf$t_depth)
-  maf$n_alt_count <- as.numeric(maf$n_alt_count)
-  maf$n_ref_count <- as.numeric(maf$n_ref_count)
-  maf$n_depth <- as.numeric(maf$n_depth)
 
   colnames(maf)[which(colnames(maf) == tumorSampleName)] <- 'tumorSampleInfo'
   maf <- cbind(maf, CaTag = '0')

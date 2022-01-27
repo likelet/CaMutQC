@@ -20,7 +20,7 @@ selectTrans <- function(maf, CSQdf, INFOdf) {
     mutDatFrame <- CSQ_subinfo[, c('BIOTYPE', 'Consequence', 'cDNA_position')]
     for (d in 1:nrow(mutDatFrame)) {
       for (e in 1:ncol(mutDatFrame)) {
-        if (mutDatFrame[d, e] == '' | (grep('?', mutDatFrame[d, e])))
+        if ((mutDatFrame[d, e] == '') | (grepl('\\?', mutDatFrame[d, e])))
           mutDatFrame[d, e] <- 'Missing'
       }
     }

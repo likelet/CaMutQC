@@ -12,7 +12,7 @@
 #' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
 #' @param bedFilter Whether to filter the information in bed file or not, which
-#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.
 #'
 #' @return A TMB value.
 #'
@@ -180,10 +180,8 @@ calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
     # maf <- arrange(maf, Chromosome, Start_Position)
     # group_by(Chromosome)
 
-    # bedSorted <- arrange(bedProc, chrom, chromStart)
     maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
     chrs <- unique(maf$Chromosome)
-    # nums <- rep(0, length(chrs))
     for (c in seq_len(length(chrs))) {
       maf_target <- maf[which(maf$Chromosome == chrs[c]), ]
       bed_target <- bedProc[which(bedProc$chrom == chrs[c]), ]
@@ -206,7 +204,6 @@ mutCountRegion <- function(mutLoc, bedSingle){
   for (i in seq_len(nrow(mutLoc))) {
     if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
         mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
-      # print(rownames(mutLoc[i, ]))
       count <- count  + 1
     }
   }

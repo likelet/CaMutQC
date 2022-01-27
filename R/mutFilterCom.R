@@ -2,25 +2,24 @@
 #' @description Apply common filter strategies on a MAF data frame.
 #'
 #' @param maf An MAF data frame.
-#' @param tumorDP Threshold of tumor total depth. Default: 20
-#' @param normalDP Threshold of normal total depth. Default: 10
-#' @param tumorAD Threshold of tumor alternative allele depth. Default: 10
-#' @param VAF Threshold of VAF value. Default: 0.05
-#' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
+#' @param tumorDP Threshold of tumor total depth. Default: 20.
+#' @param normalDP Threshold of normal total depth. Default: 10.
+#' @param tumorAD Threshold of tumor alternative allele depth. Default: 10.
+#' @param VAF Threshold of VAF value. Default: 0.05.
+#' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5.
 #' @param SBmethod Method will be used to detect strand bias,
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
 #' StrandOddsRatio)
 #' @param SBscore Cutoff strand bias score used to filter variants.
-#' Default: 3
+#' Default: 3.
 #' @param maxIndelLen Maximum length of indel accepted to be included.
-#' Default: 50
+#' Default: 50.
 #' @param minInterval Maximum length of interval between an SNV and an indel
-#' accepted to be included. Default: 10
+#' accepted to be included. Default: 10.
 #' @param tagFILTER Variants with spcific tag in the FILTER column will be kept,
-#' Default: 'PASS'
-#' @param dbVAF Threshold of VAF of certain population for variants
-#'  in database. Default: 0.01
+#' Default: 'PASS'.
+#' @param dbVAF Threshold of VAF value for databases. Default: 0.01.
 #' @param ExAC Whether to filter variants listed in ExAC with VAF higher than
 #' cutoff(set in VAF parameter). Default: TRUE.
 #' @param Genomesprojects1000 Whether to filter variants listed in
@@ -36,21 +35,21 @@
 #' @param keepType A group of variant classifications will be kept,
 #' including 'exonic' and 'nonsynonymous'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
-#' Default: NULL
+#' Default: NULL.
 #' @param bedFilter Whether to filter the information in bed file or not, which
-#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.
 #' @param mutFilter Whether to directly return a filtered MAF data frame.
 #' If FALSE, a simulation filtration process will be run, and the original MAF
 #' data frame with tags in CaTag column, and  a filter report will be returned.
 #' If TRUE, a filtered MAF data frame and a filter report will be generated.
-#' Default: FALSE
+#' Default: FALSE.
 #' @param selectCols Columns will be contained in the filtered data frame.
 #' By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.
 #' Or a vector contains column names will be kept.
 #' @param report Whether to generate report automatically. Default: TRUE
 #' @param reportFile File name of the report. Default: 'FilterReport.html'
-#' @param reportDir Path to the output report file. Default: './'
-#' @param TMB Whether to calculate TMB. Default: TRUE
+#' @param reportDir Path to the output report file. Default: './'.
+#' @param TMB Whether to calculate TMB. Default: TRUE.
 #' @param assay Methodology and assay will be applied as a reference, including
 #' 'MSK-v3', 'MSK-v2', 'MSK-v1', 'FoundationOne', 'Pan-Cancer Panel' and
 #' 'Customized'. Default: 'MSK-v3'.
@@ -92,13 +91,9 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                                SBmethod = SBmethod, SBscore = SBscore,
                                maxIndelLen = maxIndelLen,
                                minInterval = minInterval, tagFILTER = tagFILTER)
-  #print(paste0('T:', nrow(mafFilteredT)))
-  #print(paste0('T:', names(table(mafFilteredT$CaTag))))
 
   # filter first for report usage
   mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == "0", ]
-  #print(paste0('Ts:', nrow(mafFilteredTs)))
-  #print(paste0('Ts:', table(mafFilteredTs$CaTag)))
 
   # run mutSelection
   mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAC = ExAC,
@@ -106,8 +101,6 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                               ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
                               keepCOSMIC = keepCOSMIC, keepType = keepType,
                               bedFile = bedFile, bedFilter = bedFilter)
-  #print(paste0('S:', nrow(mafFilteredS)))
-  #print(paste0('S:', table(mafFilteredS$CaTag)))
 
   # filter first for report usage
   mafFilteredS2 <- suppressMessages(
@@ -116,11 +109,8 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                  ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC,
                  keepType = keepType, bedFile = bedFile, bedFilter = bedFilter))
 
-  #print(paste0('S2:', nrow(mafFilteredTs)))
-  #print(paste0('S2:', table(mafFilteredTs$CaTag)))
 
   mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
-  # print(nrow(mafFilteredF))
   if (nrow(mafFilteredF) == 0){
     stop('No variants left after filtration.')
   }

@@ -5,8 +5,7 @@
 #' @param keepType A group of variant classifications will be kept,
 #' including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'.
 #'
-#' @return An MAF data frame where some variants
-#' has T tag in CaTag column for variant type filtration
+#' @return An MAF data frame after variant type filtration.
 #'
 #' @export mutFilterType
 #' @examples

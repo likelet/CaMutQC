@@ -9,10 +9,9 @@
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360035532152-Fisher-
 #' s-Exact-Test)
 #' @param SBscore Cutoff strand bias score used to filter variants.
-#' Default: 3
+#' Default: 3.
 #'
-#' @return An MAF data frame where some variants
-#' has S tag in CaTag column for strand bias filtration
+#' @return An MAF data frame after strand bias filtration.
 #'
 #' @export mutFilterSB
 #' @examples
@@ -82,11 +81,10 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
       }
     }
   }
-    # maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'] , 'S')
     return(maf)
 }
 
-## construct function to calculate the SB score for strand bias detection
+## construct function to realize algorithms for strand bias detection
 calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
   depths <- as.numeric(strsplit(charmatrix, ",")[[1]])
   if (method == 'SOR') {
@@ -122,9 +120,9 @@ calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
 
     # check P1 whether it is over the depth
     if (is.na(P1)){
-      stop(paste0('Your data is in high coverage that ',
-                  'the factorial of its depth can not be obtained, ',
-                  'please use \'SOR\' method instead.'))
+      stop(paste0("Your data is in high coverage so ",
+                  "the factorial of its depth can not be obtained, ",
+                  "please use 'SOR' method instead."))
     }
 
     # probability of observing more extreme data
@@ -146,7 +144,7 @@ calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
     # get Phred score
     score <- -10 * log10(Pt)
   }else {
-    stop('Please select a method from SOR and Fisher')
+    stop("Please select a method from 'SOR' and 'Fisher'")
   }
   return(score)
 }

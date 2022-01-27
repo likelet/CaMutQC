@@ -29,7 +29,7 @@ vignette: >
 
 ### Metadata
 
-* Tumor sample name: <span style="color:#ED6F3E">**`r tumorSample`**</span>
+* Tumor sample name: <span style="color:#ED6F3E">**`r unique(maf$Tumor_Sample_Barcode)`**</span>
 * Normal Sample name: <span style="color:#ED6F3E">**`r unique(maf$Matched_Norm_Sample_Barcode)`**</span>
 * Size of MAF data frame: <span style="color:#ED6F3E">**`r paste0(as.character(round(object.size(maf)/1024, 2)), ' kb')`**</span>
 
@@ -177,7 +177,7 @@ In this section, users are able to further select variants related to cancer dev
 In CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types. `mutFilterCan` function integrates ten cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
 
 
-**Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r if (exists('cancerType')){return(cancerType)}else{return('NULL')}`**</span>
+**Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r cancerType`**</span>
 
 &nbsp;
 
@@ -658,7 +658,9 @@ In CaMutQC, four methods are supported for TMB calculation, including Foundation
 &nbsp;
 
 ## Specific Inspection
-  
+
+Variants below are the ones that pass all the filtration functions.
+
 &nbsp;
   
 ```{r, echo=FALSE}
