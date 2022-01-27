@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-/docs
-LICENSE.md
-=======
 *.Rproj 
 /docs
 LICENSE.md
 .Rbuildignore
-.gitignore
->>>>>>> WX
