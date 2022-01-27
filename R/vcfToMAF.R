@@ -276,8 +276,14 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
       maf[i, "n_depth"] <- strsplit(strsplit(vcf_additional[i, normalSampleName],
                                             ":")[[1]][DP_loc], ",")[[1]]
 
-      maf[i, 'VAF'] <- as.numeric(maf[i, "t_alt_count"])/
-        as.numeric(maf[i, "t_depth"])
+      ## transform to numeric data
+      maf[i, "t_ref_count"] <- as.numeric(maf[i, "t_ref_count"])
+      maf[, "t_alt_count"] <- as.numeric(maf[i, "t_alt_count"])
+      maf[i, "n_ref_count"] <- as.numeric(maf[i, "n_ref_count"])
+      maf[i, "n_alt_count"] <- as.numeric(maf[i, "n_alt_count"])
+      maf[i, "t_depth"] <- as.numeric(maf[i, "t_depth"])
+      maf[i, "n_depth"] <- as.numeric(maf[i, "n_depth"])
+      maf[i, 'VAF'] <- maf[i, "t_alt_count"]/maf[i, "t_depth"]
 
     }else{
       AD_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'AD'
@@ -398,7 +404,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
 
   ## set Tumor_Seq_Allele1 same as ref
   maf[, 12] <- maf[, 11]
-
+  
   maf[, 'Tumor_Sample_Barcode'] <- tumorSampleName
   maf[, 'Matched_Norm_Sample_Barcode'] <- normalSampleName
 
