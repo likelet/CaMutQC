@@ -398,10 +398,15 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
 
   ## set Tumor_Seq_Allele1 same as ref
   maf[, 12] <- maf[, 11]
-
+  
   maf[, 'Tumor_Sample_Barcode'] <- tumorSampleName
   maf[, 'Matched_Norm_Sample_Barcode'] <- normalSampleName
-
+  maf$t_alt_count <- as.numeric(maf$t_alt_count)
+  maf$t_ref_count <- as.numeric(maf$t_ref_count)
+  maf$t_depth <- as.numeric(maf$t_depth)
+  maf$n_alt_count <- as.numeric(maf$n_alt_count)
+  maf$n_ref_count <- as.numeric(maf$n_ref_count)
+  maf$n_depth <- as.numeric(maf$n_depth)
 
   maf1 <- jointMAF(maf[ ,1:46], CSQ_info, vcf_main)
   maf <- cbind(maf1, VAF = maf[ ,'VAF'], vcf_additional)
