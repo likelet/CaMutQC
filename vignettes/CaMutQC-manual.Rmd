@@ -53,21 +53,34 @@ In R console, enter `citation("CaMutQC")`.
 &nbsp;
 
 
-## 2. Input File 
+## 2. Overview of CaMutQC
+
+For now, there are three main functional modules in CaMutQC. The first section is to filter cancer somatic mutations through common strategies, and the following section offers users customized filtration criteria based on cancer types. CaMutQC is also capable of measuring TMB (Tumor Mutational Burden) through various methods. Required input of most functions in CaMutQC can be obtained by applying `vcfToMAF` function on VCF files.
+
+MAF data frame with special labels from CaMutQC will be returned after each filtration. And a filter report will be provided, giving detailed and organized result information. 
+   
+
+![](CaMutQC-workflow.png){width=70%}
 
 
-### 2.1 Single VCF
+&nbsp;
+
+
+## 3. Input File 
+
+
+### 3.1 Single VCF
 
 [VCF](https://samtools.github.io/hts-specs/VCFv4.3.pdf) is a widely used text file format used in bioinformatics for storing gene sequence variations. All VCF files should be annotated by [VEP](https://useast.ensembl.org/info/docs/tools/vep/index.html) first before analyzing through CaMutQC because annotated VCF files contain more detailed information that has clinical significance. Information about VEP and how to run VEP on VCF file can be found [here](https://asia.ensembl.org/info/docs/tools/vep/script/vep_options.html#opt_check_existing).
 
 
-### 2.2 Multi-sample VCF
+### 3.2 Multi-sample VCF
 CaMutQC supports annotated multi-sample VCF files as input, which should be under the same file path.
 
 
 &nbsp;
 
-## 3. Installation
+## 4. Installation
 
 ### Via GitHub 
 
@@ -79,19 +92,6 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 }
 devtools::install_github("likelet/CaMutQC")
 ```   
-
-&nbsp;
-
-## 4. Overview of CaMutQC
-
-For now, there are three main functional modules in CaMutQC. The first section is to filter cancer somatic mutations through common strategies, and the following section offers users customized filtration criteria based on cancer types. CaMutQC is also capable of measuring TMB (Tumor Mutational Burden) through various methods. Required input of most functions in CaMutQC can be obtained by applying `vcfToMAF` function on VCF files.
-
-MAF data frame with special labels from CaMutQC will be returned after each filtration. And a filter report will be provided, giving detailed and organized result information. 
-   
-   
-
-![](CaMutQC-workflow.png){width=70%}
-
 
 
 &nbsp;
@@ -335,6 +335,8 @@ table(MAFCom_tmb$CaTag)
 
 ## 7. Customized filtering strategies
 
+### 7.1 Cancer type-based filtration
+
 With CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types, where thresholds for parameters all come from classical studies. `mutFilterCan` function integrates 10 cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
 
 Cancer types supported in CaMutQC: **COADREAD**, **BRCA**, **LIHC**, **LAML**, **LCML**, **UCEC**, **UCS**, **BLCA**, **KIRC** and **KIRP**.
@@ -345,6 +347,19 @@ table(MAFCan$CaTag)
 ```
 
 &nbsp;
+
+
+### 7.2 Reference-based filtration
+
+So far, filtering strategies used in five studies are provided for users with CaMutQC. By passing one of the references in right format into `mutFilterRef` function, all filtering strategies in that study will be applied on your data.
+
+```{r, message=FALSE}
+MAFRef <- mutFilterRef(MAFdat, reference = "Zhu_et_al-Nat_Commun-2020-KIRP", 
+                       report = FALSE, TMB = FALSE)
+table(MAFRef$CaTag)
+```
+
+
 
 ## 8. Mutational analysis {#tmb}
 
