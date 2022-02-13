@@ -58,8 +58,18 @@
 #' @param mutType A group of variant classifications that will be kept,
 #' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
-#' @param cancerType Type of cancer sample whose params needed to be referred to.
-#'
+#' @param cancerType Type of cancer whose filtering parameters 
+#' need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML", 
+#' "LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"
+#' @param reference A specific study whose filtering strategies 
+#' need to be referred to. 
+#' Format: "Last_name_of_the_first_author_et_al-Journal-Year-Cancer_type"
+#' Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
+#' "Cherniack_et_al-Cancer_Cell-2017-UCS",
+#' "Mason_et_al-Leukemia-2015-LCML",
+#' "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
+#' "Zhu_et_al-Nat_Commun-2020-KIRP"
+#' 
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
 #' @import ggplot2 DT
@@ -82,7 +92,7 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
                          assay = 'MSK-v3', genelist = NULL,
                          mutType = 'nonsynonymous',
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = TRUE, cancerType = NULL) {
+                         TMB = TRUE, cancerType = NULL, reference = NULL) {
 
 
   # run mutFilterTech
