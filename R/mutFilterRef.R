@@ -1,0 +1,178 @@
+#' mutFilterRef
+#' @description Use the same filtering strategies that a specific study used
+#'
+#' @param maf An MAF data frame.
+#' @param reference A specific study whose filtering strategies
+#' need to be referred to.
+#' Format: "Last_name_of_the_first_author_et_al-Journal-Year-Cancer_type"
+#' Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
+#' "Cherniack_et_al-Cancer_Cell-2017-UCS",
+#' "Mason_et_al-Leukemia-2015-LCML",
+#' "Gerlinger_et_al-Engl_J_Med-2012-KIRC",
+#' "Zhu_et_al-Nat_Commun-2020-KIRP"
+#' @param tumorDP Threshold of tumor total depth. Default: 20
+#' @param normalDP Threshold of normal total depth. Default: 10
+#' @param tumorAD Threshold of tumor alternative allele depth. Default: 10
+#' @param VAF Threshold of VAF value. Default: 0.05
+#' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5
+#' @param SBmethod Method will be used to detect strand bias,
+#' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
+#' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
+#' StrandOddsRatio)
+#' @param SBscore Cutoff strand bias score used to filter variants.
+#' Default: 3
+#' @param maxIndelLen Maximum length of indel accepted to be included.
+#' Default: 50
+#' @param minInterval Maximum length of interval between an SNV and an indel
+#' accepted to be included. Default: 10
+#' @param tagFILTER Variants with spcific tag in the FILTER column will be kept,
+#' Default: 'PASS'
+#' @param dbVAF Threshold of VAF of certain population for variants
+#'  in database. Default: 0.01
+#' @param ExAC Whether to filter variants listed in ExAC with VAF higher than
+#' cutoff(set in VAF parameter). Default: TRUE.
+#' @param Genomesprojects1000 Whether to filter variants listed in
+#' Genomesprojects1000 with VAF higher than cutoff(set in VAF parameter).
+#' Default: TRUE.
+#' @param ESP6500 Whether to filter variants listed in ESP6500 with VAF higher
+#' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param gnomAD Whether to filter variants listed in gnomAD with VAF higher
+#' than cutoff(set in VAF parameter). Default: TRUE.
+#' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
+#' @param keepCOSMIC Whether to keep variants in COSMIC even
+#' they have are present in germline database. Default: TRUE.
+#' @param keepType A group of variant classifications will be kept,
+#' including 'exonic' and 'nonsynonymous'. Default: 'exonic'.
+#' @param bedFile A file in bed format that contains region information.
+#' Default: NULL
+#' @param bedFilter Whether to filter the information in bed file or not, which
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' @param mutFilter Whether to directly return a filtered MAF data frame.
+#' If FALSE, a simulation filtration process will be run, and the original MAF
+#' data frame with tags in CaTag column, and  a filter report will be returned.
+#' If TRUE, a filtered MAF data frame and a filter report will be generated.
+#' Default: FALSE
+#' @param selectCols Columns will be contained in the filtered data frame.
+#' By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.
+#' Or a vector contains column names will be kept.
+#' @param report Whether to generate report automatically. Default: TRUE
+#' @param reportFile File name of the report. Default: 'FilterReport.html'
+#' @param reportDir Path to the output report file. Default: './'
+#' @param TMB Whether to calculate TMB. Default: TRUE
+#'
+#' @return An MAF data frame after applied filtering strategies in another study.
+#' @return A filter report in HTML format
+#'
+#' @export mutFilterRef
+#' @examples
+#' maf <- vcfToMAF(system.file("extdata/Multi-sample",
+#' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
+#' mafR <- mutFilterRef(maf, reference = "Zhu_et_al-Nat_Commun-2020-KIRP",
+#' TMB = FALSE)
+
+mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
+                         tumorAD = 0, VAF = 0, VAFratio = 0,
+                         SBmethod = 'SOR',
+                         SBscore = Inf, maxIndelLen = Inf, minInterval = 0,
+                         tagFILTER = NULL, dbVAF = 0, ExAC = FALSE,
+                         Genomesprojects1000 = FALSE, ESP6500 = FALSE,
+                         gnomAD = FALSE, dbSNP = FALSE, keepCOSMIC = TRUE,
+                         keepType = 'ALL', bedFile = NULL, bedFilter = TRUE,
+                         mutFilter = FALSE, selectCols = FALSE, report = TRUE,
+                         reportFile = 'FilterReport.html', reportDir = './',
+                         TMB = FALSE) {
+
+  # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"
+  # PMID: 25194673
+  if (reference == "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"){
+    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
+                                tumorDP = tumorDP, VAF = VAF,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                reference = reference)
+  # "Cherniack_et_al-Cancer_Cell-2017-UCS"
+  # PMID: 28292439
+  }else if(reference == "Cherniack_et_al-Cancer_Cell-2017-UCS"){
+    mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
+                                keepCOSMIC = TRUE, dbSNP = dbSNP,
+                                Genomesprojects1000 = Genomesprojects1000,
+                                VAF = VAF, VAFratio = VAFratio,
+                                SBmethod = SBmethod, keepType = keepType,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                reference = reference)
+
+  # "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
+  # PMID: 22397650
+  }else if(reference == "Gerlinger_et_al-Engl_J_Med-2012-KIRC"){
+    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE,
+                                Genomesprojects1000 = Genomesprojects1000,
+                                tumorDP = tumorDP, VAF = VAF,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                reference = reference)
+
+  # "Zhu_et_al-Nat_Commun-2020-KIRP"
+  # PMID: 32555180
+  }else if(reference == "Zhu_et_al-Nat_Commun-2020-KIRP"){
+    mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
+                                dbSNP = TRUE, keepCOSMIC = TRUE,
+                                Genomesprojects1000 = TRUE, ExAC = TRUE,
+                                tumorAD = tumorAD, keepType = keepType,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                reference = reference)
+
+  # "Mason_et_al-Leukemia-2015-LCML"
+  #  PMID: 26648538
+  }else if(reference == "Mason_et_al-Leukemia-2015-LCML"){
+    mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE,
+                                dbSNP = dbSNP, tumorDP = tumorDP,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
+                                minInterval = minInterval, ExAC = ExAC,
+                                tagFILTER = tagFILTER, dbVAF = dbVAF,
+                                ESP6500 = ESP6500, gnomAD = gnomAD,
+                                keepCOSMIC = keepCOSMIC, keepType = keepType,
+                                bedFile = bedFile, bedFilter = bedFilter,
+                                mutFilter = mutFilter, selectCols = selectCols,
+                                report = report, reportFile = reportFile,
+                                reportDir = reportDir, TMB = TMB,
+                                reference = reference)
+  }else{
+    stop('Invaild reference input detected, please provide a vaild reference.')
+  }
+  return(mafFiltered)
+}
