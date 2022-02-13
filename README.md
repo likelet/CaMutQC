@@ -28,7 +28,7 @@ A detailed manual can be found [here](https://seqworld.com/CaMutQC/).
 
 This software was mainly developed by:
 
-* Xin Wang, sylviawang555@gmail.com, Sun Yat-sen university
+* Xin Wang, sylviawang555@gmail.com
 
 ## Supervised by 
 
