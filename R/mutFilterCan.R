@@ -1,9 +1,11 @@
 #' mutFilterCan
-#' @description Apply common filter strategies on a MAF data frame for different
+#' @description Apply common filtering strategies on a MAF data frame for different
 #' cancer types.
 #'
 #' @param maf An MAF data frame.
-#' @param cancerType Type of cancer sample whose params needed to be referred to.
+#' @param cancerType Type of cancer whose filtering parameters 
+#' need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML", 
+#' "LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"
 #' @param tumorDP Threshold of tumor total depth. Default: 20
 #' @param normalDP Threshold of normal total depth. Default: 10
 #' @param tumorAD Threshold of tumor alternative allele depth. Default: 10
@@ -75,8 +77,6 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                          reportFile = 'FilterReport.html', reportDir = './',
                          TMB = FALSE) {
 
-  # turn on the switch for report
-  # withType <- TRUE
   # BLCA
   if (cancerType == 'BLCA'){
     mafFiltered <- mutFilterCom(maf, SBmethod = 'Fisher', SBscore = 20,
@@ -238,9 +238,7 @@ mutFilterCan <- function(maf, cancerType, tumorDP = 0, normalDP = 0,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType)
   }else{
-    # turn off the switch for report
-    # withType <- FALSE
-    stop('Invaild cancer type detected, please input a vaild cancer type.')
+    stop('Invaild cancer type detected, please provide a vaild cancer type.')
   }
   return(mafFiltered)
 }
