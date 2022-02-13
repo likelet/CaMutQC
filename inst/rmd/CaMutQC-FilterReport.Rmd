@@ -177,7 +177,16 @@ In this section, users are able to further select variants related to cancer dev
 In CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types. `mutFilterCan` function integrates ten cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
 
 
-**Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r cancerType`**</span>
+**Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r if(is.null(cancerType)){return('Not applied.')}else{return(cancerType)}`**</span>
+
+&nbsp;
+
+#### 5 &nbsp;&nbsp; Study reference
+   
+Users are allowed to apply the same filtering strategies that were used in other studies with CaMutQC, by passing a specific literature reference as a parameter into the `mutFilterRef` function.
+
+
+**Parameters in filtration and selection process refer to :** <span style="color:#ED6F3E">**`r if(is.null(reference)){return('Not applied.')}else{return(reference)}`**</span>
 
 &nbsp;
 
