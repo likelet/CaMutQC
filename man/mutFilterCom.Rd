@@ -35,7 +35,8 @@ mutFilterCom(
   reportFile = "FilterReport.html",
   reportDir = "./",
   TMB = TRUE,
-  cancerType = NULL
+  cancerType = NULL,
+  reference = NULL
 )
 }
 \arguments{
@@ -126,7 +127,18 @@ including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE.}
 
-\item{cancerType}{Type of cancer sample whose params needed to be referred to.}
+\item{cancerType}{Type of cancer whose filtering parameters 
+need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML", 
+"LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"}
+
+\item{reference}{A specific study whose filtering strategies 
+need to be referred to. 
+Format: "Last_name_of_the_first_author_et_al-Journal-Year-Cancer_type"
+Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
+"Cherniack_et_al-Cancer_Cell-2017-UCS",
+"Mason_et_al-Leukemia-2015-LCML",
+"Gerlinger_et_al-Engl_J_Med-2012-KIRC"
+"Zhu_et_al-Nat_Commun-2020-KIRP"}
 }
 \value{
 An MAF data frame after common strategy filtration
