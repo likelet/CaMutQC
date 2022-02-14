@@ -32,8 +32,7 @@ This software was mainly developed by:
 
 ## Supervised by 
 
-* [Jian Ren](renjian@sysucc.org.cn) from School of Life Sciences in Sun Yat-sen University 
-* [Qi Zhao](zhaoqi@sysucc.org.cn) from Bioinformatic Center of Sun Yat-sen University Cancer Center 
+* [Qi Zhao](zhaoqi@sysucc.org.cn) and [Jian Ren](renjian@sysucc.org.cn)  from Bioinformatic Center of Sun Yat-sen University Cancer Center 
 
 ## Maintainer
 [Xin Wang](sylviawang555@gmail.com), Sun Yat-sen university  <br/>
