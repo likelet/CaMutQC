@@ -5,11 +5,11 @@
 #' @param panel The sequencing panel applied on the dataset. Parameters
 #' for \code{\link{mutFilterQual}} function are set differently for different
 #' panels. Default: "Customized". Options: "MSKCC", "WES".
-#' @param tumorDP Threshold of tumor total depth. Default: 0.
-#' @param normalDP Threshold of normal total depth. Default: 0.
-#' @param tumorAD Threshold of tumor alternative allele depth. Default: 0.
+#' @param tumorDP Threshold of tumor total depth. Default: 20
+#' @param normalDP Threshold of normal total depth. Default: 10
+#' @param tumorAD Threshold of tumor alternative allele depth. Default: 5
 #' @param normalAD Threshold of normal alternative allele depth. Default: Inf
-#' @param VAF Threshold of VAF value. Default: 0.
+#' @param VAF Threshold of VAF value. Default: 0.05
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 0.
 #' @param SBmethod Method will be used to detect strand bias,
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -82,11 +82,11 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata/Multi-sample",
 #' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterCom(maf, panel = "WES", TMB = FALSE)
+#' mafF <- mutFilterCom(maf, TMB = FALSE)
 
 
-mutFilterCom <- function(maf, panel = "Customized", tumorDP = 0, normalDP = 0,
-                         tumorAD = 0, normalAD = Inf, VAF = 0, VAFratio = 0,
+mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
+                         tumorAD = 5, normalAD = Inf, VAF = 0.05, VAFratio = 0,
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50,
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01,
                          ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE,
