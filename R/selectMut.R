@@ -1,9 +1,6 @@
 ## select the proper transcript
 selectMut <- function(charMatrix) {
 
-  # When no Consequence provided, tag it as an intergenic variant
-  charMatrix[which(charMatrix$Consequence == ""), 2] <- "intergenic_variant"
-  
   if (nrow(charMatrix) == 1 ) {
     return(1)
   } else {
@@ -20,6 +17,7 @@ selectMut <- function(charMatrix) {
       return(as.numeric(rownames(numMatrix[which(numMatrix$V1
                                                  == Biotypefreq[1, 1]), ])))
     } else {
+
       # keep the rows with the highest biofunction priority, sort by consequence
       remMatrix <- charMatrix[which(numMatrix[, 1] == Biotypefreq[1, 1]), ]
       remNumMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(remMatrix)))
@@ -37,13 +35,16 @@ selectMut <- function(charMatrix) {
       Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing = FALSE), ]
 
       if (Conseqfreq[1, 2] == 1){
+
         # return the one with the highest consequence priority
         return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1]
                                           == Conseqfreq[1, 1]), ])))
       } else {
+
         # work on length
         finalMatrix <- remMatrix[which(remNumMatrix[, 1]
                                        == Conseqfreq[1, 1]), ]
+        #rownames(finalMatrix) <- rownames(remMatrix)
 
         ## choose the first transcript if all cDNA position info is missing
         if (all(finalMatrix$cDNA_position == 'Missing') |

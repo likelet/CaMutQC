@@ -6,11 +6,13 @@
 \usage{
 mutFilterCom(
   maf,
-  tumorDP = 20,
-  normalDP = 10,
-  tumorAD = 10,
-  VAF = 0.05,
-  VAFratio = 5,
+  panel = "Customized",
+  tumorDP = 0,
+  normalDP = 0,
+  tumorAD = 0,
+  normalAD = Inf,
+  VAF = 0,
+  VAFratio = 0,
   SBmethod = "SOR",
   SBscore = 3,
   maxIndelLen = 50,
@@ -42,15 +44,21 @@ mutFilterCom(
 \arguments{
 \item{maf}{An MAF data frame.}
 
-\item{tumorDP}{Threshold of tumor total depth. Default: 20.}
+\item{panel}{The sequencing panel applied on the dataset. Parameters
+for \code{\link{mutFilterQual}} function are set differently for different
+panels. Default: "Customized". Options: "MSKCC", "WES".}
 
-\item{normalDP}{Threshold of normal total depth. Default: 10.}
+\item{tumorDP}{Threshold of tumor total depth. Default: 0.}
 
-\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 10.}
+\item{normalDP}{Threshold of normal total depth. Default: 0.}
 
-\item{VAF}{Threshold of VAF value. Default: 0.05.}
+\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 0.}
 
-\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 5.}
+\item{normalAD}{Threshold of normal alternative allele depth. Default: Inf}
+
+\item{VAF}{Threshold of VAF value. Default: 0.}
+
+\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 0.}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -127,12 +135,12 @@ including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE.}
 
-\item{cancerType}{Type of cancer whose filtering parameters 
-need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML", 
+\item{cancerType}{Type of cancer whose filtering parameters
+need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
 "LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"}
 
-\item{reference}{A specific study whose filtering strategies 
-need to be referred to. 
+\item{reference}{A specific study whose filtering strategies
+need to be referred to.
 Format: "Last_name_of_the_first_author_et_al-Journal-Year-Cancer_type"
 Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
 "Cherniack_et_al-Cancer_Cell-2017-UCS",

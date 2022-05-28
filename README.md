@@ -35,4 +35,7 @@ This software was mainly developed by:
 * [Qi Zhao](zhaoqi@sysucc.org.cn) and [Jian Ren](renjian@sysucc.org.cn)  from Bioinformatic Center of Sun Yat-sen University Cancer Center 
 
 ## Maintainer
-[Xin Wang](sylviawang555@gmail.com), Sun Yat-sen university  <br/>
+[Xin Wang](sylviawang555@gmail.com)  
+
+## Citation (AACR 2022 abstract)
+*Xin Wang, Jian Ren, Qi Zhao*. Integrative quality control of cancer somatic mutations with CaMutQC [abstract]. In: Proceedings of the 113th Annual Meeting of the American Association for Cancer Research; 2022 April 8-13; New Orleans LA. Philadelphia (PA): AACR; 2022. Abstract nr 5004

@@ -14,8 +14,9 @@ getVarFeature <- function(vcf_pos, ref, alt) {
     }
   } else if (nchar(ref) < nchar(alt)){
     # INS
+    start_pos <- vcf_pos + nchar(ref)
     alt_allele <- substring(alt, nchar(ref)+1, nchar(alt))
-    return(list(vcf_pos, vcf_pos + 1, "INS", "-",
+    return(list(start_pos, start_pos + 1, "INS", "-",
                 alt_allele, (nchar(alt) - nchar(ref)) %% 3 == 0))
   }else{
     # DEL

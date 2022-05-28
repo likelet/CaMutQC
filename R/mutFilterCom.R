@@ -2,11 +2,15 @@
 #' @description Apply common filter strategies on a MAF data frame.
 #'
 #' @param maf An MAF data frame.
-#' @param tumorDP Threshold of tumor total depth. Default: 20.
-#' @param normalDP Threshold of normal total depth. Default: 10.
-#' @param tumorAD Threshold of tumor alternative allele depth. Default: 10.
-#' @param VAF Threshold of VAF value. Default: 0.05.
-#' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 5.
+#' @param panel The sequencing panel applied on the dataset. Parameters
+#' for \code{\link{mutFilterQual}} function are set differently for different
+#' panels. Default: "Customized". Options: "MSKCC", "WES".
+#' @param tumorDP Threshold of tumor total depth. Default: 0.
+#' @param normalDP Threshold of normal total depth. Default: 0.
+#' @param tumorAD Threshold of tumor alternative allele depth. Default: 0.
+#' @param normalAD Threshold of normal alternative allele depth. Default: Inf
+#' @param VAF Threshold of VAF value. Default: 0.
+#' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 0.
 #' @param SBmethod Method will be used to detect strand bias,
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
@@ -58,18 +62,18 @@
 #' @param mutType A group of variant classifications that will be kept,
 #' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
-#' @param cancerType Type of cancer whose filtering parameters 
-#' need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML", 
+#' @param cancerType Type of cancer whose filtering parameters
+#' need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
 #' "LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"
-#' @param reference A specific study whose filtering strategies 
-#' need to be referred to. 
+#' @param reference A specific study whose filtering strategies
+#' need to be referred to.
 #' Format: "Last_name_of_the_first_author_et_al-Journal-Year-Cancer_type"
 #' Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
 #' "Cherniack_et_al-Cancer_Cell-2017-UCS",
 #' "Mason_et_al-Leukemia-2015-LCML",
 #' "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
 #' "Zhu_et_al-Nat_Commun-2020-KIRP"
-#' 
+#'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
 #' @import ggplot2 DT
@@ -81,8 +85,8 @@
 #' mafF <- mutFilterCom(maf, TMB = FALSE)
 
 
-mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
-                         VAF = 0.05, VAFratio = 5,
+mutFilterCom <- function(maf, panel = "Customized", tumorDP = 0, normalDP = 0,
+                         tumorAD = 0, normalAD = Inf, VAF = 0, VAFratio = 0,
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50,
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01,
                          ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE,
@@ -96,10 +100,11 @@ mutFilterCom <- function(maf, tumorDP = 20, normalDP = 10, tumorAD = 10,
 
 
   # run mutFilterTech
-  mafFilteredT <- mutFilterTech(maf, tumorDP = tumorDP, normalDP = normalDP,
-                               tumorAD = tumorAD, VAF = VAF, VAFratio = VAFratio,
-                               SBmethod = SBmethod, SBscore = SBscore,
-                               maxIndelLen = maxIndelLen,
+  mafFilteredT <- mutFilterTech(maf, panel = panel, tumorDP = tumorDP,
+                                normalDP = normalDP, tumorAD = tumorAD,
+                                normalAD = normalAD, VAF = VAF,
+                                VAFratio = VAFratio, SBmethod = SBmethod,
+                                SBscore = SBscore, maxIndelLen = maxIndelLen,
                                minInterval = minInterval, tagFILTER = tagFILTER)
 
   # filter first for report usage
