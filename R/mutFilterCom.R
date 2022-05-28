@@ -82,7 +82,7 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata/Multi-sample",
 #' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterCom(maf, TMB = FALSE)
+#' mafF <- mutFilterCom(maf, panel = "WES", TMB = FALSE)
 
 
 mutFilterCom <- function(maf, panel = "Customized", tumorDP = 0, normalDP = 0,

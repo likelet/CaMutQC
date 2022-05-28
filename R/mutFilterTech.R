@@ -34,7 +34,7 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
 #' package = "CaMutQC"))
-#' mafF <- mutFilterTech(maf)
+#' mafF <- mutFilterTech(maf, panel = "WES")
 
 mutFilterTech <- function(maf, panel = "Customized", tumorDP = 0, normalDP = 0,
                           tumorAD = 0, normalAD = Inf, VAF = 0, VAFratio = 0,
