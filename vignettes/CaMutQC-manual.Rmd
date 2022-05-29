@@ -155,7 +155,7 @@ To provide more convenience as well as more flexibility, the `panel` parameter i
 **Parameters for Customized, WES and MSKCC panel**
 
 | **Parameter** |  **Customized panel (default)** | **WES panel** | **MSKCC panel** |
-| :----- | :---- | :---- |
+| :----- | :---- | :---- | :---- |
 | normalDP | 10 | 10 | 10 |
 | normalAD | Inf* | 1 | 1 |
 | tumorDP | 20 | 20 | 20 |
