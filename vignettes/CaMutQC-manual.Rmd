@@ -150,19 +150,20 @@ Besides, sub-functions are integrated into bigger functions to provide more conv
 #### 6.1.1 Sequencing quality filtration
 
 Sequencing quality parameters like allele depth (`AD`), total depth (`DP`) and variant allele frequency (`VAF`) are widely used to filter potential artifacts.
-To provide more convenience as well as more flexibility, the `panel` parameter in this function is able to apply a set of filtration strategies related to sequencing quality, where user can choose between panels like `WES` and `MSKCC` and they can also set freely under the default `Customized` condition.
+To provide more convenience as well as more flexibility, the `panel` parameter in this function is able to apply a set of filtration strategies related to sequencing quality, where user can choose between panels like `WES` and `MSKCC` and they can also set freely under any panel.
 
-**Parameters for WES and MSKCC panel**
+**Parameters for Customized, WES and MSKCC panel**
 
-| **Parameter** | **WES panel** | **MSKCC panel** |
-| :----- | :---- | :---- |
-| normalDP | 10 | 10 |
-| normalAD | 1 | 1 |
-| tumorDP | 20 | 20 |
-| tumorAD | 5 | 10 |
-| VAF | 0.05 | 0.05 | 
-| VAFratio | 0 | 5 |
+| **Parameter** |  **Customized panel (default)** | **WES panel** | **MSKCC panel** |
+| :----- | :---- | :---- | :---- |
+| normalDP | 10 | 10 | 10 |
+| normalAD | Inf* | 1 | 1 |
+| tumorDP | 20 | 20 | 20 |
+| tumorAD | 5 | 5 | 10 |
+| VAF | 0.05 | 0.05 | 0.05 | 
+| VAFratio | 0 | 0 | 5 |
 
+**\*: Inf here means normalAD is not a filtration criterion in this panel**
 
 ```{r, message=FALSE}
 MAF_qual <- mutFilterQual(MAFdat, panel = "Customized", VAF = 0.01, VAFratio = 4)
