@@ -7,11 +7,11 @@
 mutFilterCom(
   maf,
   panel = "Customized",
-  tumorDP = 0,
-  normalDP = 0,
-  tumorAD = 0,
+  tumorDP = 20,
+  normalDP = 10,
+  tumorAD = 5,
   normalAD = Inf,
-  VAF = 0,
+  VAF = 0.05,
   VAFratio = 0,
   SBmethod = "SOR",
   SBscore = 3,
@@ -48,15 +48,15 @@ mutFilterCom(
 for \code{\link{mutFilterQual}} function are set differently for different
 panels. Default: "Customized". Options: "MSKCC", "WES".}
 
-\item{tumorDP}{Threshold of tumor total depth. Default: 0.}
+\item{tumorDP}{Threshold of tumor total depth. Default: 20}
 
-\item{normalDP}{Threshold of normal total depth. Default: 0.}
+\item{normalDP}{Threshold of normal total depth. Default: 10}
 
-\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 0.}
+\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 5}
 
 \item{normalAD}{Threshold of normal alternative allele depth. Default: Inf}
 
-\item{VAF}{Threshold of VAF value. Default: 0.}
+\item{VAF}{Threshold of VAF value. Default: 0.05}
 
 \item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 0.}
 
