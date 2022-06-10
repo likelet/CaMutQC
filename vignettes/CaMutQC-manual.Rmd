@@ -136,10 +136,10 @@ Besides, sub-functions are integrated into bigger functions to provide more conv
 | mutFilterTech | mutFilterQual | **Q** |
 |  | mutFilterSB | **S** |
 |  | mutFilterAdj | **A** |
-|  | FILTER | **F** |
-| mutSelection | mutFilterDB | **D** |
 |  | mutFilterNormalDP | **N** |
 |  | mutFilterPON | **P** |
+|  | FILTER | **F** |
+| mutSelection | mutFilterDB | **D** |
 |  | mutFilterType | **T** |
 |  | mutFilterReg | **R** |
 
@@ -285,7 +285,7 @@ In addition, `mutFilterCom` function is an upper function that combines `mutFilt
 
 #### 6.2.1 Potential artifacts filtration
 
-Function `mutFilterTech` combines filtration strategies for removing potential artifacts, including sequencing quality, strand of bias and adjacent indel filtration.
+Function `mutFilterTech` combines filtration strategies for removing potential artifacts, including sequencing quality, strand of bias, normal DP, PON and adjacent indel filtration.
 
 Some variant callers add a tag if a variant pass the post-filtration after calling. With CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. <span style="color:#ED6F3E">**`PASS`**</span> is set as the default tag.
 
@@ -300,7 +300,7 @@ table(MAF_tech$CaTag)
 
 In most cases, basic filtration by removing potential artifacts is not enough for selecting candidate variants that participate in the formation and development of tumor, because a number of germline variants or variants that do not influence phenotype are still remained in the data set. Therefore, candidate variant selection is a necessary step for downstream analyses.
 
-The whole selection process in CaMutQC is comprised of database filtration, normal depth filtration, PON filtration, variant type filtration and region selection, which implemented in `mutSelection` function.
+The whole selection process in CaMutQC is comprised of database filtration, variant type filtration and region selection, which implemented in `mutSelection` function.
 
 ```{r, message=FALSE}
 MAF_selec <- mutSelection(MAFdat, dbVAF = 0.02, gnomAD = FALSE, keepType = 'nonsynonymous')
@@ -385,7 +385,10 @@ tmb_value
 
 ## 9. Process mutations from multiple variant callers
 
-After verifying on published data sets, We believed combining CaMutQC filtered mutations from multiple variant callers is a great approach to better eliminate the bias of single mutation caller while rescuing potential false negative mutations. In this pipeline, the same data set processed by three mutation callers ([MuTect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2), [VarScan](http://varscan.sourceforge.net/) and [MuSE](http://bioinformatics.mdanderson.org/main/MuSE)) first goes through CaMutQC filtration respectively and removes labeled mutations. Then `processMut` function takes three MAF data frames and returns the union or intersection of mutations.
+After verifying on published data sets, We believed combining CaMutQC filtered mutations from multiple variant callers is a great approach to better eliminate the bias of single mutation caller while rescuing potential false negative mutations. In this pipeline, the same data set processed by three mutation callers ([MuTect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2), [VarScan2](http://varscan.sourceforge.net/) and [MuSE](http://bioinformatics.mdanderson.org/main/MuSE)) first goes through CaMutQC filtration respectively and removes labeled mutations. Then `processMut` function takes three MAF data frames and returns the union or intersection of mutations.
+
+
+![](Union_strategy.png){width=50%}
 
 ```{r, message=FALSE}
 maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller", 
