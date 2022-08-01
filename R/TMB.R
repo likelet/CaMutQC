@@ -27,7 +27,6 @@
 calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
                    mutType = 'nonsynonymous', bedFilter = TRUE) {
 
-  # bed <- read.table('../Data/test-bed')
   bed <- read.table(bedFile)
   chromVaild <- c(paste0('chr', 1:22), 'chrX', 'chrY')
 
@@ -144,16 +143,10 @@ calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
     ## genelist
     if (!(is.null(genelist))){
       maf <- maf[(maf$Hugo_Symbol %in% genelist), ]
-
     }
+
     ## select certain variant type
     maf <- mutFilterType(maf, keepType = mutType)
-
-    ## VAF and AD filtering (using mutFilterQual)
-    #maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0,
-                         #tumorAD = AD, VAF = VAF, VAFratio = 0)
-    # database filtration
-    # maf <- mutFilterDB(maf)
 
   }else{
     stop(paste0('Invalid assay detected.',
@@ -176,9 +169,6 @@ calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
                             interval = bedProc$chromEnd - bedProc$chromStart,
                             Num = 0))
     rownames(bedProc) <- seq_len(nrow(bedProc))
-    ## count mutation
-    # maf <- arrange(maf, Chromosome, Start_Position)
-    # group_by(Chromosome)
 
     maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
     chrs <- unique(maf$Chromosome)
