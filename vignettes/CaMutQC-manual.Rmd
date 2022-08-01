@@ -10,6 +10,7 @@ output:
     toc_depth: 5
     toc_float: yes
 date: "`r Sys.Date()`"
+author: "Xin Wang  sylviawang555@gmail.com"
 
 vignette: >
   %\VignetteIndexEntry{Manual}
