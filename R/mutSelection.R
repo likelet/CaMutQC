@@ -17,7 +17,7 @@
 #' @param keepCOSMIC Whether to keep variants in COSMIC even
 #' they have are present in germline database. Default: TRUE.
 #' @param keepType A group of variant classifications will be kept,
-#' including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'.
+#' including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
 #' Default: NULL
 #' @param bedFilter Whether to filter the information in bed file or not, which
@@ -43,7 +43,7 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
 
   # database selection
   message('Selection for germline variant database is in process.')
-  maf <- mutFilterDB(maf, VAF = dbVAF, ExAC = ExAC,
+  maf <- mutFilterDB(maf, dbVAF = dbVAF, ExAC = ExAC,
                      Genomesprojects1000 = Genomesprojects1000, ESP6500 = ESP6500,
                      gnomAD = gnomAD, dbSNP = dbSNP, keepCOSMIC = keepCOSMIC)
 
@@ -56,7 +56,7 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
   maf <- mutFilterReg(maf, bedFile = bedFile, bedFilter = bedFilter)
 
   # complete selection
-  message('Cancer variant selection is done!')
+  message('Cancer somatic variant selection is done!')
   return(maf)
 }
 
