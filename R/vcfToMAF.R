@@ -8,8 +8,8 @@
 #' @param inputStrelka The type of variants ('indel' or 'SNV') in VCF file if it is
 #' from Strelka. Default: FALSE
 #' @param writeFile Whether to directly write MAF file to the disk. If FALSE,
-#' a MAF data frame will be returned. If TRUE,
-#' a MAF file will be saved in your disk. Default: FALSE.
+#' a MAF data frame will be returned. If TRUE, a MAF file will be saved.
+#' Default: FALSE.
 #' @param MAFfile File name of the exported MAF file, if writeFile is set as
 #' TRUE.
 #' @param MAFdir Directory of the exported MAF file, if writeFile is set as
@@ -32,7 +32,7 @@
 #' converting to MAF file. Default: FALSE
 #'
 #' @import vcfR org.Hs.eg.db clusterProfiler stringr dplyr
-#' @return A MAF data frame
+#' @return A detailed MAF data frame
 #' @export vcfToMAF
 #'
 #' @examples
@@ -80,7 +80,7 @@ vcfToMAF <- function(vcfFile, multiSample = FALSE, inputStrelka = FALSE,
     }
     maf <- vcfhelper(vcfFile, tumorSampleName = tumorSampleName,
                      normalSampleName = normalSampleName, ncbiBuild = ncbiBuild,
-                     MAFcenter = MAFcenter, MAFstrand = MAFstrand, 
+                     MAFcenter = MAFcenter, MAFstrand = MAFstrand,
                      inputStrelka = inputStrelka)
   }
 
@@ -235,10 +235,9 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   maf[, c(15, 18:34, 37, 46)] <- '.'
 
   for (i in 1:nrow(maf)) {
-
     ## ENTREZID
     maf[i, 2] <- IDs$ENTREZID[which(IDs$ENSEMBL == CSQ_info$Gene[i])][1]
-    
+
     ## get correct variant Position, Variant_Type, Ref allele and Alt allele
     pos_type <- getVarFeature(maf[i, 6], maf[i, 11], maf[i, 13])
     maf[i, 6] <- pos_type[[1]] # start
@@ -285,7 +284,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
       if (any(AD_loc)){
         AD <- strsplit(strsplit(vcf_additional[i, tumorSampleName],
                                 ":")[[1]][AD_loc], ",")[[1]][2]
-        
+
         if (length(grep('DP', strsplit(vcf_additional[i, 1], ":")[[1]]))){
           DP_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'DP'
           DP <- as.numeric(strsplit(vcf_additional[i, tumorSampleName],
@@ -300,7 +299,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
           nDP <- sum(as.numeric(strsplit(strsplit(vcf_additional[i, normalSampleName],
                                                   ":")[[1]][AD_loc], ",")[[1]]))
         }
-        
+
         ## t_depth, n_depth, t_ref_count, t_alt_count, n_ref_count, n_alt_count
         tRefAD <- as.numeric(strsplit(strsplit(vcf_additional[i, tumorSampleName],
                                                ":")[[1]][AD_loc], ",")[[1]][1])
@@ -312,7 +311,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
         maf[i, "t_alt_count"] <- as.numeric(AD)
         maf[i, "n_ref_count"] <- nRefAD
         maf[i, "n_alt_count"] <- nAltAD
-        
+
         if (!(exists('tDP'))){
           maf[i, "t_depth"] <- tRefAD + as.numeric(AD)
           maf[i, "n_depth"] <- nRefAD + nAltAD
@@ -398,7 +397,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
 
   ## set Tumor_Seq_Allele1 same as ref
   maf[, 12] <- maf[, 11]
-  
+
   maf[, 'Tumor_Sample_Barcode'] <- tumorSampleName
   maf[, 'Matched_Norm_Sample_Barcode'] <- normalSampleName
   maf$t_alt_count <- as.numeric(maf$t_alt_count)
@@ -411,8 +410,35 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   maf1 <- jointMAF(maf[ ,1:46], CSQ_info, vcf_main)
   maf <- cbind(maf1, VAF = maf[ ,'VAF'], vcf_additional)
 
+  # change column type
   maf$Start_Position <- as.numeric(maf$Start_Position)
   maf$End_Position <- as.numeric(maf$End_Position)
+  maf$GMAF <- suppressWarnings(as.numeric(maf$GMAF))
+  maf$AFR_MAF <- suppressWarnings(as.numeric(maf$AFR_MAF))
+  maf$AMR_MAF <- suppressWarnings(as.numeric(maf$AMR_MAF))
+  maf$ASN_MAF <- suppressWarnings(as.numeric(maf$ASN_MAF))
+  maf$EAS_MAF <- suppressWarnings(as.numeric(maf$EAS_MAF))
+  maf$EUR_MAF <- suppressWarnings(as.numeric(maf$EUR_MAF))
+  maf$SAS_MAF <- suppressWarnings(as.numeric(maf$SAS_MAF))
+  maf$AA_MAF <- suppressWarnings(as.numeric(maf$AA_MAF))
+  maf$EA_MAF <- suppressWarnings(as.numeric(maf$EA_MAF))
+  maf$gnomAD_AF <- suppressWarnings(as.numeric(maf$gnomAD_AF))
+  maf$gnomAD_AFR_AF <- suppressWarnings(as.numeric(maf$gnomAD_AFR_AF))
+  maf$gnomAD_AMR_AF <- suppressWarnings(as.numeric(maf$gnomAD_AMR_AF))
+  maf$gnomAD_EAS_AF <- suppressWarnings(as.numeric(maf$gnomAD_EAS_AF))
+  maf$gnomAD_FIN_AF <- suppressWarnings(as.numeric(maf$gnomAD_FIN_AF))
+  maf$gnomAD_NFE_AF <- suppressWarnings(as.numeric(maf$gnomAD_NFE_AF))
+  maf$gnomAD_OTH_AF <- suppressWarnings(as.numeric(maf$gnomAD_OTH_AF))
+  maf$gnomAD_SAS_AF <- suppressWarnings(as.numeric(maf$gnomAD_SAS_AF))
+  maf$ExAC_AF <- suppressWarnings(as.numeric(maf$ExAC_AF))
+  maf$ExAC_AF_adj <- suppressWarnings(as.numeric(maf$ExAC_AF_adj))
+  maf$ExAC_AF_AFR <- suppressWarnings(as.numeric(maf$ExAC_AF_AFR))
+  maf$ExAC_AF_AMR <- suppressWarnings(as.numeric(maf$ExAC_AF_AMR))
+  maf$ExAC_AF_EAS <- suppressWarnings(as.numeric(maf$ExAC_AF_EAS))
+  maf$ExAC_AF_FIN <- suppressWarnings(as.numeric(maf$ExAC_AF_FIN))
+  maf$ExAC_AF_NFE <- suppressWarnings(as.numeric(maf$ExAC_AF_NFE))
+  maf$ExAC_AF_OTH <- suppressWarnings(as.numeric(maf$ExAC_AF_OTH))
+  maf$ExAC_AF_SAS <- suppressWarnings(as.numeric(maf$ExAC_AF_SAS))
 
   colnames(maf)[which(colnames(maf) == tumorSampleName)] <- 'tumorSampleInfo'
   maf <- cbind(maf, CaTag = '0')
