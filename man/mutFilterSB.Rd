@@ -21,7 +21,7 @@ Default: 3}
 }
 \value{
 An MAF data frame where some variants
-has S tag in CaTag column for strand bias filtration
+have S tag in CaTag column for strand bias filtration
 }
 \description{
 Filter variants based on strand bias.

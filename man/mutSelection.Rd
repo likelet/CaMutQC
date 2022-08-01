@@ -43,7 +43,7 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 they have are present in germline database. Default: TRUE.}
 
 \item{keepType}{A group of variant classifications will be kept,
-including 'exonic', 'nonsynonymous' and 'ALL'. Default: 'exonic'.}
+including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.}
 
 \item{bedFile}{A file in bed format that contains region information.
 Default: NULL}

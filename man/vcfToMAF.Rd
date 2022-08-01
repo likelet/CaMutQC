@@ -31,8 +31,8 @@ VCFs that come from multi-region/sample sequencing. Default: FALSE}
 from Strelka. Default: FALSE}
 
 \item{writeFile}{Whether to directly write MAF file to the disk. If FALSE,
-a MAF data frame will be returned. If TRUE,
-a MAF file will be saved in your disk. Default: FALSE.}
+a MAF data frame will be returned. If TRUE, a MAF file will be saved.
+Default: FALSE.}
 
 \item{MAFfile}{File name of the exported MAF file, if writeFile is set as
 TRUE.}
@@ -64,7 +64,7 @@ Default: TRUE}
 converting to MAF file. Default: FALSE}
 }
 \value{
-A MAF data frame
+A detailed MAF data frame
 }
 \description{
 Format transformation from VCF to MAF.

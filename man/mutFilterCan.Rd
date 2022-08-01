@@ -7,9 +7,11 @@
 mutFilterCan(
   maf,
   cancerType,
+  panel = "Customized",
   tumorDP = 0,
   normalDP = 0,
   tumorAD = 0,
+  normalAD = Inf,
   VAF = 0,
   VAFratio = 0,
   SBmethod = "SOR",
@@ -17,14 +19,14 @@ mutFilterCan(
   maxIndelLen = Inf,
   minInterval = 0,
   tagFILTER = NULL,
-  dbVAF = 0,
+  dbVAF = 0.01,
   ExAC = FALSE,
   Genomesprojects1000 = FALSE,
   ESP6500 = FALSE,
   gnomAD = FALSE,
   dbSNP = FALSE,
-  keepCOSMIC = TRUE,
-  keepType = "ALL",
+  keepCOSMIC = FALSE,
+  keepType = "all",
   bedFile = NULL,
   bedFilter = TRUE,
   mutFilter = FALSE,
@@ -38,19 +40,25 @@ mutFilterCan(
 \arguments{
 \item{maf}{An MAF data frame.}
 
-\item{cancerType}{Type of cancer whose filtering parameters 
-need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML", 
+\item{cancerType}{Type of cancer whose filtering parameters
+need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
 "LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"}
+
+\item{panel}{The sequencing panel applied on the dataset. Parameters
+for \code{\link{mutFilterQual}} function are set differently for different
+panels. Default: "Customized". Options: "MSKCC", "WES".}
 
 \item{tumorDP}{Threshold of tumor total depth. Default: 20}
 
 \item{normalDP}{Threshold of normal total depth. Default: 10}
 
-\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 10}
+\item{tumorAD}{Threshold of tumor alternative allele depth. Default:5}
+
+\item{normalAD}{Threshold of normal alternative allele depth. Default: Inf}
 
 \item{VAF}{Threshold of VAF value. Default: 0.05}
 
-\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 5}
+\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 0}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -70,7 +78,7 @@ accepted to be included. Default: 10}
 Default: 'PASS'}
 
 \item{dbVAF}{Threshold of VAF of certain population for variants
-in database. Default: 0.01}
+in database. Default: 0.01.}
 
 \item{ExAC}{Whether to filter variants listed in ExAC with VAF higher than
 cutoff(set in VAF parameter). Default: TRUE.}
@@ -91,7 +99,7 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 they have are present in germline database. Default: TRUE.}
 
 \item{keepType}{A group of variant classifications will be kept,
-including 'exonic' and 'nonsynonymous'. Default: 'exonic'.}
+including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.}
 
 \item{bedFile}{A file in bed format that contains region information.
 Default: NULL}

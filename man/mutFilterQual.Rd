@@ -36,7 +36,7 @@ panels. Default: "Customized". Options: "MSKCC", "WES".}
 }
 \value{
 An MAF data frame where some variants
-has Q tag in CaTag column for sequencing quality filtration
+have Q tag in CaTag column for sequencing quality filtration
 }
 \description{
 Filter variants in low sequencing quality or low confidence.

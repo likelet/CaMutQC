@@ -98,7 +98,7 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 they have are present in germline database. Default: TRUE.}
 
 \item{keepType}{A group of variant classifications will be kept,
-including 'exonic' and 'nonsynonymous'. Default: 'exonic'.}
+including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.}
 
 \item{bedFile}{A file in bed format that contains region information.
 Default: NULL.}
@@ -154,7 +154,7 @@ An MAF data frame after common strategy filtration
 A filter report in HTML format
 }
 \description{
-Apply common filter strategies on a MAF data frame.
+Apply common filtering strategies on a MAF data frame.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata/Multi-sample",
