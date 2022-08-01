@@ -14,7 +14,9 @@ An MAF data frame where some variants
 has N tag in CaTag column for Normal depth filtration.
 }
 \description{
-Filter dbsnp/non-dbsnp variants based on their normal depth
+Filter dbsnp/non-dbsnp variants based on their normal depth.
+Variants in dbSNP database should have normal depth >= 19, while non-dbSNP
+variants should have normal depth >= 8 to avoid being filtered.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",

@@ -15,7 +15,7 @@
 #' @import dplyr
 #'
 #' @return An MAF data frame where some variants
-#' has Q tag in CaTag column for sequencing quality filtration
+#' have Q tag in CaTag column for sequencing quality filtration
 #'
 #' @export mutFilterQual
 #' @examples
@@ -46,10 +46,12 @@ mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10
   tags <- union(tags, rownames(maf[((maf$t_alt_count < tumorAD) |
                                  (maf$t_depth < tumorDP) |
                                  (maf$n_depth < normalDP) |
-                                 (maf$n_alt_count > normalAD)), ]))
+                                 (maf$n_alt_count >= normalAD)), ]))
 
   VAFr <- (maf$t_alt_count/maf$t_depth)/(maf$n_alt_count/maf$n_depth)
   VAFr[which(is.na(VAFr))] <- 0
+
+  # VAF ratio filtration
   tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
 
   maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')

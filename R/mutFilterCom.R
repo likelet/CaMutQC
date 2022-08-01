@@ -1,5 +1,5 @@
 #' mutFilterCom
-#' @description Apply common filter strategies on a MAF data frame.
+#' @description Apply common filtering strategies on a MAF data frame.
 #'
 #' @param maf An MAF data frame.
 #' @param panel The sequencing panel applied on the dataset. Parameters
@@ -37,7 +37,7 @@
 #' @param keepCOSMIC Whether to keep variants in COSMIC even
 #' they have are present in germline database. Default: TRUE.
 #' @param keepType A group of variant classifications will be kept,
-#' including 'exonic' and 'nonsynonymous'. Default: 'exonic'.
+#' including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
 #' Default: NULL.
 #' @param bedFilter Whether to filter the information in bed file or not, which

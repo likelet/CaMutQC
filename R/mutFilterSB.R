@@ -12,7 +12,7 @@
 #' Default: 3
 #'
 #' @return An MAF data frame where some variants
-#' has S tag in CaTag column for strand bias filtration
+#' have S tag in CaTag column for strand bias filtration
 #'
 #' @export mutFilterSB
 #' @examples
@@ -22,9 +22,8 @@
 
 mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
 
-
-  # use for loop to get the SB score for each variation
   if (method == 'Fisher') {
+    # use for loop to get the SB score for each variation
     for (i in seq_len(nrow(maf))) {
       SBindex <- strsplit(maf$FORMAT[i], ':')[[1]] == 'SB'
       if (all(SBindex == FALSE)){
@@ -37,7 +36,6 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
         rv <- strsplit(F2R1, ',')[[1]][1]
         av <- strsplit(F2R1, ',')[[1]][2]
         SBcharmatix <- paste(rf, rv, af, av, sep = ',')
-        # print(SBcharmatix)
       }else{
         SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'],
                                 ':')[[1]][SBindex]
@@ -82,7 +80,6 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
       }
     }
   }
-    # maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'] , 'S')
     return(maf)
 }
 

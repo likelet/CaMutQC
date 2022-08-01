@@ -30,7 +30,7 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
                     Exon = getValue(CSQ_info$EXON),
                     INTRON = getValue(CSQ_info$INTRON),
                     DOMAINS = getValue(CSQ_info$DOMAINS),
-                    GMAF = getValue(CSQ_info$gnomAD_AF),
+                    GMAF = getValue(CSQ_info$AF),
                     AFR_MAF = getValue(CSQ_info$AFR_AF),
                     AMR_MAF = getValue(CSQ_info$AMR_AF),
                     ASN_MAF = '.',
@@ -61,15 +61,23 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
                     gnomAD_NFE_AF = getValue(CSQ_info$gnomAD_NFE_AF),
                     gnomAD_OTH_AF = getValue(CSQ_info$gnomAD_OTH_AF),
                     gnomAD_SAS_AF = getValue(CSQ_info$gnomAD_SAS_AF),
+                    ExAC_AF = getValue(CSQ_info$ExAC_AF),
+                    ExAC_AF_adj = getValue(CSQ_info$ExAC_AF_adj),
+                    ExAC_AF_AFR = getValue(CSQ_info$ExAC_AF_AFR),
+                    ExAC_AF_AMR = getValue(CSQ_info$ExAC_AF_AMR),
+                    ExAC_AF_EAS = getValue(CSQ_info$ExAC_AF_EAS),
+                    ExAC_AF_FIN = getValue(CSQ_info$ExAC_AF_FIN),
+                    ExAC_AF_NFE = getValue(CSQ_info$ExAC_AF_NFE),
+                    ExAC_AF_OTH = getValue(CSQ_info$ExAC_AF_OTH),
+                    ExAC_AF_SAS = getValue(CSQ_info$ExAC_AF_SAS),
                     GENE_PHENO = getValue(CSQ_info$GENE_PHENO),
                     FILTER = vcfMain$FILTER)
-  return(mafFinal)
 
 }
 
 getValue <- function(chars){
   if (is.null(chars)){
-    return(NA)
+    return("")
   }else{
     return(chars)
   }

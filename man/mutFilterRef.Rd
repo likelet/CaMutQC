@@ -10,6 +10,7 @@ mutFilterRef(
   tumorDP = 0,
   normalDP = 0,
   tumorAD = 0,
+  normalAD = Inf,
   VAF = 0,
   VAFratio = 0,
   SBmethod = "SOR",
@@ -17,14 +18,14 @@ mutFilterRef(
   maxIndelLen = Inf,
   minInterval = 0,
   tagFILTER = NULL,
-  dbVAF = 0,
+  dbVAF = 0.01,
   ExAC = FALSE,
   Genomesprojects1000 = FALSE,
   ESP6500 = FALSE,
   gnomAD = FALSE,
   dbSNP = FALSE,
-  keepCOSMIC = TRUE,
-  keepType = "ALL",
+  keepCOSMIC = FALSE,
+  keepType = "all",
   bedFile = NULL,
   bedFilter = TRUE,
   mutFilter = FALSE,
@@ -47,15 +48,17 @@ Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
 "Gerlinger_et_al-Engl_J_Med-2012-KIRC",
 "Zhu_et_al-Nat_Commun-2020-KIRP"}
 
-\item{tumorDP}{Threshold of tumor total depth. Default: 20}
+\item{tumorDP}{Threshold of tumor total depth. Default: 0}
 
-\item{normalDP}{Threshold of normal total depth. Default: 10}
+\item{normalDP}{Threshold of normal total depth. Default: 0}
 
-\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 10}
+\item{tumorAD}{Threshold of tumor alternative allele depth. Default: 0}
 
-\item{VAF}{Threshold of VAF value. Default: 0.05}
+\item{normalAD}{Threshold of normal alternative allele depth. Default: Inf}
 
-\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 5}
+\item{VAF}{Threshold of VAF value. Default: 0}
+
+\item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 0}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -66,13 +69,13 @@ StrandOddsRatio)}
 Default: 3}
 
 \item{maxIndelLen}{Maximum length of indel accepted to be included.
-Default: 50}
+Default: Inf}
 
 \item{minInterval}{Maximum length of interval between an SNV and an indel
-accepted to be included. Default: 10}
+accepted to be included. Default: 0}
 
 \item{tagFILTER}{Variants with spcific tag in the FILTER column will be kept,
-Default: 'PASS'}
+Default: NULL}
 
 \item{dbVAF}{Threshold of VAF of certain population for variants
 in database. Default: 0.01}
@@ -93,13 +96,13 @@ than cutoff(set in VAF parameter). Default: TRUE.}
 \item{dbSNP}{Whether to filter variants listed in dbSNP. Default: FALSE.}
 
 \item{keepCOSMIC}{Whether to keep variants in COSMIC even
-they have are present in germline database. Default: TRUE.}
+they have are present in germline database. Default: FALSE.}
 
 \item{keepType}{A group of variant classifications will be kept,
-including 'exonic' and 'nonsynonymous'. Default: 'exonic'.}
+including 'exonic', 'nonsynonymous' and 'all'. Default: 'all'.}
 
 \item{bedFile}{A file in bed format that contains region information.
-Default: NULL}
+Default: NULL.}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
 only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}

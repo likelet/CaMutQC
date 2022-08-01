@@ -16,10 +16,10 @@ Default: 50}
 accepted to be included. Default: 10}
 }
 \value{
-An MAF data frame after filtration for adjacent alleles.
+An MAF data frame after filtration for adjacent variants.
 }
 \description{
-Filter alleles based on adjacent indel tags
+Filter variants based on adjacent indel tags
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
