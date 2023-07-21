@@ -1,0 +1,1 @@
+**NOTE**: all bed files under *panel_hg19* and *panel_hg38* are generated from the UCSC Genome Browser based on the gene list of the corresponding [panels](https://github.com/likelet/CaMutQC/tree/master/inst/extdata/Panel_gene), please cite the original studies when using them (DO NOT cite CaMutQC if you only use these external data instead of CaMutQC itself), thank you!
