@@ -31,7 +31,8 @@
 #' @param simplified Logical. Whether to extract the first thirteen columns after
 #' converting to MAF file. Default: FALSE
 #'
-#' @import vcfR org.Hs.eg.db clusterProfiler stringr dplyr
+#' @import vcfR org.Hs.eg.db clusterProfiler stringr dplyr utils
+#' @importFrom stats na.omit
 #' @return A detailed MAF data frame
 #' @export vcfToMAF
 #'
