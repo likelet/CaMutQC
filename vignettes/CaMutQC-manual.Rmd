@@ -333,7 +333,7 @@ By default, a vivid and detailed filter report will be saved automatically each 
 
 ```{r, message=FALSE}
 MAFCom_tmb <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = TRUE, 
-                           bedFile = system.file("extdata/bed", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"))
+                           bedFile = system.file("extdata/bed/Twist", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"))
 table(MAFCom_tmb$CaTag)
 ```
 
