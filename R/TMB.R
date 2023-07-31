@@ -20,7 +20,7 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
 #' package = "CaMutQC"))
-#' TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed",
+#' TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed/Twist",
 #' "Twist_Exome_Target_hg19.bed",package = "CaMutQC"))
 
 

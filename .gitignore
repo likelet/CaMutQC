@@ -2,3 +2,5 @@
 /docs
 LICENSE.md
 .Rbuildignore
+.gitignore
+.Rproj.user
