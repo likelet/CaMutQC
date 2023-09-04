@@ -34,7 +34,7 @@ mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10
       tumorAD <- 10
       VAFratio <- 5
     }else if (panel != "WES"){
-      stop("Wrong panel input!")
+      stop("Wrong panel input! Should be one of MSKCC, WES and Customized.")
     }
   }
 

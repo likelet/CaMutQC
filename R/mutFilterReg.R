@@ -27,7 +27,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
     bed <- read.table(bedFile)
     chromVaild <- c(paste0('chr', 1:22), 'chrX', 'chrY')
 
-    ## check for validation of bed file
+    ## validate bed file
     if (nrow(bed) < 3 | any(substring(bed$V1, 1,3) != 'chr') |
         typeof(bed$V2) != 'integer' | typeof(bed$V3) != 'integer'){
       stop(paste0('Invaild bed file. Please input vaild bed file',
@@ -44,7 +44,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
 
     ## sort bed object
     bedProc <- unique(bed[, 1:3])
-    colnames(bedProc) <- c('chrom', 'chromStart', 'chromEnd')
+    colnames(bedProc) <- c("chr", "start", "end")
 
     ## process maf data and start targeting
     mafTar <- maf[, c("Chromosome", "Start_Position", "End_Position")]
@@ -52,6 +52,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
     # nums <- rep(0, length(chrs))
     allTar <- list()
     for (c in seq_len(length(chrs))) {
+      # split the bed file into small =bed based on chromosome
       mafSepc <- mafTar[which(mafTar$Chromosome == chrs[c]), ]
       bedSepc <- bedProc[which(bedProc$chrom == chrs[c]), ]
       l <- list()
@@ -71,7 +72,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
 }
 
 
-## helper function to target variants in specific region
+# helper function to target variants in specific region
 mutRegionTag <- function(mutLoc, bedSingle){
   # count <- bedSingle[1, 'Num']
   inRegion <- rep(NA, nrow(mutLoc))
