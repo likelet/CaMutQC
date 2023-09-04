@@ -32,7 +32,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
 
   # ExAC filtration
   if (ExAC){
-    if ('ExAC_AF' %in% colnames(maf) & !is.na(unique(maf$ExAC_AF))){
+    if ('ExAC_AF' %in% colnames(maf) & any(!(is.na(MAFdat$ExAC_AF)))){
       tags1 <- rownames(maf[(!(is.na(maf$ExAC_AF)) &
                                (maf$ExAC_AF >= dbVAF)), ])
     }else{
@@ -46,7 +46,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
 
   # 1000 Genomesprojects filtration
   if (Genomesprojects1000){
-    if ('GMAF' %in% colnames(maf) & !is.na(unique(maf$GMAF))){
+    if ('GMAF' %in% colnames(maf) & any(!(is.na(MAFdat$GMAF)))){
       tags2 <- rownames(maf[(!(is.na(maf$GMAF)) &
                                (maf$GMAF >= dbVAF)), ])
     }else{
@@ -61,7 +61,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
 
   # gnomAD filtration
   if (gnomAD){
-    if ('gnomAD_AF' %in% colnames(maf) & !is.na(unique(maf$gnomAD_AF)) ){
+    if ('gnomAD_AF' %in% colnames(maf) & any(!(is.na(MAFdat$gnomAD_AF))) ){
       tags3 <- rownames(maf[(!(is.na(maf$gnomAD_AF)) &
                                (maf$gnomAD_AF >= dbVAF)), ])
     }else{
@@ -75,13 +75,13 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
 
   # ESP6500 filtration
   if (ESP6500){
-    if ('AA_MAF' %in% colnames(maf) & !is.na(unique(maf$AA_MAF))){
+    if ('AA_MAF' %in% colnames(maf) & any(!(is.na(MAFdat$AA_MAF)))){
       tags4 <- rownames(maf[(!(is.na(maf$AA_MAF)) &
                                (maf$AA_MAF >= dbVAF)), ])
       tags5 <- NULL
     }else{
       tags4 <- NULL
-      if ('EA_MAF' %in% colnames(maf) & !is.na(unique(maf$EA_MAF))){
+      if ('EA_MAF' %in% colnames(maf) & any(!(is.na(MAFdat$EA_MAF)))){
         tags5 <- rownames(maf[(!(is.na(maf$EA_MAF)) &
                                  (maf$EA_MAF >= dbVAF)), ])
       }else{

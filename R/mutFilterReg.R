@@ -44,7 +44,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
 
     ## sort bed object
     bedProc <- unique(bed[, 1:3])
-    colnames(bedProc) <- c("chr", "start", "end")
+    colnames(bedProc) <- c("chr", 'chromStart', 'chromEnd')
 
     ## process maf data and start targeting
     mafTar <- maf[, c("Chromosome", "Start_Position", "End_Position")]
@@ -54,7 +54,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
     for (c in seq_len(length(chrs))) {
       # split the bed file into small =bed based on chromosome
       mafSepc <- mafTar[which(mafTar$Chromosome == chrs[c]), ]
-      bedSepc <- bedProc[which(bedProc$chrom == chrs[c]), ]
+      bedSepc <- bedProc[which(bedProc$chr == chrs[c]), ]
       l <- list()
       for(i in seq_len(nrow(bedSepc))) {
         l[[i]] <- mutRegionTag(mafSepc, bedSepc[i, ])
