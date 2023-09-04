@@ -17,26 +17,29 @@
 
 mutFilterNormalDP <- function(maf) {
   if (!('Existing_variation' %in% colnames(maf))) {
-    stop('No annotation from existing database detected.')
+    discard <- c()
+    message(paste0('No annotation from existing database detected, ', 
+                "mutFilterNormalDP function will not run."))
   }
 
   # build a vector to store discarded variants
-  discard <- c()
+  discard <- rep(NA, length(maf))
 
   for (i in seq_len(nrow(maf))) {
     # variants in dbsnp
     if(length(grep('rs', maf[i, 'Existing_variation']))) {
       if(maf$n_depth[i] < 19) {
-        discard <- c(discard, i)
+        discard[i] <- i
       }
 
     # variants not in dbsnp
     }else if (maf$n_depth[i] < 8) {
-      discard <- c(discard, i)
+      discard[i] <- i
     }
  }
 
   # add tag
+  discard <- as.vector(na.omit(discard))
   maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'], 'N')
   return(maf)
 }

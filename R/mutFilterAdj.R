@@ -27,22 +27,38 @@ mutFilterAdj <- function(maf, maxIndelLen = 50, minInterval = 10){
 
   # calculate the distance between variants
   mafFile <- mafFile %>% group_by(Chromosome) %>%
-    mutate(pre_diff = Start_Position - lag(Start_Position,
+    mutate(pre_diff = Start_Position - lag(End_Position,
                                            default = Start_Position[1]),
-           next_diff = End_Position - lag(End_Position,
-                                          default = End_Position[1]))
-
-  # filter variants
-  n_tags <- setdiff(rownames(mafFile),
-                    rownames(mafFile[(nchar(mafFile$Reference_Allele)
-                                    <= maxIndelLen) &
-                        ((mafFile$pre_diff == 0 & mafFile$next_diff == 0) |
-                        (mafFile$pre_diff >= minInterval &
-                           mafFile$next_diff >= minInterval)), ]))
+           next_diff = lead(Start_Position, 
+                            default = Start_Position[1]) - End_Position,
+           prev_mut_length = lag(nchar(Reference_Allele), default = 1),
+           next_mut_length = lead(nchar(Reference_Allele), default = 1),
+           prev_mut_type = lag(Variant_Type, default = "SNP"), 
+           next_mut_type = lead(Variant_Type, default = "SNP"))
   mafFile <- data.frame(mafFile)
-
+  
+  # either of the conditions should be satisfied to avoid being filtered
+  ## 1. the current mutation be analyzed is an INDEL
+  ## 2. the current mutation (SNP) is far enough from the previous mutation if
+  ##    the previous mutation is an indel within max length, and, 
+  ##    far enough from the next mutation if the next mutation is an indel 
+  ##    within max length
+  condition1 <- (mafFile$Variant_Type == "INS" | mafFile$Variant_Type == "DEL")
+  condition2_1 <- (mafFile$pre_diff >= minInterval | 
+                     mafFile$prev_mut_length >= maxIndelLen | 
+                     mafFile$prev_mut_type == "SNP" | mafFile$pre_diff < 0)
+  condition2_2 <- (mafFile$next_diff >= minInterval | 
+                     mafFile$next_mut_length >= maxIndelLen | 
+                     mafFile$next_mut_type == "SNP" | mafFile$next_diff < 0)
+  
+  n_tags <- setdiff(rownames(mafFile), 
+                    rownames(mafFile[((condition2_1 & condition2_2) | 
+                                        condition1),]))
+  
   mafFile[n_tags, 'CaTag'] <- paste0(mafFile[n_tags, 'CaTag'] , 'A')
 
-  return(subset(mafFile, select = c(-pre_diff, -next_diff)))
+  return(subset(mafFile, select = c(-pre_diff, -next_diff, -prev_mut_length,
+                                    -next_mut_length, -prev_mut_type, 
+                                    -next_mut_type)))
 }
 

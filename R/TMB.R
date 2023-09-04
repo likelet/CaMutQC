@@ -30,7 +30,7 @@ calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
   bed <- read.table(bedFile)
   chromVaild <- c(paste0('chr', 1:22), 'chrX', 'chrY')
 
-  ## check for validation of bed file
+  ## validate bed file
   if (nrow(bed) < 3 | any(substring(bed$V1, 1,3) != 'chr') |
       typeof(bed$V2) != 'integer' | typeof(bed$V3) != 'integer'){
     stop(paste0('Invaild bed file. Please input vaild bed file',
@@ -83,7 +83,7 @@ calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
                              VAF = 0.02, VAFratio = 0)
     maf_nonc_f <- mutFilterQual(maf_nonc, tumorDP = 20, tumorAD = 10,
                                 normalDP = 0, VAF = 0.05, VAFratio = 0)
-    maf <- rbind(maf_c_f, maf_nonc_f)
+    maf <- unique(rbind(maf_c_f, maf_nonc_f))
 
     # filter non-exonic variants
     maf <- mutFilterType(maf)

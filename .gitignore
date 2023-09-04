@@ -1,5 +1,4 @@
 *.Rproj 
-/docs
 LICENSE.md
 .Rbuildignore
 .gitignore

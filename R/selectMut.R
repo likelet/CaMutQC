@@ -163,6 +163,10 @@ GetBiotypePriority <- function(biotype) {
          'Mt_rRNA' = 4, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
          'antisense' = 5, # Has transcripts that overlap the genomic span
+         'lncRNA' = 5, # Generic long non-coding RNA biotype that replaced the following biotypes: 
+         # 3prime_overlapping_ncRNA, antisense, bidirectional_promoter_lncRNA, 
+         # lincRNA, macro_lncRNA, non_coding, processed_transcript, 
+         # sense_intronic and sense_overlapping.
          # (exon or introns) of a protein-coding locus on the opposite strand
          'antisense_RNA' = 5, # Alias for antisense (Y. Boursin)
          'sense_intronic' = 5, # Long non-coding transcript in introns
@@ -178,6 +182,7 @@ GetBiotypePriority <- function(biotype) {
          'regulatory_region' = 6, # A region of sequence that is involved in the control of a biological process
          'disrupted_domain' = 6, # Otherwise viable coding region omitted from this alternatively spliced transcript because the splice variation affects a region coding for a protein domain
          'processed_transcript' = 6, # Doesn't contain an ORF
+         'protein_coding_CDS_not_defined' = 6, # Transcript that belongs to a protein_coding gene and doesn't contain an ORF. Replaces the processed_transcript transcript biotype in protein_coding genes.
          'TEC' = 6, # To be Experimentally Confirmed. This is used for non-spliced EST clusters that have polyA features. This category has been specifically created for the ENCODE project to highlight regions that could indicate the presence of protein coding genes that require experimental validation, either by 5' RACE or RT-PCR to extend the transcripts, or by confirming expression of the putatively-encoded peptide with specific antibodies
          'TF_binding_site' = 7, # A region of a nucleotide molecule that binds a Transcription Factor or Transcription Factor complex
          'CTCF_binding_site' = 7, # A transcription factor binding site with consensus sequence CCGCGNGGNGGCAG, bound by CCCTF-binding factor
@@ -192,6 +197,7 @@ GetBiotypePriority <- function(biotype) {
          'pseudogene' = 8, # Have homology to proteins but generally suffer from a disrupted coding sequence and an active homologous gene can be found at another locus. Sometimes these entries have an intact coding sequence or an open but truncated ORF, in which case there is other evidence used (for example genomic polyA stretches at the 3' end) to classify them as a pseudogene. Can be further classified as one of the following
          'processed_pseudogene' = 8, # Pseudogene that lack introns and is thought to arise from reverse transcription of mRNA followed by reinsertion of DNA into the genome
          'polymorphic_pseudogene' = 8, # Pseudogene owing to a SNP/DIP but in other individuals/haplotypes/strains the gene is translated
+         'protein_coding_LoF' = 8, # Not translated in the reference genome owing to a SNP/DIP but in other individuals/haplotypes/strains the transcript is translated. Replaces the polymorphic_pseudogene transcript biotype.
          'retrotransposed' = 8, # Pseudogene owing to a reverse transcribed and re-inserted sequence
          'translated_processed_pseudogene' = 8, # Pseudogenes that have mass spec data suggesting that they are also translated
          'translated_unprocessed_pseudogene' = 8, # Pseudogenes that have mass spec data suggesting that they are also translated
