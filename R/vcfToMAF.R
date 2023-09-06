@@ -240,7 +240,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
     maf[i, 2] <- IDs$ENTREZID[which(IDs$ENSEMBL == CSQ_info$Gene[i])][1]
 
     ## get correct variant Position, Variant_Type, Ref allele and Alt allele
-    pos_type <- getVarFeature(maf[i, 6], maf[i, 11], maf[i, 13])
+    pos_type <- getVarFeature(maf[i, 6], maf[i, 11], maf[i, 13], CSQ_info[i, 1])
     maf[i, 6] <- pos_type[[1]] # start
     maf[i, 7] <- pos_type[[2]] # end
     maf[i, 10] <- pos_type[[3]] # Variant_Type
