@@ -9,7 +9,7 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
     # may have A,G
     if (str_detect(alt, ",") | str_detect(alt, "/")){
       alts <- str_split(alt, "[,/]")[[1]]
-      # REF: C. Alt: T,CCAT. csqalt: CCAT
+      # handle special case: REF: C. Alt: T,CCAT. csqalt: CCAT
       if (csqalt %in% alts) {
         if (nchar(csqalt) == 1 & nchar(ref) == 1) {
           alt <- csqalt
