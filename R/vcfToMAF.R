@@ -112,6 +112,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                       normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
                       MAFcenter = '.', MAFstrand = '+', inputStrelka = FALSE) {
   # message('Loading VCF data...')
+  # message(vcfFile)
   invisible(capture.output(Anno_Vcf <- read.vcfR(vcfFile)))
   message('VCF data has been loaded successfully!')
 

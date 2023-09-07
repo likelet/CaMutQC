@@ -9,22 +9,32 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
     # may have A,G
     if (str_detect(alt, ",") | str_detect(alt, "/")){
       alts <- str_split(alt, "[,/]")[[1]]
-      # if it is a SNP, DNP, TNP or ONP, just select the first alt as final alt
-      if (nchar(ref) == nchar(alts[1])) {
-        if (csqalt %in% alts) {
+      # handle special case: REF: C. Alt: T,CCAT. csqalt: CCAT
+      if (csqalt %in% alts) {
+        if (nchar(csqalt) == 1 & nchar(ref) == 1) {
           alt <- csqalt
         }else{
-          alt <- alts[1]
+          ref <- remove1stString(ref)
+          alt <- remove1stString(csqalt)
         }
       }else{
-        alts <- unlist(lapply(alts, remove1stString))
-        ref <- remove1stString(ref)
-        # if the alt in transcript can be found in alts, return it
-        # otherwise, return the first alt in alts
-        if (csqalt %in% alts) {
-          alt <- csqalt
+        # if it is a SNP, DNP, TNP or ONP, just select the first alt as final alt
+        if (nchar(ref) == nchar(alts[1])) {
+          if (csqalt %in% alts) {
+            alt <- csqalt
+          }else{
+            alt <- alts[1]
+          }
         }else{
-          alt <- alts[1]
+          alts <- unlist(lapply(alts, remove1stString))
+          ref <- remove1stString(ref)
+          # if the alt in transcript can be found in alts, return it
+          # otherwise, return the first alt in alts
+          if (csqalt %in% alts) {
+            alt <- csqalt
+          }else{
+            alt <- alts[1]
+          }
         }
       }
     }else if (nchar(ref) != nchar(alt)){
