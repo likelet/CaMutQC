@@ -73,11 +73,9 @@ mutFilterAdj <- function(maf, maxIndelLen = 50, minInterval = 10){
                                  & snp_frame$Start_Position %in% bed_frame$Location,])
     maf[n_tags, 'CaTag'] <- paste0(maf[n_tags, 'CaTag'] , 'A')
     
-  }else{
-    # directly return maf if there is no INDEL in maf data frame
-    return(maf)
   }
-  
+    # else: directly return maf if there is no INDEL in maf data frame
+    return(maf)
 }
 
 # select indel with length <= maxIndelLen, and return the corresponding bed
