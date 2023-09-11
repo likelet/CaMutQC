@@ -16,7 +16,7 @@ vcfToMAF(
   ncbiBuild = "Extracted",
   MAFcenter = ".",
   MAFstrand = "+",
-  filterGene = TRUE,
+  filterGene = FALSE,
   simplified = FALSE
 )
 }
@@ -58,7 +58,7 @@ which will be presented as value in 'Center' column in MAF file. Default: '.'.}
 presented as value in 'Strand' column in MAF file. Default: '+'.}
 
 \item{filterGene}{Logical. Whether to filter variants without Hugo Symbol.
-Default: TRUE}
+Default: FALSE}
 
 \item{simplified}{Logical. Whether to extract the first thirteen columns after
 converting to MAF file. Default: FALSE}
