@@ -27,7 +27,7 @@
 #' @param MAFstrand Genomic strand of the reported allele, which will be
 #' presented as value in 'Strand' column in MAF file. Default: '+'.
 #' @param filterGene Logical. Whether to filter variants without Hugo Symbol.
-#' Default: TRUE
+#' Default: FALSE
 #' @param simplified Logical. Whether to extract the first thirteen columns after
 #' converting to MAF file. Default: FALSE
 #'
@@ -45,7 +45,7 @@ vcfToMAF <- function(vcfFile, multiSample = FALSE, inputStrelka = FALSE,
                      writeFile = FALSE, MAFfile = 'MAF.maf', MAFdir = './',
                      tumorSampleName = 'Extracted',
                      normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
-                     MAFcenter = '.', MAFstrand = '+', filterGene = TRUE,
+                     MAFcenter = '.', MAFstrand = '+', filterGene = FALSE,
                      simplified = FALSE){
 
   # if inputs are multi-sample VCFs
