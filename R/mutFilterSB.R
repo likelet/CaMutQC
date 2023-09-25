@@ -26,16 +26,22 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
     # use for loop to get the SB score for each variation
     for (i in seq_len(nrow(maf))) {
       SBindex <- strsplit(maf$FORMAT[i], ':')[[1]] == 'SB'
+      # different caller may have different field name to record strand read
       if (all(SBindex == FALSE)){
-        F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F1R2'
-        F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F2R1'
-        F1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][F1R2index]
-        F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][F2R1index]
-        rf <- strsplit(F1R2, ',')[[1]][1]
-        af <- strsplit(F1R2, ',')[[1]][2]
-        rv <- strsplit(F2R1, ',')[[1]][1]
-        av <- strsplit(F2R1, ',')[[1]][2]
-        SBcharmatix <- paste(rf, rv, af, av, sep = ',')
+        if (length(grep('DP4', maf$FORMAT[i]))){
+          DP4index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'DP4'
+          SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][DP4index]
+        }else{
+          F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F1R2'
+          F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F2R1'
+          F1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][F1R2index]
+          F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][F2R1index]
+          rf <- strsplit(F1R2, ',')[[1]][1]
+          af <- strsplit(F1R2, ',')[[1]][2]
+          rv <- strsplit(F2R1, ',')[[1]][1]
+          av <- strsplit(F2R1, ',')[[1]][2]
+          SBcharmatix <- paste(rf, rv, af, av, sep = ',')
+        }
       }else{
         SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'],
                                 ':')[[1]][SBindex]
