@@ -22,7 +22,7 @@ This is a simple workflow of CaMutQC.
 
 </div>
 
-A detailed manual can be found [here](https://github.com/likelet/CaMutQC/blob/WX/docs/index.html).
+A detailed manual can be found [here](https://seqworld.com/CaMutQC/).
 
 ## Author
 
