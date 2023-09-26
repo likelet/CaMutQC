@@ -67,6 +67,12 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
     #ref_allele <- substring(ref, nchar(alt)+1, nchar(ref))
     return(list(start_pos, start_pos + nchar(ref) - 1, "DEL", ref, alt, 
                 (nchar(ref)) %% 3 == 0))
+    # if the first bp is still the same, remove the first character
+  }else if (substring(ref, 1, 1) == substring(alt, 1, 1)){
+    ref <- remove1stString(ref)
+    alt <- remove1stString(alt)
+    return(list(vcf_pos + 2, vcf_pos + 2, "INS", ref, alt, 
+                (nchar(alt)) %% 3 == 0))
   }else{
     warning(paste0("Ref: ", ref, ". Alt: ", alt, ". csqalt: ", csqalt))
     stop("Error encountered in getFeature!")
