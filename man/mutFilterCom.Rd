@@ -38,7 +38,8 @@ mutFilterCom(
   reportDir = "./",
   TMB = TRUE,
   cancerType = NULL,
-  reference = NULL
+  reference = NULL,
+  progressbar = TRUE
 )
 }
 \arguments{
@@ -147,6 +148,9 @@ Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
 "Mason_et_al-Leukemia-2015-LCML",
 "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
 "Zhu_et_al-Nat_Commun-2020-KIRP"}
+
+\item{progressbar}{Whether to show progress bar when running this function
+Default: TRUE}
 }
 \value{
 An MAF data frame after common strategy filtration

@@ -15,7 +15,8 @@ mutSelection(
   keepCOSMIC = TRUE,
   keepType = "exonic",
   bedFile = NULL,
-  bedFilter = TRUE
+  bedFilter = TRUE,
+  progressbar = TRUE
 )
 }
 \arguments{
@@ -50,6 +51,9 @@ Default: NULL}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
 only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}
+
+\item{progressbar}{Whether to show progress bar when running this function
+Default: TRUE}
 }
 \value{
 An MAF data frame with variants after selection.

@@ -34,7 +34,8 @@ mutFilterCan(
   report = TRUE,
   reportFile = "FilterReport.html",
   reportDir = "./",
-  TMB = FALSE
+  TMB = FALSE,
+  progressbar = TRUE
 )
 }
 \arguments{
@@ -124,6 +125,9 @@ Or a vector contains column names will be kept.}
 \item{reportDir}{Path to the output report file. Default: './'}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE}
+
+\item{progressbar}{Whether to show progress bar when running this function
+Default: TRUE}
 }
 \value{
 An MAF data frame after common strategy filtration for a cancer type.

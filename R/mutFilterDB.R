@@ -37,7 +37,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                                (maf$ExAC_AF >= dbVAF)), ])
     }else{
       tags1 <- NULL
-      message(paste0('This VCF file didn\'t annotated by ExAC database.' ,
+      message(paste0('  This VCF file didn\'t annotated by ExAC database.' ,
       ' No variants will be filtered based on ExAC.'))
     }
   }else{
@@ -51,7 +51,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                                (maf$GMAF >= dbVAF)), ])
     }else{
       tags2 <- NULL
-      message(paste0('This VCF file didn\'t annotated by 1000 Genomesprojects',
+      message(paste0('  This VCF file didn\'t annotated by 1000 Genomesprojects',
                      '. No variants will be filtered based' ,
                      ' on 1000 Genomesprojects.'))
     }
@@ -66,7 +66,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                                (maf$gnomAD_AF >= dbVAF)), ])
     }else{
       tags3 <- NULL
-      message(paste0('This VCF file didn\'t annotated by gnomAD database.' ,
+      message(paste0('  This VCF file didn\'t annotated by gnomAD database.' ,
                      ' No variants will be filtered based on gnomAD.'))
     }
   }else{
@@ -86,7 +86,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                                  (maf$EA_MAF >= dbVAF)), ])
       }else{
         tags5 <- NULL
-        message(paste0('This VCF file didn\'t annotated by ESP6500 database.' ,
+        message(paste0('  This VCF file didn\'t annotated by ESP6500 database.' ,
                        ' No variants will be filtered based on ESP6500.'))
       }
     }

@@ -22,6 +22,8 @@
 #' Default: NULL
 #' @param bedFilter Whether to filter the information in bed file or not, which
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' @param progressbar Whether to show progress bar when running this function
+#' Default: TRUE
 #'
 #' @import vcfR stringr
 #' @importFrom  dplyr filter
@@ -39,24 +41,44 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                          Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE,
                          keepCOSMIC = TRUE, keepType = 'exonic',
-                         bedFile = NULL, bedFilter = TRUE){
-
+                         bedFile = NULL, bedFilter = TRUE, progressbar = TRUE){
+  
+  # build a progress bar and turn it on is asked
+  # pb <- txtProgressBar(min = 0, max = 100, style = 3)
+  if (progressbar) {
+    pb <- txtProgressBar(min = 0, max = 100, style = 3)
+  }
   # database selection
-  message('Selection for germline variant database is in process.')
+  #message('Selection for germline variant database is in process.')
+  if (progressbar) {
+    setTxtProgressBar(pb, 40, title = progressbar)
+    cat("\n")
+  }
   maf <- mutFilterDB(maf, dbVAF = dbVAF, ExAC = ExAC,
                      Genomesprojects1000 = Genomesprojects1000, ESP6500 = ESP6500,
                      gnomAD = gnomAD, dbSNP = dbSNP, keepCOSMIC = keepCOSMIC)
 
   # variant type selection
-  message('Selection for variant type is in process.')
+  #message('Selection for variant type is in process.')
+  if (progressbar) {
+    setTxtProgressBar(pb, 60, title = progressbar)
+  }
   maf <- mutFilterType(maf, keepType = keepType)
 
   # region selection
-  message('Selection for variants in specific region is in process.')
+  #message('Selection for variants in specific region is in process.')
+  if (progressbar) {
+    setTxtProgressBar(pb, 80, title = progressbar)
+    cat("\n")
+  }
   maf <- mutFilterReg(maf, bedFile = bedFile, bedFilter = bedFilter)
 
   # complete selection
-  message('Cancer somatic variant selection is done!')
+  if (progressbar) {
+    setTxtProgressBar(pb, 100, title = progressbar)
+    close(pb)
+  }
+  message('  Cancer somatic variant selection is done!')
   return(maf)
 }
 
