@@ -177,7 +177,8 @@ GetBiotypePriority <- function(biotype) {
          # and/or published experimental data strongly supports the existence
          # of short non-coding transcripts transcribed from the 3'UTR
          '3prime_overlapping_ncRNA' = 5, # Transcripts where ditag and/or published experimental data strongly supports the existence of short non-coding transcripts transcribed from the 3'UTR
-         'misc_RNA' = 5, # Non-coding RNA predicted using sequences from RFAM and miRBase
+         'misc_RNA' = 5, # Non-coding RNA predicted using sequences from RFAM and miRBase,
+         'vault_RNA' = 5, # Short non coding RNA genes that form part of the vault ribonucleoprotein complex.
          'non_coding' = 5, # Transcript which is known from the literature to not be protein coding
          'regulatory_region' = 6, # A region of sequence that is involved in the control of a biological process
          'disrupted_domain' = 6, # Otherwise viable coding region omitted from this alternatively spliced transcript because the splice variation affects a region coding for a protein domain
