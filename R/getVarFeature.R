@@ -73,6 +73,13 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
     alt <- remove1stString(alt)
     return(list(vcf_pos + 2, vcf_pos + 2, "INS", ref, alt, 
                 (nchar(alt)) %% 3 == 0))
+    # INS, handle cases: Ref: C. Alt: AC. csqalt: CAC
+  }else if (nchar(alt) > nchar(ref)){
+    start_pos <- vcf_pos + 1
+    ref <- "-"
+    alt <- substring(alt,1,1)
+    return(list(start_pos, start_pos + 1, "INS", ref, alt, 
+                (nchar(alt)) %% 3 == 0))
   }else{
     warning(paste0("Ref: ", ref, ". Alt: ", alt, ". csqalt: ", csqalt))
     stop("Error encountered in getFeature!")
