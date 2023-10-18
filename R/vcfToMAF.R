@@ -149,8 +149,9 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   maf[, 13] <- vcf_main$ALT
 
   # get INFO information
-  INFOFrame <- as.data.frame(readINFO(vcf_header, vcf_main)[[1]])
-  INFOinfo <- as.data.frame(readINFO(vcf_header, vcf_main)[[2]])
+  INFOall <- readINFO(vcf_header, vcf_main)
+  INFOFrame <- as.data.frame(INFOall[[1]])
+  INFOinfo <- as.data.frame(INFOall[[2]])
 
   # process CSQ column
   ## extract CSQ header and set as colnames
