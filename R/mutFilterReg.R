@@ -21,7 +21,8 @@
 mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
 
   if (is.null(bedFile)){
-    message('No bed file detected, so no variants will get an R flag.')
+    #cat("\n")
+    message('  No bed file detected, so no variants will get an R flag.')
   }else{
     # bed <- read.table('../Data/Twist_Exome_Target_hg19.bed')
     bed <- read.table(bedFile)

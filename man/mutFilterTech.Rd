@@ -17,7 +17,8 @@ mutFilterTech(
   SBscore = 3,
   maxIndelLen = 50,
   minInterval = 10,
-  tagFILTER = "PASS"
+  tagFILTER = "PASS",
+  progressbar = TRUE
 )
 }
 \arguments{
@@ -55,6 +56,9 @@ accepted to be included. Default: 10}
 
 \item{tagFILTER}{Variants with specific tag in the FILTER column will be kept,
 set to NULL if you want to skip this filter. Default: 'PASS'}
+
+\item{progressbar}{Whether to show progress bar when running this function
+Default: TRUE}
 }
 \value{
 An MAF data frame after filtration for technical issue

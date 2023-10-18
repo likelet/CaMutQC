@@ -73,6 +73,8 @@
 #' "Mason_et_al-Leukemia-2015-LCML",
 #' "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
 #' "Zhu_et_al-Nat_Commun-2020-KIRP"
+#' @param progressbar Whether to show progress bar when running this function
+#' Default: TRUE
 #'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
@@ -96,33 +98,40 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                          assay = 'MSK-v3', genelist = NULL,
                          mutType = 'nonsynonymous',
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = TRUE, cancerType = NULL, reference = NULL) {
+                         TMB = TRUE, cancerType = NULL, reference = NULL,
+                         progressbar = TRUE) {
 
 
   # run mutFilterTech
+  message("  Filtration for technical issue is running")
   mafFilteredT <- mutFilterTech(maf, panel = panel, tumorDP = tumorDP,
                                 normalDP = normalDP, tumorAD = tumorAD,
                                 normalAD = normalAD, VAF = VAF,
                                 VAFratio = VAFratio, SBmethod = SBmethod,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
-                               minInterval = minInterval, tagFILTER = tagFILTER)
+                               minInterval = minInterval, tagFILTER = tagFILTER,
+                               progressbar = progressbar)
 
   # filter first for report usage
   mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == "0", ]
 
   # run mutSelection
+  cat("\n")
+  message("  Cancer somatic variant selection is running")
   mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAC = ExAC,
                               Genomesprojects1000 = Genomesprojects1000,
                               ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
                               keepCOSMIC = keepCOSMIC, keepType = keepType,
-                              bedFile = bedFile, bedFilter = bedFilter)
+                              bedFile = bedFile, bedFilter = bedFilter,
+                              progressbar = progressbar)
 
   # filter first for report usage
   mafFilteredS2 <- suppressMessages(
     mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
                  Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
                  ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC,
-                 keepType = keepType, bedFile = bedFile, bedFilter = bedFilter))
+                 keepType = keepType, bedFile = bedFile, bedFilter = bedFilter,
+                 progressbar = FALSE))
 
 
   mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
@@ -141,8 +150,8 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
       TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay,
                          genelist = genelist, mutType = mutType,
                          bedFilter = bedFilter)
-      print(paste0("Estimated tumor mutational burden (TMB): ", TMBvalue))
-      print(paste0("Method used to calculate TMB: ", assay))
+      print(paste0("  Estimated tumor mutational burden (TMB): ", TMBvalue))
+      print(paste0("  Method used to calculate TMB: ", assay))
     }
   }
 
