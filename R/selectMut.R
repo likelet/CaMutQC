@@ -6,7 +6,12 @@ selectMut <- function(charMatrix) {
   } else {
     numMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(charMatrix)))
     for (i in 1:nrow(numMatrix)) {
-      numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])
+      # handle situation when biotype is null
+      if (charMatrix[i, 1] == '') {
+        numMatrix[i, 1] <- 10
+      }else{
+        numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])
+      }
     }
     Biotypefreq <- data.frame(table(numMatrix[, 1]))
     Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing = FALSE), ]
@@ -140,6 +145,7 @@ GetBiotypePriority <- function(biotype) {
          'sRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
          'scaRNA' = 3, # Non-coding RNA predicted using sequences
+         'scRNA' = 3, # Non-coding RNA predicted using sequences from Rfam and miRBase
          # from RFAM and miRBase
          'rRNA' = 3, # Non-coding RNA predicted using sequences
          # from RFAM and miRBase
@@ -222,7 +228,8 @@ GetBiotypePriority <- function(biotype) {
          'TR_J_pseudogene' = 8, # Inactivated immunoglobulin gene
          'TR_V_pseudogene' = 8, # Inactivated immunoglobulin gene
          'artifact' = 9, # Used to tag mistakes in the public databases (Ensembl/SwissProt/Trembl)
-         'Missing' = 10) # Used to process missing value
+         'Missing' = 10, # Used to process missing value
+  ) # Used to process missing value
 }
 
 
@@ -267,8 +274,11 @@ GetConsequencePriority <- function(consequence) {
          # A feature amplification of a region containing a transcript
          'splice_region_variant' = 8,
          # A sequence variant in which a change has occurred within the region of the splice site, either within 1-3 bases of the exon or 3-8 bases of the intron
-         'stop_retained_variant' = 9,
-         # A sequence variant where at least one base in the terminator codon is changed, but the terminator remains
+         'splice_donor_5th_base_variant' = 8, # A sequence variant that causes a change at the 5th base pair after the start of the intron in the orientation of the transcript
+         'splice_donor_region_variant' = 8, # A sequence variant that falls in the region between the 3rd and 6th base after splice junction (5' end of intron)
+         'splice_polypyrimidine_tract_variant' = 8, # A sequence variant that falls in the polypyrimidine tract at 3' end of intron between 17 and 3 bases from the end (acceptor -3 to acceptor -17)
+         'stop_retained_variant' = 9, # A sequence variant where at least one base in the terminator codon is changed, but the terminator remains
+         'start_retained_variant' = 9, # A sequence variant where at least one base in the start codon is changed, but the start remains
          'synonymous_variant' = 9,
          # A sequence variant where there is no resulting change to the encoded amino acid
          'incomplete_terminal_codon_variant' = 10,
