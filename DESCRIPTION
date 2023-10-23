@@ -1,7 +1,7 @@
 Package: CaMutQC
 Type: Package
 Title: An R Package for Comprehensive Flitration and Selection of Cancer Somatic Mutations
-Version: 0.2.0
+Version: 0.3.0
 Author: 
     person(given = "Xin",
            family = "Wang",
