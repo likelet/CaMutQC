@@ -38,6 +38,20 @@ mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10
     }
   }
 
+  # check whether VAF, t_depth and n_depth column exists (has values in it)
+  ## calculate t_depth based on alt and ref
+  if (all(is.na(maf$t_depth))) {
+    maf$t_depth <- maf$t_alt_count + maf$t_ref_count
+  }
+  ## calculate n_depth based on alt and ref
+  if (all(is.na(maf$n_depth))) {
+    maf$n_depth <- maf$n_alt_count + maf$n_ref_count
+  }
+  ## add VAF column
+  if (!("VAF" %in% colnames(maf))) {
+    maf$VAF <- maf$t_alt_count/maf$t_depth
+  }
+  
   tags <- c()
   ## VAF filtering
   tags <- c(tags, rownames(maf[maf$VAF < VAF, ]))
