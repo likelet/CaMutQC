@@ -53,7 +53,7 @@ mutFilterReg <- function(maf, bedFile = NULL, bedFilter = TRUE){
     # nums <- rep(0, length(chrs))
     allTar <- list()
     for (c in seq_len(length(chrs))) {
-      # split the bed file into small =bed based on chromosome
+      # split the bed file into small bed based on chromosome
       mafSepc <- mafTar[which(mafTar$Chromosome == chrs[c]), ]
       bedSepc <- bedProc[which(bedProc$chr == chrs[c]), ]
       l <- list()
