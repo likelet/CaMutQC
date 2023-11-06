@@ -172,6 +172,13 @@ calTMB <- function(maf, bedFile, assay = 'MSK-v3', genelist = NULL,
 
     maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
     chrs <- unique(maf$Chromosome)
+    # set a warning if there is no overlap between the chromosome field of maf
+    # and bed regions
+    if (length(intersect(chrs, unique(bed$V1))) == 0) {
+      stop(paste0("No overlap between chromosome field in maf and chromosome field", 
+                  "in bed file. \n", "Maybe '1' in maf should be 'chr1'?"))
+    }
+    
     for (c in seq_len(length(chrs))) {
       maf_target <- maf[which(maf$Chromosome == chrs[c]), ]
       bed_target <- bedProc[which(bedProc$chrom == chrs[c]), ]
