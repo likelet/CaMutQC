@@ -232,9 +232,10 @@ t2[which(is.na(t2[, 1])),1] <- 0
 
 ```{r piechart-of-types, echo=FALSE, fig.width=6, fig.height=6, fig.align='center'}
 cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946", 
-           "#f2cc8f", "#e7ecef", "#f5cac3", "#11DD66")
+           "#f2cc8f", "#e7ecef", "#f5cac3", "#006d77", "#83c5be", "#edf6f9", 
+           "#ffddd2", "#e29578", "#f6bd60", "#84a59d", "#f28482", 
+           "#bdb2ff", "#ff6392", "#14213d", "#b5838d", "#168aad")
 
-# library(ggplot2)
 
 flagDat <- data.frame(table(mafFilteredT$CaTag))
 #flagDat <- flagDat[order(flagDat$Freq, decreasing = TRUE),]
@@ -685,6 +686,7 @@ if (isTRUE(selectCols) | isFALSE(selectCols)){
 }
 datatable(mafFilteredF[, showCols], filter = 'top', 
           extensions = c('Buttons', 'FixedHeader'),
+          rownames = FALSE,
           options = list(dom = 'Bfirtp', autoWidth = TRUE,
                          buttons = c('csv', 'excel', 'pdf', 'print'),
                          scrollX = TRUE, fixedHeader = TRUE))
