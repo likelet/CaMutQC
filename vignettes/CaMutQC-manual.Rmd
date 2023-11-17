@@ -250,7 +250,7 @@ table(MAF_pon$CaTag)
 
 Most studies relate to cancer somatic mutations keep certain types of variants in order to better target candidate variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
 
-In CaMutQC, these two categories can be chosen in this step and **`exonic`** is the default option, while **`nonsynonymous`** will leave users non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
+In CaMutQC, these two categories can be chosen in this step and **`exonic`** is the default option, while **`nonsynonymous`** will leave users non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html).
 
 - Variant classifications filtered when set as exonic: **`RNA`, `Intron`, `IGR`, `5\'Flank`, `3\'Flank`, `5\'UTR`, `3\'UTR`**
 

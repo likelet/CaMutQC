@@ -142,7 +142,7 @@ In CaMutQC, PON filtration dependents on GATK PON datasets, and variant data ref
 
 Most studies relate to cancer somatic mutations remove certain types of variants in order to better target candidate variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
 
-In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
+In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html).
 
 - Variant classifications viewed as exonic: **`RNA`, `Intron`, `IGR`, `5\'Flank`, `3\'Flank`, `5\'UTR`, `3\'UTR`**
 
