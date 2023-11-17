@@ -20,6 +20,8 @@
 #' including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
 #' Default: NULL
+#' @param bedHeader Whether the input bed file has a header or not. 
+#' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
 #' @param progressbar Whether to show progress bar when running this function
@@ -41,7 +43,8 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                          Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE,
                          keepCOSMIC = TRUE, keepType = 'exonic',
-                         bedFile = NULL, bedFilter = TRUE, progressbar = TRUE){
+                         bedFile = NULL, bedHeader = FALSE,
+                         bedFilter = TRUE, progressbar = TRUE){
   
   # build a progress bar and turn it on is asked
   # pb <- txtProgressBar(min = 0, max = 100, style = 3)
@@ -71,7 +74,8 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     setTxtProgressBar(pb, 80, title = progressbar)
     cat("\n")
   }
-  maf <- mutFilterReg(maf, bedFile = bedFile, bedFilter = bedFilter)
+  maf <- mutFilterReg(maf, bedFile = bedFile, bedHeader = bedHeader,
+                      bedFilter = bedFilter)
 
   # complete selection
   if (progressbar) {
