@@ -108,9 +108,8 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                       normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
                       MAFcenter = '.', MAFstrand = '+', inputStrelka = FALSE) {
   # message('Loading VCF data...')
-  # message(vcfFile)
   invisible(capture.output(Anno_Vcf <- read.vcfR(vcfFile)))
-  message('VCF data has been loaded successfully!')
+  message(paste0(vcfFile, ' has been loaded successfully!'))
 
   ## convert to data frames and store useful information
   vcf_header <- as.data.frame(Anno_Vcf@meta)

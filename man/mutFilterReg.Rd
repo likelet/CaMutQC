@@ -23,7 +23,7 @@ An MAF data frame where some variants
 have R tag in CaTag column for region filtration.
 }
 \description{
-Filter variants in specific regions.
+Filter variants not in specific regions.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
