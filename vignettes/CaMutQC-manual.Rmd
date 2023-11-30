@@ -312,7 +312,7 @@ table(MAF_selec$CaTag)
 
 #### 6.2.3 Combined function: `mutFilerCom`
 
-A main function of CaMutQC is `mutFilterCom`, which integrates all sub-functions into a big function. In addition, it includes other functions that make CaMutQC an interactive and powerful tool.
+A main function of CaMutQC is `mutFilterCom`, which integrates all sub-functions into a big function. In addition, it includes other functions that make CaMutQC an interactive and powerful tool, for example, you can export the code, along with the parameters you set by turning on `codelog` and specify `codelogFile`.
 
 ```{r, message=FALSE}
 MAFCom <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = FALSE)
