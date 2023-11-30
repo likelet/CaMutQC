@@ -77,6 +77,11 @@
 #' "Zhu_et_al-Nat_Commun-2020-KIRP"
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
+#' @param codelog If TRUE, your code, along with the parameters you set, 
+#' will be export in a log file. It will be convenient for users to repeat 
+#' experiments. Default: FALSE
+#' @param codelogFile Where to store the codelog, only useful when codelog is
+#' set to TRUE. Default: "mutFilterCom.log"
 #'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
@@ -86,7 +91,7 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata/Multi-sample",
 #' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterCom(maf, TMB = FALSE)
+#' mafF <- mutFilterCom(maf, TMB = FALSE, report = FALSE)
 
 
 mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
@@ -102,7 +107,8 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                          mutType = 'nonsynonymous',
                          reportFile = 'FilterReport.html', reportDir = './',
                          TMB = TRUE, cancerType = NULL, reference = NULL,
-                         progressbar = TRUE) {
+                         progressbar = TRUE, codelog = FALSE, 
+                         codelogFile = "mutFilterCom.log") {
 
 
   # run mutFilterTech
@@ -164,6 +170,34 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
     rmarkdown::render(system.file("rmd", "CaMutQC-FilterReport.Rmd",
                                   package = "CaMutQC"), output_file = reportFile,
                       output_dir = reportDir)
+  }
+  
+  # export codelog if asked
+  if (codelog) {
+    printer <- file(codelogFile, "w")
+    # export date and running code 
+    writeLines(paste0(date(), " \n"), con=printer)
+    running_code <- paste0("mutFilterCom(maf, panel=", panel, ", tumorDP=", 
+                           tumorDP, ", normalDP=", normalDP, ", tumorAD=", tumorAD,
+                           ", normalAD=", normalAD, ", VAF=", VAF, ", VAFratio=",
+                           VAFratio, ", SBmethod=", SBmethod, ", SBscore=", 
+                           SBscore, ", maxIndelLen=", maxIndelLen, ", minInterval=",
+                           minInterval, ", tagFILTER=", tagFILTER, ", dbVAF=",
+                           dbVAF, ", ExAC=", ExAC, ", Genomesprojects1000=", 
+                           Genomesprojects1000, ", ESP6500=", ESP6500, ", gnomAD=",
+                           gnomAD, ", dbSNP=", dbSNP, ", keepCOSMIC=", keepCOSMIC,
+                           ", keepType=", keepType, ", bedFile=", bedFile,
+                           ", bedHeader=", bedHeader, ", bedFilter=", bedFilter,
+                           ", mutFilter=", mutFilter, ", selectCols=", selectCols,
+                           ", report=", report, ", assay=", assay, ", genelist=",
+                           genelist, ", mutType=", mutType, 
+                           ", reportFile=", reportFile, ", reportDir=", reportDir,
+                           ", TMB=", TMB, ", cancerType=", cancerType, 
+                           ", reference=", reference, ", progressbar=", progressbar,
+                           ", codelog=", codelog, ", codelogFile=", codelogFile,
+                           ")")
+    writeLines(running_code, con=printer)
+    close(printer)
   }
 
   if (mutFilter) {

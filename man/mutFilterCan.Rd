@@ -36,7 +36,9 @@ mutFilterCan(
   reportFile = "FilterReport.html",
   reportDir = "./",
   TMB = FALSE,
-  progressbar = TRUE
+  progressbar = TRUE,
+  codelog = FALSE,
+  codelogFile = "mutFilterCan.log"
 )
 }
 \arguments{
@@ -132,6 +134,13 @@ Or a vector contains column names will be kept.}
 
 \item{progressbar}{Whether to show progress bar when running this function
 Default: TRUE}
+
+\item{codelog}{If TRUE, your code, along with the parameters you set, 
+will be export in a log file. It will be convenient for users to repeat 
+experiments. Default: FALSE}
+
+\item{codelogFile}{Where to store the codelog, only useful when codelog is
+set to TRUE. Default: "mutFilterCan.log"}
 }
 \value{
 An MAF data frame after common strategy filtration for a cancer type.

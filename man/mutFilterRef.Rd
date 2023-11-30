@@ -33,7 +33,9 @@ mutFilterRef(
   report = TRUE,
   reportFile = "FilterReport.html",
   reportDir = "./",
-  TMB = FALSE
+  TMB = FALSE,
+  codelog = FALSE,
+  codelogFile = "mutFilterCom.log"
 )
 }
 \arguments{
@@ -124,6 +126,13 @@ Or a vector contains column names will be kept.}
 \item{reportDir}{Path to the output report file. Default: './'}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE}
+
+\item{codelog}{If TRUE, your code, along with the parameters you set, 
+will be export in a log file. It will be convenient for users to repeat 
+experiments. Default: FALSE}
+
+\item{codelogFile}{Where to store the codelog, only useful when codelog is
+set to TRUE. Default: "mutFilterCom.log"}
 }
 \value{
 An MAF data frame after applied filtering strategies in another study.

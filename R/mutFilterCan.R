@@ -63,6 +63,11 @@
 #' @param TMB Whether to calculate TMB. Default: TRUE
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
+#' @param codelog If TRUE, your code, along with the parameters you set, 
+#' will be export in a log file. It will be convenient for users to repeat 
+#' experiments. Default: FALSE
+#' @param codelogFile Where to store the codelog, only useful when codelog is
+#' set to TRUE. Default: "mutFilterCan.log"
 #'
 #' @return An MAF data frame after common strategy filtration for a cancer type.
 #' @return A filter report in HTML format
@@ -84,7 +89,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                          bedHeader = FALSE, mutFilter = FALSE, 
                          selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = FALSE, progressbar = TRUE) {
+                         TMB = FALSE, progressbar = TRUE, codelog = FALSE, 
+                         codelogFile = "mutFilterCan.log") {
 
   # BLCA
   if (cancerType == 'BLCA'){
@@ -102,7 +108,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 selectCols = selectCols, report = report,
                                 reportFile = reportFile, reportDir = reportDir,
                                 TMB = TMB, cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # BRCA
   }else if(cancerType == 'BRCA'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, VAF = 0.1,
@@ -119,7 +126,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 selectCols = selectCols, report = report,
                                 reportFile = reportFile, reportDir = reportDir,
                                 TMB = TMB, cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # COADREAD
   }else if(cancerType == 'COADREAD'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 5, VAF = 0.2,
@@ -137,7 +145,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # UCEC
   }else if(cancerType == 'UCEC'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
@@ -155,7 +164,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # UCS
   }else if(cancerType == 'UCS'){
@@ -174,7 +184,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # KIRC
   }else if(cancerType == 'KIRC'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE,
@@ -193,7 +204,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # KIRP
   }else if(cancerType == 'KIRP'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
@@ -211,7 +223,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # LCML
   }else if(cancerType == 'LCML'){
     mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE,
@@ -229,7 +242,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # LAML
   }else if(cancerType == 'LAML'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, tumorAD = 3,
@@ -246,7 +260,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # LIHC
   }else if(cancerType == 'LIHC'){
@@ -265,7 +280,8 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   }else{
     stop('Invaild cancer type detected, please provide a vaild cancer type.')
   }

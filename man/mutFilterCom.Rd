@@ -40,7 +40,9 @@ mutFilterCom(
   TMB = TRUE,
   cancerType = NULL,
   reference = NULL,
-  progressbar = TRUE
+  progressbar = TRUE,
+  codelog = FALSE,
+  codelogFile = "mutFilterCom.log"
 )
 }
 \arguments{
@@ -155,6 +157,13 @@ Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
 
 \item{progressbar}{Whether to show progress bar when running this function
 Default: TRUE}
+
+\item{codelog}{If TRUE, your code, along with the parameters you set, 
+will be export in a log file. It will be convenient for users to repeat 
+experiments. Default: FALSE}
+
+\item{codelogFile}{Where to store the codelog, only useful when codelog is
+set to TRUE. Default: "mutFilterCom.log"}
 }
 \value{
 An MAF data frame after common strategy filtration
