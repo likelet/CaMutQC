@@ -45,6 +45,8 @@
 #' including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
 #' Default: NULL
+#' @param bedHeader Whether the input bed file has a header or not. 
+#' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
 #' @param mutFilter Whether to directly return a filtered MAF data frame.
@@ -61,6 +63,11 @@
 #' @param TMB Whether to calculate TMB. Default: TRUE
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
+#' @param codelog If TRUE, your code, along with the parameters you set, 
+#' will be export in a log file. It will be convenient for users to repeat 
+#' experiments. Default: FALSE
+#' @param codelogFile Where to store the codelog, only useful when codelog is
+#' set to TRUE. Default: "mutFilterCan.log"
 #'
 #' @return An MAF data frame after common strategy filtration for a cancer type.
 #' @return A filter report in HTML format
@@ -79,9 +86,11 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                          Genomesprojects1000 = FALSE, ESP6500 = FALSE,
                          gnomAD = FALSE, dbSNP = FALSE, keepCOSMIC = FALSE,
                          keepType = 'all', bedFile = NULL, bedFilter = TRUE,
-                         mutFilter = FALSE, selectCols = FALSE, report = TRUE,
+                         bedHeader = FALSE, mutFilter = FALSE, 
+                         selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = FALSE, progressbar = TRUE) {
+                         TMB = FALSE, progressbar = TRUE, codelog = FALSE, 
+                         codelogFile = "mutFilterCan.log") {
 
   # BLCA
   if (cancerType == 'BLCA'){
@@ -94,11 +103,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 dbSNP = dbSNP, keepCOSMIC = keepCOSMIC,
                                 keepType = keepType, bedFile = bedFile,
+                                bedHeader = bedHeader,
                                 bedFilter = bedFilter, mutFilter = mutFilter,
                                 selectCols = selectCols, report = report,
                                 reportFile = reportFile, reportDir = reportDir,
                                 TMB = TMB, cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # BRCA
   }else if(cancerType == 'BRCA'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, VAF = 0.1,
@@ -108,13 +119,15 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 SBmethod = SBmethod, ExAC = ExAC,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
                                 minInterval = minInterval, bedFile = bedFile,
+                                bedHeader = bedHeader,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 gnomAD = gnomAD, keepType = keepType,
                                 bedFilter = bedFilter, mutFilter = mutFilter,
                                 selectCols = selectCols, report = report,
                                 reportFile = reportFile, reportDir = reportDir,
                                 TMB = TMB, cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # COADREAD
   }else if(cancerType == 'COADREAD'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 5, VAF = 0.2,
@@ -127,11 +140,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # UCEC
   }else if(cancerType == 'UCEC'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
@@ -144,11 +159,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # UCS
   }else if(cancerType == 'UCS'){
@@ -162,11 +179,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # KIRC
   }else if(cancerType == 'KIRC'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE,
@@ -180,11 +199,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # KIRP
   }else if(cancerType == 'KIRP'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
@@ -197,11 +218,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # LCML
   }else if(cancerType == 'LCML'){
     mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE,
@@ -214,11 +237,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   # LAML
   }else if(cancerType == 'LAML'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, tumorAD = 3,
@@ -230,11 +255,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 minInterval = minInterval, gnomAD = gnomAD,
                                 keepCOSMIC = keepCOSMIC, keepType = keepType,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # LIHC
   }else if(cancerType == 'LIHC'){
@@ -248,11 +275,13 @@ mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,
                                 tagFILTER = tagFILTER, dbVAF = dbVAF,
                                 ESP6500 = ESP6500, gnomAD = gnomAD,
                                 bedFile = bedFile, bedFilter = bedFilter,
+                                bedHeader = bedHeader,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
-                                progressbar = progressbar)
+                                progressbar = progressbar, codelog = codelog,
+                                codelogFile = codelogFile)
   }else{
     stop('Invaild cancer type detected, please provide a vaild cancer type.')
   }

@@ -40,6 +40,8 @@
 #' including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.
 #' @param bedFile A file in bed format that contains region information.
 #' Default: NULL.
+#' @param bedHeader Whether the input bed file has a header or not. 
+#' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.
 #' @param mutFilter Whether to directly return a filtered MAF data frame.
@@ -75,6 +77,11 @@
 #' "Zhu_et_al-Nat_Commun-2020-KIRP"
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
+#' @param codelog If TRUE, your code, along with the parameters you set, 
+#' will be export in a log file. It will be convenient for users to repeat 
+#' experiments. Default: FALSE
+#' @param codelogFile Where to store the codelog, only useful when codelog is
+#' set to TRUE. Default: "mutFilterCom.log"
 #'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
@@ -84,7 +91,7 @@
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata/Multi-sample",
 #' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterCom(maf, TMB = FALSE)
+#' mafF <- mutFilterCom(maf, TMB = FALSE, report = FALSE)
 
 
 mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
@@ -93,13 +100,15 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01,
                          ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE,
-                         keepType = 'exonic', bedFile = NULL, bedFilter = TRUE,
-                         mutFilter = FALSE, selectCols = TRUE, report = TRUE,
+                         keepType = 'exonic', bedFile = NULL, bedHeader = FALSE,
+                         bedFilter = TRUE, mutFilter = FALSE, 
+                         selectCols = TRUE, report = TRUE,
                          assay = 'MSK-v3', genelist = NULL,
                          mutType = 'nonsynonymous',
                          reportFile = 'FilterReport.html', reportDir = './',
                          TMB = TRUE, cancerType = NULL, reference = NULL,
-                         progressbar = TRUE) {
+                         progressbar = TRUE, codelog = FALSE, 
+                         codelogFile = "mutFilterCom.log") {
 
 
   # run mutFilterTech
@@ -123,6 +132,7 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                               ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
                               keepCOSMIC = keepCOSMIC, keepType = keepType,
                               bedFile = bedFile, bedFilter = bedFilter,
+                              bedHeader = bedHeader,
                               progressbar = progressbar)
 
   # filter first for report usage
@@ -130,8 +140,8 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
     mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
                  Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
                  ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC,
-                 keepType = keepType, bedFile = bedFile, bedFilter = bedFilter,
-                 progressbar = FALSE))
+                 keepType = keepType, bedFile = bedFile, bedHeader = bedHeader,
+                 bedFilter = bedFilter, progressbar = FALSE))
 
 
   mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
@@ -145,11 +155,11 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
       stop(paste0('A bed file is missing, which is required for TMB calculation.',
           ' If you don\'t want to calculate TMB, please set TMB to FALSE.'))
     }else{
-      bed <- read.table(bedFile)
-      bedLen <- as.character(round(sum(bed$V3 - bed$V2)/1000000, 2))
+      bed <- readBed(bedFile, bedHeader = bedHeader)
+      bedLen <- as.character(round(sum(bed[, 3] - bed[, 2])/1000000, 2))
       TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay,
-                         genelist = genelist, mutType = mutType,
-                         bedFilter = bedFilter)
+                         genelist = genelist, mutType = mutType, 
+                         bedHeader = bedHeader, bedFilter = bedFilter)
       print(paste0("  Estimated tumor mutational burden (TMB): ", TMBvalue))
       print(paste0("  Method used to calculate TMB: ", assay))
     }
@@ -160,6 +170,34 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
     rmarkdown::render(system.file("rmd", "CaMutQC-FilterReport.Rmd",
                                   package = "CaMutQC"), output_file = reportFile,
                       output_dir = reportDir)
+  }
+  
+  # export codelog if asked
+  if (codelog) {
+    printer <- file(codelogFile, "w")
+    # export date and running code 
+    writeLines(paste0(date(), " \n"), con=printer)
+    running_code <- paste0("mutFilterCom(maf, panel=", panel, ", tumorDP=", 
+                           tumorDP, ", normalDP=", normalDP, ", tumorAD=", tumorAD,
+                           ", normalAD=", normalAD, ", VAF=", VAF, ", VAFratio=",
+                           VAFratio, ", SBmethod=", SBmethod, ", SBscore=", 
+                           SBscore, ", maxIndelLen=", maxIndelLen, ", minInterval=",
+                           minInterval, ", tagFILTER=", tagFILTER, ", dbVAF=",
+                           dbVAF, ", ExAC=", ExAC, ", Genomesprojects1000=", 
+                           Genomesprojects1000, ", ESP6500=", ESP6500, ", gnomAD=",
+                           gnomAD, ", dbSNP=", dbSNP, ", keepCOSMIC=", keepCOSMIC,
+                           ", keepType=", keepType, ", bedFile=", bedFile,
+                           ", bedHeader=", bedHeader, ", bedFilter=", bedFilter,
+                           ", mutFilter=", mutFilter, ", selectCols=", selectCols,
+                           ", report=", report, ", assay=", assay, ", genelist=",
+                           genelist, ", mutType=", mutType, 
+                           ", reportFile=", reportFile, ", reportDir=", reportDir,
+                           ", TMB=", TMB, ", cancerType=", cancerType, 
+                           ", reference=", reference, ", progressbar=", progressbar,
+                           ", codelog=", codelog, ", codelogFile=", codelogFile,
+                           ")")
+    writeLines(running_code, con=printer)
+    close(printer)
   }
 
   if (mutFilter) {

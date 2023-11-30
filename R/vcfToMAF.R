@@ -54,14 +54,10 @@ vcfToMAF <- function(vcfFile, multiSample = FALSE, inputStrelka = FALSE,
     if (length(filenames) == 0){
       stop('No VCF file detected under the path you offered.')
     }else{
+      # transform each vcf to maf separately
       dfs <- lapply(filenames, vcfhelper, tumorSampleName = tumorSampleName,
                     normalSampleName = normalSampleName, ncbiBuild = ncbiBuild,
                     MAFcenter = MAFcenter, MAFstrand = MAFstrand)
-      #if (length(dfs) == length(tumorSampleNames)){
-       # names(dfs) <- tumorSampleNames
-      #}else{
-       # warning('Length of objects doesn\'t match')
-      #}
       maf <- do.call("rbind", dfs)
     }
   }else{
@@ -112,9 +108,8 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                       normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
                       MAFcenter = '.', MAFstrand = '+', inputStrelka = FALSE) {
   # message('Loading VCF data...')
-  # message(vcfFile)
   invisible(capture.output(Anno_Vcf <- read.vcfR(vcfFile)))
-  message('VCF data has been loaded successfully!')
+  message(paste0(vcfFile, ' has been loaded successfully!'))
 
   ## convert to data frames and store useful information
   vcf_header <- as.data.frame(Anno_Vcf@meta)
@@ -184,47 +179,45 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
 
   ## tumor sample name and normal sample name
   if (tumorSampleName == 'Extracted'){
+    # mutect format: tumor_sample=
     tumorSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('tumor_sample=',
                                                        vcf_header$`Anno_Vcf@meta`)]
-
-    if (length(tumorSampleLine) == 0){
-      #('Please check the input VCF file to make sure that it contains
-           #\'tumor_sample=\' in the header.')
-      # if no ID was given in the header of VCF file, CaMutQC will use colnamaes
-      # of the VCF main section
-      tumorSampleName <- 'TUMOR'
-
-    }else{
+    if (length(tumorSampleLine) != 0){
       tumorSampleName <- strsplit(tumorSampleLine, split = '=')[[1]][2]
+    }else{
+      # MuSE format: TUMOR=
+      tumorSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('TUMOR=',
+                                                         vcf_header$`Anno_Vcf@meta`)]
+      if (length(tumorSampleLine) != 0){
+        tumorSampleName <- strsplit(strsplit(tumorSampleLine, split = ',')[[1]][1], 
+                                    split = "=")[[1]][3]
+      }else{
+        tumorSampleName <- 'TUMOR'
+      }
     }
   }
 
   if (normalSampleName == 'Extracted'){
+    # mutect format: normal_sample=
     normalSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('normal_sample=',
-                                                        vcf_header$`Anno_Vcf@meta`)]
-
-    if (length(normalSampleLine) == 0){
-      #('Please check the input VCF file to make sure that it contains
-      #\'normal_sample=\' in the header.')
-      # if no ID was given in the header of VCF file, CaMutQC will use colnamaes
-      # of the VCF main section
-      normalSampleName <- 'NORMAL'
-    }else{
+                                                       vcf_header$`Anno_Vcf@meta`)]
+    if (length(normalSampleLine) != 0){
       normalSampleName <- strsplit(normalSampleLine, split = '=')[[1]][2]
+    }else{
+      # MuSE format: NORMAL=
+      normalSampleLine <- vcf_header$`Anno_Vcf@meta`[grep('NORMAL=',
+                                                         vcf_header$`Anno_Vcf@meta`)]
+      if (length(normalSampleLine) != 0){
+        normalSampleName <- strsplit(strsplit(normalSampleLine, split = ',')[[1]][1], 
+                                     split = "=")[[1]][3]
+      }else{
+        normalSampleName <- 'NORMAL'
+      }
     }
   }
-
-  ### check the consistence of tumorSampleName/normalSampleName
-  ### with colnames of FORMAT column
-  if (!(tumorSampleName %in% colnames(vcf_additional))){
-    stop('Tumor Sample Name is invalid.
-     Set as \'Extracted\' if you want tumorSampleName
-         to be extracted from VCF file')
-  }else if(!(normalSampleName %in% colnames(vcf_additional))){
-    stop('Normal Sample Name is invalid.
-     Set as \'Extracted\' if you want normalSampleName
-         to be extracted from VCF file')
-  }
+  
+  colnames(vcf_additional)[which(colnames(vcf_additional) == 'TUMOR')] <- tumorSampleName
+  colnames(vcf_additional)[which(colnames(vcf_additional) == 'NORMAL')] <- normalSampleName
 
   ## strand
   maf[, 8] <- MAFstrand
@@ -411,39 +404,21 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
   maf$n_depth <- as.numeric(maf$n_depth)
 
   maf1 <- jointMAF(maf[ ,1:46], CSQ_info, vcf_main)
+  # remane NORMAL and TUMOR column so that vcf from different callers can merge
+  colnames(vcf_additional)[which(colnames(vcf_additional) == tumorSampleName)] <- 'tumorSampleInfo'
+  colnames(vcf_additional)[which(colnames(vcf_additional) == normalSampleName)] <- 'normalSampleInfo'
+  
   maf <- cbind(maf1, VAF = maf[ ,'VAF'], vcf_additional)
 
   # change column type
   maf$Start_Position <- as.numeric(maf$Start_Position)
   maf$End_Position <- as.numeric(maf$End_Position)
-  maf$GMAF <- suppressWarnings(as.numeric(maf$GMAF))
-  maf$AFR_MAF <- suppressWarnings(as.numeric(maf$AFR_MAF))
-  maf$AMR_MAF <- suppressWarnings(as.numeric(maf$AMR_MAF))
-  maf$ASN_MAF <- suppressWarnings(as.numeric(maf$ASN_MAF))
-  maf$EAS_MAF <- suppressWarnings(as.numeric(maf$EAS_MAF))
-  maf$EUR_MAF <- suppressWarnings(as.numeric(maf$EUR_MAF))
-  maf$SAS_MAF <- suppressWarnings(as.numeric(maf$SAS_MAF))
-  maf$AA_MAF <- suppressWarnings(as.numeric(maf$AA_MAF))
-  maf$EA_MAF <- suppressWarnings(as.numeric(maf$EA_MAF))
-  maf$gnomAD_AF <- suppressWarnings(as.numeric(maf$gnomAD_AF))
-  maf$gnomAD_AFR_AF <- suppressWarnings(as.numeric(maf$gnomAD_AFR_AF))
-  maf$gnomAD_AMR_AF <- suppressWarnings(as.numeric(maf$gnomAD_AMR_AF))
-  maf$gnomAD_EAS_AF <- suppressWarnings(as.numeric(maf$gnomAD_EAS_AF))
-  maf$gnomAD_FIN_AF <- suppressWarnings(as.numeric(maf$gnomAD_FIN_AF))
-  maf$gnomAD_NFE_AF <- suppressWarnings(as.numeric(maf$gnomAD_NFE_AF))
-  maf$gnomAD_OTH_AF <- suppressWarnings(as.numeric(maf$gnomAD_OTH_AF))
-  maf$gnomAD_SAS_AF <- suppressWarnings(as.numeric(maf$gnomAD_SAS_AF))
-  maf$ExAC_AF <- suppressWarnings(as.numeric(maf$ExAC_AF))
-  maf$ExAC_AF_adj <- suppressWarnings(as.numeric(maf$ExAC_AF_adj))
-  maf$ExAC_AF_AFR <- suppressWarnings(as.numeric(maf$ExAC_AF_AFR))
-  maf$ExAC_AF_AMR <- suppressWarnings(as.numeric(maf$ExAC_AF_AMR))
-  maf$ExAC_AF_EAS <- suppressWarnings(as.numeric(maf$ExAC_AF_EAS))
-  maf$ExAC_AF_FIN <- suppressWarnings(as.numeric(maf$ExAC_AF_FIN))
-  maf$ExAC_AF_NFE <- suppressWarnings(as.numeric(maf$ExAC_AF_NFE))
-  maf$ExAC_AF_OTH <- suppressWarnings(as.numeric(maf$ExAC_AF_OTH))
-  maf$ExAC_AF_SAS <- suppressWarnings(as.numeric(maf$ExAC_AF_SAS))
+  # change column type without displaying warnings
+  maf <- suppressWarnings(
+    maf %>%
+      mutate_at(vars(78:86, 101:117), as.numeric)
+  )
 
-  colnames(maf)[which(colnames(maf) == tumorSampleName)] <- 'tumorSampleInfo'
   maf <- cbind(maf, CaTag = '0')
   rownames(maf) <- 1:nrow(maf)
   message('VCF to MAF conversion has been done successfully!')

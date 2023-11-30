@@ -27,6 +27,7 @@ mutFilterCom(
   keepCOSMIC = TRUE,
   keepType = "exonic",
   bedFile = NULL,
+  bedHeader = FALSE,
   bedFilter = TRUE,
   mutFilter = FALSE,
   selectCols = TRUE,
@@ -39,7 +40,9 @@ mutFilterCom(
   TMB = TRUE,
   cancerType = NULL,
   reference = NULL,
-  progressbar = TRUE
+  progressbar = TRUE,
+  codelog = FALSE,
+  codelogFile = "mutFilterCom.log"
 )
 }
 \arguments{
@@ -104,6 +107,9 @@ including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.}
 \item{bedFile}{A file in bed format that contains region information.
 Default: NULL.}
 
+\item{bedHeader}{Whether the input bed file has a header or not. 
+Default: FALSE.}
+
 \item{bedFilter}{Whether to filter the information in bed file or not, which
 only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.}
 
@@ -151,6 +157,13 @@ Options are: "Haraldsdottir_et_al-Gastroenterology-2014-UCEC",
 
 \item{progressbar}{Whether to show progress bar when running this function
 Default: TRUE}
+
+\item{codelog}{If TRUE, your code, along with the parameters you set, 
+will be export in a log file. It will be convenient for users to repeat 
+experiments. Default: FALSE}
+
+\item{codelogFile}{Where to store the codelog, only useful when codelog is
+set to TRUE. Default: "mutFilterCom.log"}
 }
 \value{
 An MAF data frame after common strategy filtration

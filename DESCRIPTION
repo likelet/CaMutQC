@@ -1,7 +1,7 @@
 Package: CaMutQC
 Type: Package
 Title: An R Package for Comprehensive Flitration and Selection of Cancer Somatic Mutations
-Version: 0.3.0
+Version: 0.4.0
 Author: 
     person(given = "Xin",
            family = "Wang",
@@ -15,7 +15,6 @@ Description: CaMutQC is able to filter false positive mutations generated due to
     And a detailed and vivid filter report will be offered after completing 
     a whole filtration or selection section. Also, CaMutQC integrates serveral 
     methods and gene panels for Tumor Mutational Burden (TMB) calculation.  
-License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
@@ -33,4 +32,8 @@ Imports:
     vcfR,
     clusterProfiler,
     stringr,
-    DT
+    DT,
+    MesKit,
+    maftools,
+    data.table
+License: GPL (>= 3)

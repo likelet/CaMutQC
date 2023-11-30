@@ -142,7 +142,7 @@ In CaMutQC, PON filtration dependents on GATK PON datasets, and variant data ref
 
 Most studies relate to cancer somatic mutations remove certain types of variants in order to better target candidate variants, among which **`exonic`** and **`nonsynonymous`** are two of the most widely used categories for filtration [4](#refer) [9](#refer) [10](#refer).
 
-In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html) and [Variant Classification Description](http://uswest.ensembl.org/Help/Glossary?id=535).
+In CaMutQC, two categories can be chosen during this filtration step. **`exonic`** is the default option, and the other option is **`nonsynonymous`**, it will leave you non-synonymous variants. More details could be found at [Ensembl Variation](https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html).
 
 - Variant classifications viewed as exonic: **`RNA`, `Intron`, `IGR`, `5\'Flank`, `3\'Flank`, `5\'UTR`, `3\'UTR`**
 
@@ -657,7 +657,7 @@ Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mut
 
 There are many calculation methods for TMB, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, the conventional method of determining TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
 
-In CaMutQC, four methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`.
+In CaMutQC, four methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`. **But it is important to point out that the bed files used for these assays in CaMutQC (only cover CDS region of panel genes) are not the real bed region files, and filtration strategy used may be different, so the result can only be viewed as a reference.** 
 
 **Size of the targeted genomic region**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste(bedLen, ' Mbp'))}else{return('Calculation not asked.')}`**</span>
 

@@ -60,6 +60,11 @@
 #' @param reportFile File name of the report. Default: 'FilterReport.html'
 #' @param reportDir Path to the output report file. Default: './'
 #' @param TMB Whether to calculate TMB. Default: TRUE
+#' @param codelog If TRUE, your code, along with the parameters you set, 
+#' will be export in a log file. It will be convenient for users to repeat 
+#' experiments. Default: FALSE
+#' @param codelogFile Where to store the codelog, only useful when codelog is
+#' set to TRUE. Default: "mutFilterCom.log"
 #'
 #' @return An MAF data frame after applied filtering strategies in another study.
 #' @return A filter report in HTML format
@@ -81,7 +86,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                          keepType = 'all', bedFile = NULL, bedFilter = TRUE,
                          mutFilter = FALSE, selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = FALSE) {
+                         TMB = FALSE, codelog = FALSE, 
+                         codelogFile = "mutFilterCom.log") {
 
   # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"
   # PMID: 25194673
@@ -99,7 +105,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
-                                reference = reference)
+                                reference = reference, codelog = codelog,
+                                codelogFile = codelogFile)
   # "Cherniack_et_al-Cancer_Cell-2017-UCS"
   # PMID: 28292439
   }else if(reference == "Cherniack_et_al-Cancer_Cell-2017-UCS"){
@@ -116,7 +123,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
-                                reference = reference)
+                                reference = reference, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
   # PMID: 22397650
@@ -135,7 +143,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
-                                reference = reference)
+                                reference = reference, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # "Zhu_et_al-Nat_Commun-2020-KIRP"
   # PMID: 32555180
@@ -153,7 +162,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
-                                reference = reference)
+                                reference = reference, codelog = codelog,
+                                codelogFile = codelogFile)
 
   # "Mason_et_al-Leukemia-2015-LCML"
   #  PMID: 26648538
@@ -171,7 +181,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 mutFilter = mutFilter, selectCols = selectCols,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
-                                reference = reference)
+                                reference = reference, codelog = codelog,
+                                codelogFile = codelogFile)
   }else{
     stop('Invaild reference input detected, please provide a vaild reference.')
   }
