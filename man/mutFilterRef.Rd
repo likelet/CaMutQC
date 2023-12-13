@@ -140,7 +140,8 @@ An MAF data frame after applied filtering strategies in another study.
 A filter report in HTML format
 }
 \description{
-Use the same filtering strategies that a specific study used
+Use the same filtering strategies that a specific study used, or
+top-rated strategies shared by users.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata/Multi-sample",

@@ -1,6 +1,6 @@
 #' mutFilterRef
-#' @description Use the same filtering strategies that a specific study used
-#'
+#' @description Use the same filtering strategies that a specific study used, or
+#' top-rated strategies shared by users.
 #' @param maf An MAF data frame.
 #' @param reference A specific study whose filtering strategies
 #' need to be referred to.
@@ -149,10 +149,10 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
   # "Zhu_et_al-Nat_Commun-2020-KIRP"
   # PMID: 32555180
   }else if(reference == "Zhu_et_al-Nat_Commun-2020-KIRP"){
-    mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
-                                dbSNP = TRUE, keepCOSMIC = TRUE,
+    mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.04,
+                                dbSNP = TRUE, keepCOSMIC = TRUE, tumorAD = 3,
                                 Genomesprojects1000 = TRUE, ExAC = TRUE,
-                                tumorAD = tumorAD, keepType = keepType,
+                                keepType = keepType,
                                 VAFratio = VAFratio, SBmethod = SBmethod,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
                                 minInterval = minInterval,

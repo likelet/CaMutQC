@@ -75,8 +75,8 @@ MAF data frame with special labels from CaMutQC will be returned after each filt
 [VCF](https://samtools.github.io/hts-specs/VCFv4.3.pdf) is a widely used text file format used in bioinformatics for storing gene sequence variations. All VCF files should be annotated by [VEP](https://useast.ensembl.org/info/docs/tools/vep/index.html) first before analyzing through CaMutQC because annotated VCF files contain more detailed information that has clinical significance. Information about VEP and how to run VEP on VCF file can be found [here](https://asia.ensembl.org/info/docs/tools/vep/script/vep_options.html#opt_check_existing).
 
 
-### 3.2 Multi-sample VCF
-CaMutQC supports annotated multi-sample VCF files as input, which should be under the same file path.
+### 3.2 Multiple VCF
+CaMutQC supports VEP annotated multi-sample or multi-caller VCF files as input, which should be under the same file path. **Support caller: MuTect2, VarScan2, MuSE.**
 
 
 &nbsp;
@@ -107,12 +107,12 @@ MAFdat <- vcfToMAF(system.file("extdata/Multi-sample", "SRR3670028.somatic.filte
 MAFdat[1:5, 1:13]
 ```
 
-Load multi-sample data that consists of several VCF files by setting `multiSample` as `TRUE`.
+Load multi-sample data that consists of several VCF files by setting `multiVCF` as `TRUE`.
 
 ```{r, message=FALSE}
 vcfPath <- system.file("extdata/Multi-sample", package = "CaMutQC")
-multiVCF <- vcfToMAF(vcfPath, multiSample = TRUE)
-unique(multiVCF$Tumor_Sample_Barcode)
+multiVCFs <- vcfToMAF(vcfPath, multiVCF = TRUE)
+unique(multiVCFs$Tumor_Sample_Barcode)
 ```
 
 &nbsp;
@@ -375,6 +375,8 @@ There are many methods for TMB measurement, including WGS, WES, regional sequenc
 
 CaMutQC supports four methods for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`.
 
+**Note: the bed region files mentioned above are generated only from CDS regions, NOT the exact bed region, so the TMB results are only for reference.**
+
 ```{r, message=FALSE}
 tmb_value <- calTMB(MAFdat, 
                     bedFile = system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed", package = "CaMutQC"), assay = 'MSK-v1')
@@ -408,7 +410,13 @@ maf_union
 
 &nbsp;
 
-## 10. SessionInfo
+## 10. Name filtration strategies/parameters set as your name!
+Tired of finding or memorizing best parameters? You can share your own filtration strategies/parameters set in the [CaMutQC community](https://github.com/likelet/CaMutQC/issues) by opening a new issue with a `parameter set` label. Every six months, CaMutQC will be updated to include top-rated parameter sets in `mutFilterRef` function, with the name of author's Github username. Isn't it cool? Start using, sharing and contributing NOW!
+
+
+&nbsp;
+
+## 11. SessionInfo
 
 ```{r}
 sessionInfo()
@@ -416,7 +424,7 @@ sessionInfo()
 
 &nbsp;
 
-## 11. Reference {#refer}
+## 12. Reference {#refer}
 
 &nbsp;
 
