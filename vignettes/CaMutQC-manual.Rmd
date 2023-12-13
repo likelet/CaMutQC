@@ -291,7 +291,7 @@ Function `mutFilterTech` combines filtration strategies for removing potential a
 Some variant callers add a tag if a variant pass the post-filtration after calling. With CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. <span style="color:#ED6F3E">**`PASS`**</span> is set as the default tag.
 
 ```{r, message=FALSE}
-MAF_tech <- mutFilterTech(MAFdat, panel = "Customized", tumorDP = 8, minInterval = 9, tagFILTER = NULL)
+MAF_tech <- mutFilterTech(MAFdat, panel = "Customized", tumorDP = 8, minInterval = 9, tagFILTER = NULL, progressbar = FALSE)
 table(MAF_tech$CaTag)
 ```
 
@@ -304,7 +304,7 @@ In most cases, basic filtration by removing potential artifacts is not enough fo
 The whole selection process in CaMutQC is comprised of database filtration, variant type filtration and region selection, which implemented in `mutSelection` function.
 
 ```{r, message=FALSE}
-MAF_selec <- mutSelection(MAFdat, dbVAF = 0.02, gnomAD = FALSE, keepType = 'nonsynonymous')
+MAF_selec <- mutSelection(MAFdat, dbVAF = 0.02, gnomAD = FALSE, keepType = 'nonsynonymous', progressbar = FALSE)
 table(MAF_selec$CaTag)
 ```
 
@@ -315,7 +315,7 @@ table(MAF_selec$CaTag)
 A main function of CaMutQC is `mutFilterCom`, which integrates all sub-functions into a big function. In addition, it includes other functions that make CaMutQC an interactive and powerful tool, for example, you can export the code, along with the parameters you set by turning on `codelog` and specify `codelogFile`.
 
 ```{r, message=FALSE}
-MAFCom <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = FALSE)
+MAFCom <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = FALSE, progressbar = FALSE)
 table(MAFCom$CaTag)
 ```
 
@@ -333,7 +333,7 @@ By default, a vivid and detailed filter report will be saved automatically each 
 
 ```{r, message=FALSE}
 MAFCom_tmb <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = TRUE, 
-                           bedFile = system.file("extdata/bed/Twist", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"))
+                           bedFile = system.file("extdata/bed/Twist", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"), progressbar = FALSE)
 table(MAFCom_tmb$CaTag)
 ```
 
@@ -348,7 +348,7 @@ With CaMutQC, users are able to filter and select cancer somatic mutations accor
 Cancer types supported in CaMutQC: **COADREAD**, **BRCA**, **LIHC**, **LAML**, **LCML**, **UCEC**, **UCS**, **BLCA**, **KIRC** and **KIRP**.
 
 ```{r, message=FALSE}
-MAFCan <- mutFilterCan(MAFdat, cancerType = 'LAML', report = FALSE, TMB = FALSE)
+MAFCan <- mutFilterCan(MAFdat, cancerType = 'LAML', report = FALSE, TMB = FALSE, progressbar = FALSE)
 table(MAFCan$CaTag)
 ```
 
@@ -361,7 +361,7 @@ So far, filtering strategies used in five studies are provided for users with Ca
 
 ```{r, message=FALSE}
 MAFRef <- mutFilterRef(MAFdat, reference = "Zhu_et_al-Nat_Commun-2020-KIRP", 
-                       report = FALSE, TMB = FALSE)
+                       report = FALSE, TMB = FALSE, progressbar = FALSE)
 table(MAFRef$CaTag)
 ```
 
@@ -396,13 +396,13 @@ After verifying on published data sets, We believed combining CaMutQC filtered m
 ```{r, message=FALSE}
 maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller", 
                                  "P01_MuSE.vep.vcf",package = "CaMutQC"))
-maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE)
+maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE, progressbar = FALSE)
 maf_MuTect2 <- vcfToMAF(system.file("extdata/Multi-caller", 
                                     "P01_MuTect2.vep.vcf",package = "CaMutQC"))
-maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE)
+maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE, progressbar = FALSE)
 maf_VarScan2 <- vcfToMAF(system.file("extdata/Multi-caller", 
                                      "P01_VarScan2.vep.vcf",package = "CaMutQC")) 
-maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE)
+maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE, progressbar = FALSE)
 mafs <- list(maf_MuSE_f, maf_MuTect2_f, maf_VarScan2_f)
 maf_union <- processMut(mafs, processMethod = "union")
 maf_union
