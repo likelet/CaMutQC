@@ -176,5 +176,5 @@ Apply common filtering strategies on a MAF data frame.
 \examples{
 maf <- vcfToMAF(system.file("extdata/Multi-sample",
 "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
-mafF <- mutFilterCom(maf, TMB = FALSE)
+mafF <- mutFilterCom(maf, TMB = FALSE, report = FALSE)
 }
