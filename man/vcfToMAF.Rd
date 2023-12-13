@@ -6,7 +6,7 @@
 \usage{
 vcfToMAF(
   vcfFile,
-  multiSample = FALSE,
+  multiVCF = FALSE,
   inputStrelka = FALSE,
   writeFile = FALSE,
   MAFfile = "MAF.maf",
@@ -24,8 +24,8 @@ vcfToMAF(
 \item{vcfFile}{Directory of a VCF file, or the path to several VCF files
 that is going to be transformed. Files should be in .vcf or .vcf.gz format.}
 
-\item{multiSample}{Logical, whether the input is a path that leads to several
-VCFs that come from multi-region/sample sequencing. Default: FALSE}
+\item{multiVCF}{Logical, whether the input is a path that leads to several
+VCFs that come from multi-region/sample/caller sequencing. Default: FALSE}
 
 \item{inputStrelka}{The type of variants ('indel' or 'SNV') in VCF file if it is
 from Strelka. Default: FALSE}

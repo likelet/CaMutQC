@@ -34,6 +34,7 @@ mutFilterRef(
   reportFile = "FilterReport.html",
   reportDir = "./",
   TMB = FALSE,
+  progressbar = TRUE,
   codelog = FALSE,
   codelogFile = "mutFilterCom.log"
 )
@@ -127,6 +128,9 @@ Or a vector contains column names will be kept.}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE}
 
+\item{progressbar}{Whether to show progress bar when running this function
+Default: TRUE}
+
 \item{codelog}{If TRUE, your code, along with the parameters you set, 
 will be export in a log file. It will be convenient for users to repeat 
 experiments. Default: FALSE}
@@ -140,7 +144,8 @@ An MAF data frame after applied filtering strategies in another study.
 A filter report in HTML format
 }
 \description{
-Use the same filtering strategies that a specific study used
+Use the same filtering strategies that a specific study used, or
+top-rated strategies shared by users.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata/Multi-sample",

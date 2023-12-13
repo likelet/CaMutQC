@@ -75,8 +75,8 @@ MAF data frame with special labels from CaMutQC will be returned after each filt
 [VCF](https://samtools.github.io/hts-specs/VCFv4.3.pdf) is a widely used text file format used in bioinformatics for storing gene sequence variations. All VCF files should be annotated by [VEP](https://useast.ensembl.org/info/docs/tools/vep/index.html) first before analyzing through CaMutQC because annotated VCF files contain more detailed information that has clinical significance. Information about VEP and how to run VEP on VCF file can be found [here](https://asia.ensembl.org/info/docs/tools/vep/script/vep_options.html#opt_check_existing).
 
 
-### 3.2 Multi-sample VCF
-CaMutQC supports annotated multi-sample VCF files as input, which should be under the same file path.
+### 3.2 Multiple VCF
+CaMutQC supports VEP annotated multi-sample or multi-caller VCF files as input, which should be under the same file path. **Support caller: MuTect2, VarScan2, MuSE.**
 
 
 &nbsp;
@@ -107,12 +107,12 @@ MAFdat <- vcfToMAF(system.file("extdata/Multi-sample", "SRR3670028.somatic.filte
 MAFdat[1:5, 1:13]
 ```
 
-Load multi-sample data that consists of several VCF files by setting `multiSample` as `TRUE`.
+Load multi-sample data that consists of several VCF files by setting `multiVCF` as `TRUE`.
 
 ```{r, message=FALSE}
 vcfPath <- system.file("extdata/Multi-sample", package = "CaMutQC")
-multiVCF <- vcfToMAF(vcfPath, multiSample = TRUE)
-unique(multiVCF$Tumor_Sample_Barcode)
+multiVCFs <- vcfToMAF(vcfPath, multiVCF = TRUE)
+unique(multiVCFs$Tumor_Sample_Barcode)
 ```
 
 &nbsp;
@@ -291,7 +291,7 @@ Function `mutFilterTech` combines filtration strategies for removing potential a
 Some variant callers add a tag if a variant pass the post-filtration after calling. With CaMutQC, users can set a standard tag found in the FILTER column of VCF file to keep variants. <span style="color:#ED6F3E">**`PASS`**</span> is set as the default tag.
 
 ```{r, message=FALSE}
-MAF_tech <- mutFilterTech(MAFdat, panel = "Customized", tumorDP = 8, minInterval = 9, tagFILTER = NULL)
+MAF_tech <- mutFilterTech(MAFdat, panel = "Customized", tumorDP = 8, minInterval = 9, tagFILTER = NULL, progressbar = FALSE)
 table(MAF_tech$CaTag)
 ```
 
@@ -304,7 +304,7 @@ In most cases, basic filtration by removing potential artifacts is not enough fo
 The whole selection process in CaMutQC is comprised of database filtration, variant type filtration and region selection, which implemented in `mutSelection` function.
 
 ```{r, message=FALSE}
-MAF_selec <- mutSelection(MAFdat, dbVAF = 0.02, gnomAD = FALSE, keepType = 'nonsynonymous')
+MAF_selec <- mutSelection(MAFdat, dbVAF = 0.02, gnomAD = FALSE, keepType = 'nonsynonymous', progressbar = FALSE)
 table(MAF_selec$CaTag)
 ```
 
@@ -315,7 +315,7 @@ table(MAF_selec$CaTag)
 A main function of CaMutQC is `mutFilterCom`, which integrates all sub-functions into a big function. In addition, it includes other functions that make CaMutQC an interactive and powerful tool, for example, you can export the code, along with the parameters you set by turning on `codelog` and specify `codelogFile`.
 
 ```{r, message=FALSE}
-MAFCom <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = FALSE)
+MAFCom <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = FALSE, progressbar = FALSE)
 table(MAFCom$CaTag)
 ```
 
@@ -333,7 +333,7 @@ By default, a vivid and detailed filter report will be saved automatically each 
 
 ```{r, message=FALSE}
 MAFCom_tmb <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = TRUE, 
-                           bedFile = system.file("extdata/bed/Twist", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"))
+                           bedFile = system.file("extdata/bed/Twist", "Twist_Exome_Target_hg19.bed", package = "CaMutQC"), progressbar = FALSE)
 table(MAFCom_tmb$CaTag)
 ```
 
@@ -348,7 +348,7 @@ With CaMutQC, users are able to filter and select cancer somatic mutations accor
 Cancer types supported in CaMutQC: **COADREAD**, **BRCA**, **LIHC**, **LAML**, **LCML**, **UCEC**, **UCS**, **BLCA**, **KIRC** and **KIRP**.
 
 ```{r, message=FALSE}
-MAFCan <- mutFilterCan(MAFdat, cancerType = 'LAML', report = FALSE, TMB = FALSE)
+MAFCan <- mutFilterCan(MAFdat, cancerType = 'LAML', report = FALSE, TMB = FALSE, progressbar = FALSE)
 table(MAFCan$CaTag)
 ```
 
@@ -361,7 +361,7 @@ So far, filtering strategies used in five studies are provided for users with Ca
 
 ```{r, message=FALSE}
 MAFRef <- mutFilterRef(MAFdat, reference = "Zhu_et_al-Nat_Commun-2020-KIRP", 
-                       report = FALSE, TMB = FALSE)
+                       report = FALSE, TMB = FALSE, progressbar = FALSE)
 table(MAFRef$CaTag)
 ```
 
@@ -374,6 +374,8 @@ Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mut
 There are many methods for TMB measurement, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, conventional method of calculating TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
 
 CaMutQC supports four methods for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`.
+
+**Note: the bed region files mentioned above are generated only from CDS regions, NOT the exact bed region, so the TMB results are only for reference.**
 
 ```{r, message=FALSE}
 tmb_value <- calTMB(MAFdat, 
@@ -394,13 +396,13 @@ After verifying on published data sets, We believed combining CaMutQC filtered m
 ```{r, message=FALSE}
 maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller", 
                                  "P01_MuSE.vep.vcf",package = "CaMutQC"))
-maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE)
+maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE, progressbar = FALSE)
 maf_MuTect2 <- vcfToMAF(system.file("extdata/Multi-caller", 
                                     "P01_MuTect2.vep.vcf",package = "CaMutQC"))
-maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE)
+maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE, progressbar = FALSE)
 maf_VarScan2 <- vcfToMAF(system.file("extdata/Multi-caller", 
                                      "P01_VarScan2.vep.vcf",package = "CaMutQC")) 
-maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE)
+maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE, progressbar = FALSE)
 mafs <- list(maf_MuSE_f, maf_MuTect2_f, maf_VarScan2_f)
 maf_union <- processMut(mafs, processMethod = "union")
 maf_union
@@ -408,7 +410,13 @@ maf_union
 
 &nbsp;
 
-## 10. SessionInfo
+## 10. Name filtration strategies/parameters set as your name!
+Tired of finding or memorizing best parameters? You can share your own filtration strategies/parameters set in the [CaMutQC community](https://github.com/likelet/CaMutQC/issues) by opening a new issue with a `parameter set` label. Every six months, CaMutQC will be updated to include top-rated parameter sets in `mutFilterRef` function, with the name of author's Github username. Isn't it cool? Start using, sharing and contributing NOW!
+
+
+&nbsp;
+
+## 11. SessionInfo
 
 ```{r}
 sessionInfo()
@@ -416,7 +424,7 @@ sessionInfo()
 
 &nbsp;
 
-## 11. Reference {#refer}
+## 12. Reference {#refer}
 
 &nbsp;
 

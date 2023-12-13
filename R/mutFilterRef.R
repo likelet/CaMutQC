@@ -1,6 +1,6 @@
 #' mutFilterRef
-#' @description Use the same filtering strategies that a specific study used
-#'
+#' @description Use the same filtering strategies that a specific study used, or
+#' top-rated strategies shared by users.
 #' @param maf An MAF data frame.
 #' @param reference A specific study whose filtering strategies
 #' need to be referred to.
@@ -60,6 +60,8 @@
 #' @param reportFile File name of the report. Default: 'FilterReport.html'
 #' @param reportDir Path to the output report file. Default: './'
 #' @param TMB Whether to calculate TMB. Default: TRUE
+#' @param progressbar Whether to show progress bar when running this function
+#' Default: TRUE
 #' @param codelog If TRUE, your code, along with the parameters you set, 
 #' will be export in a log file. It will be convenient for users to repeat 
 #' experiments. Default: FALSE
@@ -86,7 +88,7 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                          keepType = 'all', bedFile = NULL, bedFilter = TRUE,
                          mutFilter = FALSE, selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = FALSE, codelog = FALSE, 
+                         TMB = FALSE, progressbar = TRUE, codelog = FALSE, 
                          codelogFile = "mutFilterCom.log") {
 
   # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"
@@ -106,7 +108,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
-                                codelogFile = codelogFile)
+                                codelogFile = codelogFile, 
+                                progressbar = progressbar)
   # "Cherniack_et_al-Cancer_Cell-2017-UCS"
   # PMID: 28292439
   }else if(reference == "Cherniack_et_al-Cancer_Cell-2017-UCS"){
@@ -124,7 +127,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
-                                codelogFile = codelogFile)
+                                codelogFile = codelogFile, 
+                                progressbar = progressbar)
 
   # "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
   # PMID: 22397650
@@ -144,15 +148,16 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
-                                codelogFile = codelogFile)
+                                codelogFile = codelogFile, 
+                                progressbar = progressbar)
 
   # "Zhu_et_al-Nat_Commun-2020-KIRP"
   # PMID: 32555180
   }else if(reference == "Zhu_et_al-Nat_Commun-2020-KIRP"){
-    mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.07,
-                                dbSNP = TRUE, keepCOSMIC = TRUE,
+    mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.04,
+                                dbSNP = TRUE, keepCOSMIC = TRUE, tumorAD = 3,
                                 Genomesprojects1000 = TRUE, ExAC = TRUE,
-                                tumorAD = tumorAD, keepType = keepType,
+                                keepType = keepType,
                                 VAFratio = VAFratio, SBmethod = SBmethod,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
                                 minInterval = minInterval,
@@ -163,7 +168,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
-                                codelogFile = codelogFile)
+                                codelogFile = codelogFile, 
+                                progressbar = progressbar)
 
   # "Mason_et_al-Leukemia-2015-LCML"
   #  PMID: 26648538
@@ -182,7 +188,8 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 report = report, reportFile = reportFile,
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
-                                codelogFile = codelogFile)
+                                codelogFile = codelogFile, 
+                                progressbar = progressbar)
   }else{
     stop('Invaild reference input detected, please provide a vaild reference.')
   }
