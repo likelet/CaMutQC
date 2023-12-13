@@ -34,6 +34,7 @@ mutFilterRef(
   reportFile = "FilterReport.html",
   reportDir = "./",
   TMB = FALSE,
+  progressbar = TRUE,
   codelog = FALSE,
   codelogFile = "mutFilterCom.log"
 )
@@ -126,6 +127,9 @@ Or a vector contains column names will be kept.}
 \item{reportDir}{Path to the output report file. Default: './'}
 
 \item{TMB}{Whether to calculate TMB. Default: TRUE}
+
+\item{progressbar}{Whether to show progress bar when running this function
+Default: TRUE}
 
 \item{codelog}{If TRUE, your code, along with the parameters you set, 
 will be export in a log file. It will be convenient for users to repeat 
