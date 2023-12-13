@@ -3,8 +3,8 @@
 #'
 #' @param vcfFile Directory of a VCF file, or the path to several VCF files
 #' that is going to be transformed. Files should be in .vcf or .vcf.gz format.
-#' @param multiSample Logical, whether the input is a path that leads to several
-#' VCFs that come from multi-region/sample sequencing. Default: FALSE
+#' @param multiVCF Logical, whether the input is a path that leads to several
+#' VCFs that come from multi-region/sample/caller sequencing. Default: FALSE
 #' @param inputStrelka The type of variants ('indel' or 'SNV') in VCF file if it is
 #' from Strelka. Default: FALSE
 #' @param writeFile Whether to directly write MAF file to the disk. If FALSE,
@@ -41,15 +41,15 @@
 #' package = "CaMutQC"))
 
 
-vcfToMAF <- function(vcfFile, multiSample = FALSE, inputStrelka = FALSE,
+vcfToMAF <- function(vcfFile, multiVCF = FALSE, inputStrelka = FALSE,
                      writeFile = FALSE, MAFfile = 'MAF.maf', MAFdir = './',
                      tumorSampleName = 'Extracted',
                      normalSampleName = 'Extracted', ncbiBuild = 'Extracted',
                      MAFcenter = '.', MAFstrand = '+', filterGene = FALSE,
                      simplified = FALSE){
 
-  # if inputs are multi-sample VCFs
-  if (multiSample){
+  # if inputs are multi-sample/multi-caller VCFs
+  if (multiVCF){
     filenames <- list.files(vcfFile, pattern="*.vep.vcf", full.names=TRUE)
     if (length(filenames) == 0){
       stop('No VCF file detected under the path you offered.')
