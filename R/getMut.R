@@ -1,5 +1,3 @@
-library(stringr)
-
 getMut <- function(maf, Info) {
   
   ## extract CSQ header and set as column names
