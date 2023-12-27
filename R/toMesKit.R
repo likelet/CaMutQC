@@ -18,7 +18,7 @@
 #' @export toMesKit
 #' @examples
 #' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-sample/",
-#' package = "CaMutQC"), multiSample = TRUE)
+#' package = "CaMutQC"), multiVCF = TRUE)
 #' clin_file <- system.file("extdata", "clin.txt", package = "CaMutQC")
 #' maf_MesKit <- toMesKit(maf_CaMutQC, clinicalFile=clin_file)
 

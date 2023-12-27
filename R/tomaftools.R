@@ -48,7 +48,7 @@
 #' @export tomaftools
 #' @examples
 #' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-sample/",
-#' package = "CaMutQC"), multiSample = TRUE)
+#' package = "CaMutQC"), multiVCF = TRUE)
 #' maf_maftools <- tomaftools(maf_CaMutQC)
 
 tomaftools <- function(maf, clinicalData = NULL, rmFlags = FALSE, 
