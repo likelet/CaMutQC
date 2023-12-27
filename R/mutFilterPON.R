@@ -64,10 +64,10 @@ mutFilterPON <- function(maf) {
     # ponDat$ID <- 1
     somatic@fix[, 3] <- 1
     # get the intersect veriants using merging action
-    pon_maf <- merge(maf, somatic@fix, all.x = T, 
+    pon_maf <- merge(maf, somatic@fix, all.x = TRUE, 
                      by = c("Chromosome", "Start_Position", "Reference_Allele", 
                             "Tumor_Seq_Allele2"), 
-                     by.y = c("CHROM", "POS", "REF", "ALT"), all.y = F)
+                     by.y = c("CHROM", "POS", "REF", "ALT"), all.y = FALSE)
   
     # add tag qualified variants
     discard <- rownames(pon_maf[which(pon_maf$ID == 1),])
