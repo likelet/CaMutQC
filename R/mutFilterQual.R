@@ -24,52 +24,43 @@
 #' mafF <- mutFilterQual(maf)
 
 
-mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
-                          tumorAD = 5, normalAD = Inf, VAF = 0.05, VAFratio = 0) {
-
-  # set different parameters for different panels
-  if (panel != "Customized"){
-    normalAD <- 1
-    if (panel == "MSKCC"){
-      tumorAD <- 10
-      VAFratio <- 5
-    }else if (panel != "WES"){
-      stop("Wrong panel input! Should be one of MSKCC, WES and Customized.")
+mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20, 
+                          normalDP = 10, tumorAD = 5, normalAD = Inf, 
+                          VAF = 0.05, VAFratio = 0) {
+    # set different parameters for different panels
+    if (panel != "Customized"){
+      normalAD <- 1
+      if (panel == "MSKCC"){
+        tumorAD <- 10
+        VAFratio <- 5
+      }else if (panel != "WES"){
+        stop("Wrong panel input! Should be one of MSKCC, WES and Customized.")
+      }
     }
-  }
-
-  # check whether VAF, t_depth and n_depth column exists (has values in it)
-  ## calculate t_depth based on alt and ref
-  if (all(is.na(maf$t_depth))) {
-    maf$t_depth <- maf$t_alt_count + maf$t_ref_count
-  }
-  ## calculate n_depth based on alt and ref
-  if (all(is.na(maf$n_depth))) {
-    maf$n_depth <- maf$n_alt_count + maf$n_ref_count
-  }
-  ## add VAF column
-  if (!("VAF" %in% colnames(maf))) {
-    maf$VAF <- maf$t_alt_count/maf$t_depth
-  }
-  
-  tags <- c()
-  ## VAF filtering
-  tags <- c(tags, rownames(maf[maf$VAF < VAF, ]))
-
-  ## tumorAD, tumorDP, normalDP, normalAD, VAF ratio filtering
-  tags <- union(tags, rownames(maf[((maf$t_alt_count < tumorAD) |
-                                 (maf$t_depth < tumorDP) |
-                                 (maf$n_depth < normalDP) |
-                                 (maf$n_alt_count >= normalAD)), ]))
-
-  VAFr <- (maf$t_alt_count/maf$t_depth)/(maf$n_alt_count/maf$n_depth)
-  VAFr[which(is.na(VAFr))] <- 0
-
-  # VAF ratio filtration
-  tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
-
-  maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')
-
-  return(maf)
+    # check whether VAF, t_depth and n_depth column exists (has values in it)
+    ## calculate t_depth based on alt and ref
+    if (all(is.na(maf$t_depth))) {
+      maf$t_depth <- maf$t_alt_count + maf$t_ref_count
+    }
+    ## calculate n_depth based on alt and ref
+    if (all(is.na(maf$n_depth))) {
+      maf$n_depth <- maf$n_alt_count + maf$n_ref_count
+    }
+    ## add VAF column
+    if (!("VAF" %in% colnames(maf))) {
+      maf$VAF <- maf$t_alt_count/maf$t_depth
+    }
+    ## VAF filtering
+    tags <- rownames(maf[maf$VAF < VAF, ])
+    ## tumorAD, tumorDP, normalDP, normalAD, VAF ratio filtering
+    tags <- union(tags, rownames(maf[((maf$t_alt_count < tumorAD) |
+                                   (maf$t_depth < tumorDP) |
+                                   (maf$n_depth < normalDP) |
+                                   (maf$n_alt_count >= normalAD)), ]))
+    VAFr <- (maf$t_alt_count/maf$t_depth)/(maf$n_alt_count/maf$n_depth)
+    VAFr[which(is.na(VAFr))] <- 0
+    # VAF ratio filtration
+    tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
+    maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')
+    return(maf)
 }
-

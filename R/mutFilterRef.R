@@ -80,79 +80,61 @@
 
 mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                          tumorAD = 0, normalAD = Inf, VAF = 0, VAFratio = 0,
-                         SBmethod = 'SOR', SBscore = Inf,
-                         maxIndelLen = Inf, minInterval = 0,
-                         tagFILTER = NULL, dbVAF = 0.01, ExAC = FALSE,
-                         Genomesprojects1000 = FALSE, ESP6500 = FALSE,
-                         gnomAD = FALSE, dbSNP = FALSE, keepCOSMIC = FALSE,
-                         keepType = 'all', bedFile = NULL, bedFilter = TRUE,
-                         mutFilter = FALSE, selectCols = FALSE, report = TRUE,
-                         reportFile = 'FilterReport.html', reportDir = './',
-                         TMB = FALSE, progressbar = TRUE, codelog = FALSE, 
-                         codelogFile = "mutFilterCom.log") {
+                         SBmethod = 'SOR', SBscore = Inf, maxIndelLen = Inf, 
+                         minInterval = 0, tagFILTER = NULL, dbVAF = 0.01, 
+                         ExAC = FALSE, Genomesprojects1000 = FALSE, 
+                         ESP6500 = FALSE, gnomAD = FALSE, dbSNP = FALSE, 
+                         keepCOSMIC = FALSE, keepType = 'all', bedFile = NULL, 
+                         bedFilter = TRUE, mutFilter = FALSE,selectCols = FALSE, 
+                         report = TRUE, reportFile = 'FilterReport.html', 
+                         reportDir = './', TMB = FALSE, progressbar = TRUE, 
+                         codelog = FALSE, codelogFile = "mutFilterCom.log") {
 
-  # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"
-  # PMID: 25194673
+  # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC" PMID: 25194673
   if (reference == "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
-                                tumorDP = tumorDP, VAF = VAF,
-                                normalDP = normalDP, tumorAD = tumorAD,
-                                VAFratio = VAFratio, SBmethod = SBmethod,
-                                SBscore = SBscore, maxIndelLen = maxIndelLen,
-                                minInterval = minInterval, ExAC = ExAC,
-                                tagFILTER = tagFILTER, dbVAF = dbVAF,
-                                ESP6500 = ESP6500, gnomAD = gnomAD,
-                                keepCOSMIC = keepCOSMIC, keepType = keepType,
-                                bedFile = bedFile, bedFilter = bedFilter,
-                                mutFilter = mutFilter, selectCols = selectCols,
-                                report = report, reportFile = reportFile,
-                                reportDir = reportDir, TMB = TMB,
-                                reference = reference, codelog = codelog,
-                                codelogFile = codelogFile, 
-                                progressbar = progressbar)
-  # "Cherniack_et_al-Cancer_Cell-2017-UCS"
-  # PMID: 28292439
+                    tumorDP = tumorDP, VAF = VAF, normalDP = normalDP, 
+                    tumorAD = tumorAD, VAFratio = VAFratio, SBmethod = SBmethod,
+                    SBscore = SBscore, maxIndelLen = maxIndelLen, ExAC = ExAC,
+                    minInterval = minInterval, tagFILTER = tagFILTER, 
+                    dbVAF = dbVAF, ESP6500 = ESP6500, gnomAD = gnomAD,
+                    keepCOSMIC = keepCOSMIC, keepType = keepType, 
+                    bedFile = bedFile, bedFilter = bedFilter, TMB = TMB,
+                    mutFilter = mutFilter, selectCols = selectCols,
+                    report = report, reportFile = reportFile, codelog = codelog,
+                    reportDir = reportDir, reference = reference, 
+                    codelogFile = codelogFile, progressbar = progressbar)
+  # "Cherniack_et_al-Cancer_Cell-2017-UCS" PMID: 28292439
   }else if(reference == "Cherniack_et_al-Cancer_Cell-2017-UCS"){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
-                                keepCOSMIC = TRUE, dbSNP = dbSNP,
-                                Genomesprojects1000 = Genomesprojects1000,
-                                VAF = VAF, VAFratio = VAFratio,
-                                SBmethod = SBmethod, keepType = keepType,
-                                SBscore = SBscore, maxIndelLen = maxIndelLen,
-                                minInterval = minInterval, ExAC = ExAC,
-                                tagFILTER = tagFILTER, dbVAF = dbVAF,
-                                ESP6500 = ESP6500, gnomAD = gnomAD,
-                                bedFile = bedFile, bedFilter = bedFilter,
-                                mutFilter = mutFilter, selectCols = selectCols,
-                                report = report, reportFile = reportFile,
-                                reportDir = reportDir, TMB = TMB,
-                                reference = reference, codelog = codelog,
-                                codelogFile = codelogFile, 
-                                progressbar = progressbar)
+                    keepCOSMIC = TRUE, dbSNP = dbSNP, VAFratio = VAFratio,
+                    Genomesprojects1000 = Genomesprojects1000, VAF = VAF, 
+                    SBmethod = SBmethod, keepType = keepType, SBscore = SBscore, 
+                    maxIndelLen = maxIndelLen, minInterval = minInterval, 
+                    ExAC = ExAC, tagFILTER = tagFILTER, dbVAF = dbVAF,
+                    ESP6500 = ESP6500, gnomAD = gnomAD, bedFile = bedFile, 
+                    bedFilter = bedFilter, mutFilter = mutFilter, 
+                    selectCols = selectCols, report = report, 
+                    reportFile = reportFile, reportDir = reportDir, TMB = TMB,
+                    reference = reference, codelog = codelog,
+                    codelogFile = codelogFile, progressbar = progressbar)
 
-  # "Gerlinger_et_al-Engl_J_Med-2012-KIRC"
-  # PMID: 22397650
+  # "Gerlinger_et_al-Engl_J_Med-2012-KIRC" PMID: 22397650
   }else if(reference == "Gerlinger_et_al-Engl_J_Med-2012-KIRC"){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE,
-                                Genomesprojects1000 = Genomesprojects1000,
-                                tumorDP = tumorDP, VAF = VAF,
-                                normalDP = normalDP, tumorAD = tumorAD,
-                                VAFratio = VAFratio, SBmethod = SBmethod,
-                                SBscore = SBscore, maxIndelLen = maxIndelLen,
-                                minInterval = minInterval, ExAC = ExAC,
-                                tagFILTER = tagFILTER, dbVAF = dbVAF,
-                                ESP6500 = ESP6500, gnomAD = gnomAD,
-                                keepCOSMIC = keepCOSMIC, keepType = keepType,
-                                bedFile = bedFile, bedFilter = bedFilter,
-                                mutFilter = mutFilter, selectCols = selectCols,
-                                report = report, reportFile = reportFile,
-                                reportDir = reportDir, TMB = TMB,
-                                reference = reference, codelog = codelog,
-                                codelogFile = codelogFile, 
-                                progressbar = progressbar)
+                    Genomesprojects1000 = Genomesprojects1000,tumorDP = tumorDP, 
+                    VAF = VAF, normalDP = normalDP, tumorAD = tumorAD,
+                    VAFratio = VAFratio, SBmethod = SBmethod, SBscore = SBscore, 
+                    maxIndelLen = maxIndelLen, minInterval = minInterval, 
+                    ExAC = ExAC, tagFILTER = tagFILTER, dbVAF = dbVAF,
+                    ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC, 
+                    keepType = keepType,bedFile = bedFile,bedFilter = bedFilter,
+                    mutFilter = mutFilter, selectCols = selectCols, TMB = TMB,
+                    report = report, reportFile = reportFile, codelog = codelog,
+                    reportDir = reportDir, reference = reference, 
+                    codelogFile = codelogFile, progressbar = progressbar)
 
-  # "Zhu_et_al-Nat_Commun-2020-KIRP"
-  # PMID: 32555180
+  # "Zhu_et_al-Nat_Commun-2020-KIRP" PMID: 32555180
   }else if(reference == "Zhu_et_al-Nat_Commun-2020-KIRP"){
     mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.04,
                                 dbSNP = TRUE, keepCOSMIC = TRUE, tumorAD = 3,
@@ -171,8 +153,7 @@ mutFilterRef <- function(maf, reference, tumorDP = 0, normalDP = 0,
                                 codelogFile = codelogFile, 
                                 progressbar = progressbar)
 
-  # "Mason_et_al-Leukemia-2015-LCML"
-  #  PMID: 26648538
+  # "Mason_et_al-Leukemia-2015-LCML"  PMID: 26648538
   }else if(reference == "Mason_et_al-Leukemia-2015-LCML"){
     mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE,
                                 dbSNP = dbSNP, tumorDP = tumorDP,

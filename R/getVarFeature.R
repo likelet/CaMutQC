@@ -5,8 +5,8 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
   if (alt != csqalt){
     # if there is more than one alt in alt field, select one based on 
     # selected transcript (CSQ_info)
-    # for varscan, the alt field can have A/G, for mutect and muse, the alt field
-    # may have A,G
+    # for varscan, the alt field can have A/G, 
+    # for mutect and muse, the alt field may have A,G
     if (str_detect(alt, ",") | str_detect(alt, "/")){
       alts <- str_split(alt, "[,/]")[[1]]
       # handle special case: REF: C. Alt: T,CCAT. csqalt: CCAT
@@ -18,7 +18,7 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
           alt <- remove1stString(csqalt)
         }
       }else{
-        # if it is a SNP, DNP, TNP or ONP, just select the first alt as final alt
+        # if it's a SNP, DNP, TNP or ONP, just select the first alt as final alt
         if (nchar(ref) == nchar(alts[1])) {
           if (csqalt %in% alts) {
             alt <- csqalt
@@ -43,7 +43,6 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
       alt <- remove1stString(alt)
     }
   }
-  
   # SNV. If ref and alt have the same length and there is no -
   if (nchar(ref) == nchar(alt) & !("-" %in% c(ref, alt))){
     if (nchar(ref) == 1) {
@@ -81,8 +80,8 @@ getVarFeature <- function(vcf_pos, ref, alt, csqalt) {
     return(list(start_pos, start_pos + 1, "INS", ref, alt, 
                 (nchar(alt)) %% 3 == 0))
   }else{
-    warning(paste0("Ref: ", ref, ". Alt: ", alt, ". csqalt: ", csqalt))
-    stop("Error encountered in getFeature!")
+    mes <- paste0("Ref: ", ref, ". Alt: ", alt, ". csqalt: ", csqalt)
+    stop(mes)
   }
 }
 

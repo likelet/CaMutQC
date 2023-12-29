@@ -148,8 +148,8 @@ An MAF data frame after common strategy filtration for a cancer type.
 A filter report in HTML format
 }
 \description{
-Apply common filtering strategies on a MAF data frame for different
-cancer types.
+Apply common filtering strategies on a MAF data frame for 
+different cancer types.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata/Multi-sample",

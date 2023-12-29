@@ -54,7 +54,7 @@ Default: 50}
 \item{minInterval}{Minimum length of interval between an SNV and an indel
 accepted to be included. Default: 10}
 
-\item{tagFILTER}{Variants with specific tag in the FILTER column will be kept,
+\item{tagFILTER}{Variants with specific tag in FILTER column will be kept,
 set to NULL if you want to skip this filter. Default: 'PASS'}
 
 \item{progressbar}{Whether to show progress bar when running this function

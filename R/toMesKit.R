@@ -5,16 +5,15 @@
 #' @param clinicalFile A clinical data file includes Tumor_Sample_Barcode, 
 #' Tumor_ID, Patient_ID. Tumor_Sample_Label is optional.
 #' @param ccfFile A CCF file of somatic mutations. Default NULL.
-#' @param nonSyn.vc List of Variant classifications which are considered as non-silent. 
-#' Default NULL.
+#' @param nonSyn.vc List of Variant classifications 
+#' which are considered as non-silent. Default NULL.
 #' @param use.indel.ccf Whether include indels in ccfFile. Default FALSE.
-#' @param ccf.conf.level The confidence level of CCF to identify clonal or subclonal. 
-#' Only works when "CCF_std" or "CCF_CI_high" is provided in ccfFile. Default 0.95.
+#' @param ccf.conf.level The confidence level of CCF to identify 
+#' clonal or subclonal. Only works when "CCF_std" or "CCF_CI_high" 
+#' is provided in ccfFile. Default 0.95.
 #' 
 #' @return An maf object that can be recognized by MesKit.
-#' 
 #' @importFrom MesKit readMaf
-#' 
 #' @export toMesKit
 #' @examples
 #' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-sample/",
@@ -24,29 +23,29 @@
 
 toMesKit <- function(maf, clinicalFile, ccfFile = NULL, nonSyn.vc = NULL,
                      use.indel.ccf = FALSE, ccf.conf.level = 0.95){
-  # check whether the input maf is a multisample maf
-  if (length(unique(maf$Tumor_Sample_Barcode)) <= 1 ) {
-    stop("MesKit is for multi-region data, your maf only contains one sample.")
-  }
-  
-  message("Transforming to MesKit maf...")
-  # change refbuild
-  refBuild <- switch(unique(maf$NCBI_Build), "GRCh37" = "hg19", "GRCh38" = "hg38")
-  
-  # change certain column names of maf so that they can be recognized by MesKit
-  colnames(maf)[which(colnames(maf) == "t_ref_count")] <- "Ref_allele_depth"
-  colnames(maf)[which(colnames(maf) == "t_alt_count")] <- "Alt_allele_depth"
-  
-  # write to a temporary file and read it using MesKit immediately
-  write.table(maf, "./tmp_maf_for_MesKit.maf", sep = "\t", 
-              quote = FALSE, row.names = FALSE)
-  maf_final <- MesKit::readMaf(mafFile = "./tmp_maf_for_MesKit.maf",
-                      clinicalFile = clinicalFile, ccfFile = ccfFile,
-                       nonSyn.vc = nonSyn.vc, use.indel.ccf = use.indel.ccf,
-                      ccf.conf.level = ccf.conf.level, refBuild = refBuild)
-  # remove temporary file immediately
-  unlink("./tmp_maf_for_MesKit.maf", recursive = FALSE, force = FALSE)
-  # return MesKit object maf
-  return(maf_final)
+    # check whether the input maf is a multisample maf
+    if (length(unique(maf$Tumor_Sample_Barcode)) <= 1 ) {
+      stop("MesKit is for multi-region data, your maf only contains one sample.")
+    }
+    message("Transforming to MesKit maf...")
+    # change refbuild
+    refBuild <- switch(unique(maf$NCBI_Build), 
+                       "GRCh37" = "hg19", "GRCh38" = "hg38")
+    
+    # change certain column names of maf so that they can be recognized by MesKit
+    colnames(maf)[which(colnames(maf) == "t_ref_count")] <- "Ref_allele_depth"
+    colnames(maf)[which(colnames(maf) == "t_alt_count")] <- "Alt_allele_depth"
+    
+    # write to a temporary file and read it using MesKit immediately
+    write.table(maf, "./tmp_maf_for_MesKit.maf", sep = "\t", 
+                quote = FALSE, row.names = FALSE)
+    maf_final <- MesKit::readMaf(mafFile = "./tmp_maf_for_MesKit.maf",
+                        clinicalFile = clinicalFile, ccfFile = ccfFile,
+                         nonSyn.vc = nonSyn.vc, use.indel.ccf = use.indel.ccf,
+                        ccf.conf.level = ccf.conf.level, refBuild = refBuild)
+    # remove temporary file immediately
+    unlink("./tmp_maf_for_MesKit.maf", recursive = FALSE, force = FALSE)
+    # return MesKit object maf
+    return(maf_final)
 }
 

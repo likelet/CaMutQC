@@ -23,7 +23,7 @@
 #' Default: 50
 #' @param minInterval Minimum length of interval between an SNV and an indel
 #' accepted to be included. Default: 10
-#' @param tagFILTER Variants with specific tag in the FILTER column will be kept,
+#' @param tagFILTER Variants with specific tag in FILTER column will be kept,
 #' set to NULL if you want to skip this filter. Default: 'PASS'
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
@@ -38,75 +38,52 @@
 #' package = "CaMutQC"))
 #' mafF <- mutFilterTech(maf)
 
-mutFilterTech <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
-                          tumorAD = 5, normalAD = Inf, VAF = 0.05, VAFratio = 0,
-                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50,
-                          minInterval = 10, tagFILTER = 'PASS',
-                          progressbar = TRUE){
-
-  # build a progress bar and turn it on is asked
-  if (progressbar) {
-    pb <- txtProgressBar(min = 0, max = 100, style = 3)
-  }
-  # sequencing quality filtration
-  # message('Filtration for sequencing quality is in process.')
-  if (progressbar) {
-    setTxtProgressBar(pb, 10, title = progressbar)
-  }
-  maf <- mutFilterQual(maf, panel = panel, tumorDP = tumorDP, tumorAD = tumorAD,
-                       normalDP = normalDP, normalAD = normalAD,
-                       VAF = VAF, VAFratio = VAFratio)
-
-  # strand bias filtration
-  # message('Filtration for strand bias is in process.')
-  if (progressbar) {
-    setTxtProgressBar(pb, 30, title = progressbar)
-  }
-  maf <- mutFilterSB(maf, method = SBmethod, SBscore = SBscore)
-
-  # adjacent indel tag filtration
-  # message('Filtration for adjacent indel is in process.')
-  if (progressbar) {
-    setTxtProgressBar(pb, 50, title = progressbar)
-  }
-  maf <- mutFilterAdj(maf, maxIndelLen = maxIndelLen, minInterval = minInterval)
-
-  # normalDP filtration
-  # message('Filtration for normalDP is in process.')
-  if (progressbar) {
-    setTxtProgressBar(pb, 60, title = progressbar)
-  }
-  maf <- mutFilterNormalDP(maf)
-
-  # PON filtration
-  # message('PON filtration is in process.')
-  if (progressbar) {
-    setTxtProgressBar(pb, 80, title = progressbar)
-    cat("\n")
-  }
-  maf <- mutFilterPON(maf)
-
-  # FILTER field filtration
-  if (!(is.null(tagFILTER))){
+mutFilterTech <- function(maf, panel = "Customized", tumorDP = 20, 
+                          normalDP = 10, tumorAD = 5, normalAD = Inf, 
+                          VAF = 0.05, VAFratio = 0, SBmethod = 'SOR', 
+                          SBscore = 3, maxIndelLen = 50, minInterval = 10, 
+                          tagFILTER = 'PASS', progressbar = TRUE){
+    # build a progress bar and turn it on is asked
+    if (progressbar) { pb <- txtProgressBar(min = 0, max = 100, style = 3)}
+    # sequencing quality filtration
+    maf <- mutFilterQual(maf, panel = panel, tumorDP = tumorDP, 
+                         tumorAD = tumorAD, normalDP = normalDP, 
+                         normalAD = normalAD, VAF = VAF, VAFratio = VAFratio)
+    # strand bias filtration
+    if (progressbar) { setTxtProgressBar(pb, 30, title = progressbar)}
+    maf <- mutFilterSB(maf, method = SBmethod, SBscore = SBscore)
+    # adjacent indel tag filtration
+    if (progressbar) {setTxtProgressBar(pb, 50, title = progressbar)}
+    maf <- mutFilterAdj(maf, maxIndelLen=maxIndelLen, minInterval = minInterval)
+    # normalDP filtration
+    if (progressbar) {setTxtProgressBar(pb, 60, title = progressbar)}
+    maf <- mutFilterNormalDP(maf)
+    # PON filtration
+    # message('PON filtration is in process.')
     if (progressbar) {
-      setTxtProgressBar(pb, 100, title = progressbar)
-      # close progres bar
-      close(pb)
+      setTxtProgressBar(pb, 80, title = progressbar)
+      message("\n")
     }
-    # message('Filtration for FILTER column is in process.')
-    tagFilter <- rownames(maf[(!(is.na(maf$FILTER)) &
-                                 (maf$FILTER != tagFILTER)), ])
-    maf[tagFilter, 'CaTag'] <-  paste0(maf[tagFilter, 'CaTag'], 'F')
-  }else{
-    if (progressbar) {
-      setTxtProgressBar(pb, 100, title = progressbar)
-      # close progres bar
-      close(pb)
+    maf <- mutFilterPON(maf)
+    # FILTER field filtration
+    if (!(is.null(tagFILTER))){
+      if (progressbar) {
+        setTxtProgressBar(pb, 100, title = progressbar)
+        # close progres bar
+        close(pb)
+      }
+      # message('Filtration for FILTER column is in process.')
+      tagFilter <- rownames(maf[(!(is.na(maf$FILTER)) &
+                                   (maf$FILTER != tagFILTER)), ])
+      maf[tagFilter, 'CaTag'] <-  paste0(maf[tagFilter, 'CaTag'], 'F')
+    }else{
+      if (progressbar) {
+        setTxtProgressBar(pb, 100, title = progressbar)
+        # close progres bar
+        close(pb)
+      }
     }
-  }
-
-  # complete filtration
-  message('  Filtration for technical issue is done!')
-  return(maf)
+    # complete filtration
+    message('  Filtration for technical issue is done!')
+    return(maf)
 }
-

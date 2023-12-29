@@ -136,19 +136,16 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                               progressbar = progressbar)
 
   # filter first for report usage
-  mafFilteredS2 <- suppressMessages(
-    mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
+  mafFilteredS2 <- mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
                  Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
                  ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC,
                  keepType = keepType, bedFile = bedFile, bedHeader = bedHeader,
-                 bedFilter = bedFilter, progressbar = FALSE))
-
+                 bedFilter = bedFilter, progressbar = FALSE)
 
   mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
   if (nrow(mafFilteredF) == 0){
     stop('No variants left after filtration.')
   }
-
   if (TMB){
     # check bed file
     if (is.null(bedFile)){
@@ -164,14 +161,12 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
       print(paste0("  Method used to calculate TMB: ", assay))
     }
   }
-
   # report generation
   if (report){
     rmarkdown::render(system.file("rmd", "CaMutQC-FilterReport.Rmd",
                                   package = "CaMutQC"), output_file = reportFile,
                       output_dir = reportDir)
   }
-  
   # export codelog if asked
   if (codelog) {
     printer <- file(codelogFile, "w")
@@ -199,11 +194,10 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
     writeLines(running_code, con=printer)
     close(printer)
   }
-
   if (mutFilter) {
     if (selectCols){
       if (isTRUE(selectCols)){
-        return(mafFilteredF[, c(1:12, 16)])
+        return(mafFilteredF[, c(seq_len(12), 16)])
       }else{
         if (all(selectCols %in% colnames(mafFilteredF))){
           return(mafFilteredF[, selectCols])

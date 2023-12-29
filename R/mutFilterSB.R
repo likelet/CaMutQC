@@ -21,7 +21,6 @@
 #' mafF <- mutFilterSB(maf)
 
 mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
-
   if (method == 'Fisher') {
     # use for loop to get the SB score for each variation
     for (i in seq_len(nrow(maf))) {
@@ -43,8 +42,7 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
           SBcharmatix <- paste(rf, rv, af, av, sep = ',')
         }
       }else{
-        SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'],
-                                ':')[[1]][SBindex]
+        SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'],':')[[1]][SBindex]
       }
       if (calSBscore(SBcharmatix, method) > SBscore) {
         maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
@@ -57,17 +55,14 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
         ALT_F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'ALT_F2R1'
         REF_F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'REF_F1R2'
         REF_F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'REF_F2R1'
-
         ALT_F1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][ALT_F1R2index]
         ALT_F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][ALT_F2R1index]
         REF_F1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][REF_F1R2index]
         REF_F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][REF_F2R1index]
-
         SBcharmatix <- paste(REF_F1R2, REF_F2R1, ALT_F1R2, ALT_F2R1, sep = ',')
         if (calSBscore(SBcharmatix, method, rorder = TRUE) > SBscore) {
           maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
         }
-
       }else if (length(grep('F1R2', maf$FORMAT[i]))){
         F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F1R2'
         F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'F2R1'
@@ -81,7 +76,7 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
         DP4index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'DP4'
         SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][DP4index]
         if (calSBscore(SBcharmatix, method, rorder = TRUE) > SBscore) {
-          maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
+            maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
         }
       }
     }
@@ -91,67 +86,59 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
 
 ## construct function to calculate the SB score for strand bias detection
 calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
-  depths <- as.numeric(strsplit(charmatrix, ",")[[1]])
-  if (method == 'SOR') {
-    if (!(rorder)){
-      refFw <- depths[1] + 1
-      refRv <- depths[3] + 1
-      altFw <- depths[2] + 1
-      altRv <- depths[4] + 1
-    }else{
-      refFw <- depths[1] + 1
-      refRv <- depths[2] + 1
-      altFw <- depths[3] + 1
-      altRv <- depths[4] + 1
-    }
-    symmetricalRatio <- (refFw * altRv)/(refRv * altFw) +
-      (refRv * altFw) / (refFw * altRv)
-
-    refRatio <- min(refRv, refFw) / max(refRv, refFw)
-    altRatio <- min(altRv, altFw) / max(altRv, altFw)
-    score <- log(symmetricalRatio) + log(refRatio) - log(altRatio)
-
-  }else if (method == 'Fisher')   {
-    refFw <- depths[1]
-    refRv <- depths[2]
-    altFw <- depths[3]
-    altRv <- depths[4]
-    Row1 <- refRv + refFw
-    Row2 <- altRv + altFw
-    Col1 <- refFw + altFw
-    Col2 <- refRv + altRv
-
-    P1 <- calP(refFw, refRv, altFw, altRv)
-
-    # check P1 whether it is over the depth
-    if (is.na(P1)){
-      stop(paste0('Your data is in high coverage that ',
-                  'the factorial of its depth can not be obtained, ',
-                  'please use \'SOR\' method instead.'))
-    }
-
-    # probability of observing more extreme data
-    vaildP <- c()
-
-    # get the range of refFw
-    maxR <- min(Row1, Col1)
-    minR <- max(0, Row1-Col2)
-    for (i in minR:maxR){
-      exP <- calP(i, Row1-i, Col1-i, Col2 - Row1 + i)
-      if(exP <= P1){
-        vaildP <- c(vaildP, exP)
+    depths <- as.numeric(strsplit(charmatrix, ",")[[1]])
+    if (method == 'SOR') {
+      if (!(rorder)){
+        refFw <- depths[1] + 1
+        refRv <- depths[3] + 1
+        altFw <- depths[2] + 1
+        altRv <- depths[4] + 1
+      }else{
+        refFw <- depths[1] + 1
+        refRv <- depths[2] + 1
+        altFw <- depths[3] + 1
+        altRv <- depths[4] + 1
       }
+      symmetricalRatio <- (refFw * altRv)/(refRv * altFw) +
+        (refRv * altFw) / (refFw * altRv)
+      refRatio <- min(refRv, refFw) / max(refRv, refFw)
+      altRatio <- min(altRv, altFw) / max(altRv, altFw)
+      score <- log(symmetricalRatio) + log(refRatio) - log(altRatio)
+    }else if (method == 'Fisher')   {
+      refFw <- depths[1]
+      refRv <- depths[2]
+      altFw <- depths[3]
+      altRv <- depths[4]
+      Row1 <- refRv + refFw
+      Row2 <- altRv + altFw
+      Col1 <- refFw + altFw
+      Col2 <- refRv + altRv
+      P1 <- calP(refFw, refRv, altFw, altRv)
+      # check P1 whether it is over the depth
+      if (is.na(P1)){
+        mes <- paste0('Data is in high coverage, so the factorial of its depth',
+                      ' cannot be obtained, ', ' use \'SOR\' method instead.')
+        stop(mes)
+      }
+      # probability of observing more extreme data
+      vaildP <- c()
+      # get the range of refFw
+      maxR <- min(Row1, Col1)
+      minR <- max(0, Row1-Col2)
+      for (i in minR:maxR){
+        exP <- calP(i, Row1-i, Col1-i, Col2 - Row1 + i)
+        if(exP <= P1){
+          vaildP <- c(vaildP, exP)
+        }
+      }
+      # get sum of P
+      Pt <- sum(P1, vaildP)
+      # get Phred score
+      score <- -10 * log10(Pt)
+    }else {
+      stop('Please select a method from SOR and Fisher')
     }
-
-    # get sum of P
-    Pt <- sum(P1, vaildP)
-
-    # get Phred score
-    score <- -10 * log10(Pt)
-  }else {
-    stop('Please select a method from SOR and Fisher')
-  }
-  return(score)
+    return(score)
 }
 
 
@@ -160,7 +147,6 @@ calP <- function(refFw, refRv, altFw, altRv){
   R2 <- altRv + altFw
   C1 <- refFw + altFw
   C2 <- refRv + altRv
-
   # probability P
   P <- (factorial(R1) * factorial(R2) * factorial(C1) * factorial(C2))/
     (factorial(R1 + R2) * factorial(refRv) * factorial(refFw) *

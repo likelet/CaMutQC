@@ -16,31 +16,30 @@
 
 
 mutFilterNormalDP <- function(maf) {
-  if (!('Existing_variation' %in% colnames(maf))) {
-    discard <- c()
-    message(paste0('No annotation from existing database detected, ', 
-                "mutFilterNormalDP function will not run."))
-  }
+    if (!('Existing_variation' %in% colnames(maf))) {
+      discard <- c()
+      message(paste0('No annotation from existing database detected, ', 
+                  "mutFilterNormalDP function will not run."))
+    }
+  
+    # build a vector to store discarded variants
+    discard <- rep(NA, length(maf))
 
-  # build a vector to store discarded variants
-  discard <- rep(NA, length(maf))
+    for (i in seq_len(nrow(maf))) {
+      # variants in dbsnp
+      if(length(grep('rs', maf[i, 'Existing_variation']))) {
+        if(maf$n_depth[i] < 19) {
+          discard[i] <- i
+        }
 
-  for (i in seq_len(nrow(maf))) {
-    # variants in dbsnp
-    if(length(grep('rs', maf[i, 'Existing_variation']))) {
-      if(maf$n_depth[i] < 19) {
+      # variants not in dbsnp
+      }else if (maf$n_depth[i] < 8) {
         discard[i] <- i
       }
-
-    # variants not in dbsnp
-    }else if (maf$n_depth[i] < 8) {
-      discard[i] <- i
     }
- }
-
-  # add tag
-  discard <- as.vector(na.omit(discard))
-  maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'], 'N')
-  return(maf)
+    # add tag
+    discard <- as.vector(na.omit(discard))
+    maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'], 'N')
+    return(maf)
 }
 

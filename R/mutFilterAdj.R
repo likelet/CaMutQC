@@ -19,92 +19,45 @@
 
 
 mutFilterAdj <- function(maf, maxIndelLen = 50, minInterval = 10){
-
-  # # sort and order variants in maf file
-  # mafFile <- arrange(maf, Chromosome, Start_Position)
-  # # mafFile$Start_Position <- as.numeric(mafFile$Start_Position)
-  # # mafFile$End_Position <- as.numeric(mafFile$End_Position)
-  # 
-  # # calculate the distance between variants
-  # mafFile <- mafFile %>% group_by(Chromosome) %>%
-  #   mutate(pre_diff = Start_Position - lag(End_Position,
-  #                                          default = Start_Position[1]),
-  #          next_diff = lead(Start_Position, 
-  #                           default = Start_Position[1]) - End_Position,
-  #          prev_mut_length = lag(nchar(Reference_Allele), default = 1),
-  #          next_mut_length = lead(nchar(Reference_Allele), default = 1),
-  #          prev_mut_type = lag(Variant_Type, default = "SNP"), 
-  #          next_mut_type = lead(Variant_Type, default = "SNP"))
-  # mafFile <- data.frame(mafFile)
-  # 
-  # # either of the conditions should be satisfied to avoid being filtered
-  # ## 1. the current mutation be analyzed is an INDEL
-  # ## 2. the current mutation (SNP) is far enough from the previous mutation if
-  # ##    the previous mutation is an indel within max length, and, 
-  # ##    far enough from the next mutation if the next mutation is an indel 
-  # ##    within max length
-  # # only consider the stiuation when the upstream and downstream of a SNP is
-  # # an indel, so "SNP", "DNP", "TNP", "ONP" are save type
-  # save_type <- c("SNP", "DNP", "TNP", "ONP")
-  # condition1 <- (mafFile$Variant_Type == "INS" | mafFile$Variant_Type == "DEL")
-  # condition2_1 <- (mafFile$pre_diff >= minInterval | 
-  #                    mafFile$prev_mut_length >= maxIndelLen | 
-  #                    mafFile$prev_mut_type %in% save_type | mafFile$pre_diff < 0)
-  # condition2_2 <- (mafFile$next_diff >= minInterval | 
-  #                    mafFile$next_mut_length >= maxIndelLen | 
-  #                    mafFile$next_mut_type %in% save_type | mafFile$next_diff < 0)
-  # 
-  # n_tags <- setdiff(rownames(mafFile), 
-  #                   rownames(mafFile[((condition2_1 & condition2_2) | 
-  #                                       condition1),]))
-  # 
-  # mafFile[n_tags, 'CaTag'] <- paste0(mafFile[n_tags, 'CaTag'] , 'A')
-  # 
-  # return(subset(mafFile, select = c(-pre_diff, -next_diff, -prev_mut_length,
-  #                                   -next_mut_length, -prev_mut_type, 
-  #                                   -next_mut_type)))
-  
-  if ("DEL" %in% unique(maf$Variant_Type) | "INS" %in% unique(maf$Variant_Type)) {
-    # create an indel bed with indels of length <= maxIndelLen
-    bed_frame <- selectIndel(maf, maxIndelLen, minInterval)
-    snp_frame <- maf[which(maf$Variant_Type == "SNP"), ]
-    # add tags to variants in expanded bed
-    n_tags <- rownames(snp_frame[snp_frame$Chromosome %in% bed_frame$Chromosome 
-                                 & snp_frame$Start_Position %in% bed_frame$Location,])
-    maf[n_tags, 'CaTag'] <- paste0(maf[n_tags, 'CaTag'] , 'A')
-    
-  }
+    if ("DEL" %in% unique(maf$Variant_Type) | 
+        "INS" %in% unique(maf$Variant_Type)) {
+        # create an indel bed with indels of length <= maxIndelLen
+        bed_frame <- selectIndel(maf, maxIndelLen, minInterval)
+        snp_frame <- maf[which(maf$Variant_Type == "SNP"), ]
+        # add tags to variants in expanded bed
+        n_tags <- rownames(snp_frame[snp_frame$Chromosome 
+                                     %in% bed_frame$Chromosome 
+                                     & snp_frame$Start_Position 
+                                     %in% bed_frame$Location,])
+        maf[n_tags, 'CaTag'] <- paste0(maf[n_tags, 'CaTag'] , 'A')
+    }
     # else: directly return maf if there is no INDEL in maf data frame
     return(maf)
 }
 
 # select indel with length <= maxIndelLen, and return the corresponding bed
 selectIndel <- function(mafDat, maxIndelLen = 50, minInterval = 10) {
-  indels <- rownames(mafDat[(mafDat$Variant_Type %in% c("DEL", "INS")) & 
+    indels <- rownames(mafDat[(mafDat$Variant_Type %in% c("DEL", "INS")) & 
                               (mafDat$End_Position - mafDat$Start_Position <=
                                  maxIndelLen),])
-  chrs <- mafDat[indels, "Chromosome"]
-  starts <- mafDat[indels, "Start_Position"]
-  ends <- mafDat[indels, "End_Position"]
-  tmpbed <- data.frame(Chromosome = chrs, 
+    chrs <- mafDat[indels, "Chromosome"]
+    starts <- mafDat[indels, "Start_Position"]
+    ends <- mafDat[indels, "End_Position"]
+    tmpbed <- data.frame(Chromosome = chrs, 
                          Start_Position = starts - minInterval, 
                          End_Position = ends + minInterval)
-  # generate the bed framn first
-  finalbed <- data.frame(matrix(ncol=2))
-  colnames(finalbed) <- c("Chromosome", "Location")
-  # iterate through every row of bed file, split it into single base
-  for (i in seq_len(nrow(tmpbed))) {
-    nbase <- length(tmpbed[i,2]:tmpbed[i,3])
-    currentbed <- data.frame(rep(tmpbed[i, 1]), tmpbed[i,2]:tmpbed[i,3])
-    colnames(currentbed) <- c("Chromosome", "Location")
-    finalbed <- rbind(finalbed, currentbed)
-  }
-  
-  # remove duplicated rows
-  finalbed <- na.omit(finalbed[!duplicated(finalbed),])
-  rownames(finalbed) <- 1:nrow(finalbed)
-  
-  return(finalbed)
+    # generate the bed framn first
+    finalbed <- data.frame(matrix(ncol=2))
+    colnames(finalbed) <- c("Chromosome", "Location")
+    # iterate through every row of bed file, split it into single base
+    for (i in seq_len(nrow(tmpbed))) {
+      nbase <- length(tmpbed[i,2]:tmpbed[i,3])
+      currentbed <- data.frame(rep(tmpbed[i, 1]), tmpbed[i,2]:tmpbed[i,3])
+      colnames(currentbed) <- c("Chromosome", "Location")
+      finalbed <- rbind(finalbed, currentbed)
+    }
+    # remove duplicated rows
+    finalbed <- na.omit(finalbed[!duplicated(finalbed),])
+    rownames(finalbed) <- 1:nrow(finalbed)
+    return(finalbed)
 }
-
-

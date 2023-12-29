@@ -1,12 +1,12 @@
 jointMAF <- function(mafdf, CSQ_info, vcfMain){
-  mafFinal <- cbind(mafdf, Allele = getValue(CSQ_info$Allele),
-                    Gene = getValue(CSQ_info$Gene),
-                    Feature = getValue(CSQ_info$Feature),
-                    Feature_type = getValue(CSQ_info$Feature_type),
-                    One_Consequence = getValue(CSQ_info$Consequence),
-                    Consequence = getValue(CSQ_info$Consequence),
-                    cDNA_position = getValue(CSQ_info$cDNA_position),
-                    CDS_position = getValue(CSQ_info$CDS_position),
+    mafFinal <- cbind(mafdf, Allele = getValue(CSQ_info$Allele),
+                Gene = getValue(CSQ_info$Gene), 
+                Feature = getValue(CSQ_info$Feature),
+                Feature_type = getValue(CSQ_info$Feature_type),
+                One_Consequence = getValue(CSQ_info$Consequence),
+                Consequence = getValue(CSQ_info$Consequence),
+                cDNA_position = getValue(CSQ_info$cDNA_position),
+                CDS_position = getValue(CSQ_info$CDS_position),
                     Protein_position = getValue(CSQ_info$Protein_position),
                     Amino_acids = getValue(CSQ_info$Amino_acids),
                     Codons = getValue(CSQ_info$Codons),
@@ -33,8 +33,7 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
                     GMAF = getValue(CSQ_info$AF),
                     AFR_MAF = getValue(CSQ_info$AFR_AF),
                     AMR_MAF = getValue(CSQ_info$AMR_AF),
-                    ASN_MAF = '.',
-                    EAS_MAF = getValue(CSQ_info$EAS_AF),
+                    ASN_MAF = '.', EAS_MAF = getValue(CSQ_info$EAS_AF),
                     EUR_MAF = getValue(CSQ_info$EUR_AF),
                     SAS_MAF = getValue(CSQ_info$SAS_AF),
                     AA_MAF = getValue(CSQ_info$AA_AF),
@@ -52,8 +51,7 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
                     TSL = getValue(CSQ_info$TSL),
                     HGVS_OFFSET = getValue(CSQ_info$HGVS_OFFSET),
                     PHENO = getValue(CSQ_info$PHENO),
-                    MINIMISED = '.',
-                    gnomAD_AF = getValue(CSQ_info$gnomAD_AF),
+                    MINIMISED = '.', gnomAD_AF = getValue(CSQ_info$gnomAD_AF),
                     gnomAD_AFR_AF = getValue(CSQ_info$gnomAD_AFR_AF),
                     gnomAD_AMR_AF = getValue(CSQ_info$gnomAD_AMR_AF),
                     gnomAD_EAS_AF = getValue(CSQ_info$gnomAD_EAS_AF),
@@ -72,13 +70,12 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
                     ExAC_AF_SAS = getValue(CSQ_info$ExAC_AF_SAS),
                     GENE_PHENO = getValue(CSQ_info$GENE_PHENO),
                     FILTER = vcfMain$FILTER)
-
 }
 
 getValue <- function(chars){
-  if (is.null(chars)){
-    return("")
-  }else{
-    return(chars)
-  }
+    if (is.null(chars)){
+      return("")
+    }else{
+      return(chars)
+    }
 }
