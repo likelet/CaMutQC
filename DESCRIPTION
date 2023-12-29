@@ -3,7 +3,7 @@ Type: Package
 Title: An R Package for Comprehensive Filtration and Selection of Cancer Somatic Mutations
 Version: 0.10.0
 Authors@R: c(person(given = "Xin", family = "Wang", 
-                    "Developer", role = c("aut", "cre"),
+                     role = c("aut", "cre"),
                      email = "sylviawang555@gmail.com",
                      comment = c(ORCID = "0000-0002-6072-599X")))
 Description: CaMutQC is able to filter false positive mutations generated due to 
