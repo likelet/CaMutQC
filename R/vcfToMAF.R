@@ -86,6 +86,7 @@ vcfToMAF <- function(vcfFile, multiVCF = FALSE, inputStrelka = FALSE,
       message('The generated MAF file has been saved.')
       write.table(maf, paste0(MAFdir, MAFfile), sep = "\t",
                   quote = FALSE, row.names = FALSE)
+      return(maf)
     }else{return(maf)}
 }
 
