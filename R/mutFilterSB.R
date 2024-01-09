@@ -125,7 +125,7 @@ calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
       # get the range of refFw
       maxR <- min(Row1, Col1)
       minR <- max(0, Row1-Col2)
-      for (i in minR:maxR){
+      for (i in seq(minR, maxR)){
         exP <- calP(i, Row1-i, Col1-i, Col2 - Row1 + i)
         if(exP <= P1){
           vaildP <- c(vaildP, exP)

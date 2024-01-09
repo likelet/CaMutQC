@@ -58,6 +58,6 @@ selectIndel <- function(mafDat, maxIndelLen = 50, minInterval = 10) {
     }
     # remove duplicated rows
     finalbed <- na.omit(finalbed[!duplicated(finalbed),])
-    rownames(finalbed) <- 1:nrow(finalbed)
+    rownames(finalbed) <- seq_len(nrow(finalbed))
     return(finalbed)
 }

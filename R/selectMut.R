@@ -9,7 +9,13 @@ selectMut <- function(charMatrix) {
         if (charMatrix[i, 1] == '') {
           numMatrix[i, 1] <- 10
         }else{
-          numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])
+          # handle biotypes that are not included
+          if (is.null(GetBiotypePriority(charMatrix[i, 1]))) {
+            numMatrix[i, 1] <- 10
+            warning("At least one biotype can not be recognized!")
+          }else{
+            numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])
+          }
         }
       }
       Biotypefreq <- data.frame(table(numMatrix[, 1]))
@@ -56,7 +62,7 @@ selectMut <- function(charMatrix) {
             if (length(grep('/', finalMatrix$cDNA_position))){
               Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "/")[[1]][2])
               selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
-              for (l in 2:nrow(finalMatrix)) {
+              for (l in seq(2,nrow(finalMatrix))) {
                 Tend <- as.numeric(strsplit(finalMatrix[l, 3], "/")[[1]][2])
                 if (Tend > Toplength) {
                   Toplength <- Tend
@@ -66,7 +72,7 @@ selectMut <- function(charMatrix) {
             }else if (length(grep('-', finalMatrix$cDNA_position))){
               Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "-")[[1]][2])
               selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
-              for (l in 2:nrow(finalMatrix)) {
+              for (l in seq(2,nrow(finalMatrix))) {
                 Tend <- as.numeric(strsplit(finalMatrix[l, 3], "-")[[1]][2])
                 if (Tend > Toplength) {
                   Toplength <- Tend
@@ -97,7 +103,7 @@ GetBiotypePriority <- function(biotype) {
            'bidirectional_promoter_lncrna' = 3, 
            'bidirectional_promoter_lncRNA' = 3, 'known_ncrna' = 4,
            'vaultRNA' = 4,  'macro_lncRNA' = 4, 'Mt_tRNA' = 4, 'Mt_rRNA' = 4, 
-           'antisense' = 5, 'lncRNA' = 5, 'antisense_RNA' = 5,
+           'antisense' = 5, 'antisense_RNA' = 5,
            'sense_intronic' = 5, 'sense_overlapping' = 5, 
            '3prime_overlapping_ncrna' = 5,  '3prime_overlapping_ncRNA' = 5, 
            'misc_RNA' = 5, 'vault_RNA' = 5, 'non_coding' = 5, 
@@ -114,6 +120,7 @@ GetBiotypePriority <- function(biotype) {
            'transcribed_processed_pseudogene' = 8, 
            'transcribed_unprocessed_pseudogene' = 8, 
            'transcribed_unitary_pseudogene' = 8, 
+           'transcribed_pseudogene' = 8, 
            'unitary_pseudogene' = 8, 'unprocessed_pseudogene' = 8, 
            'Mt_tRNA_pseudogene' = 8, 'tRNA_pseudogene' = 8, 
            'snoRNA_pseudogene' = 8, 'snRNA_pseudogene' = 8, 
