@@ -51,8 +51,8 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
 
 getValue <- function(chars){
     if (is.null(chars)){
-      return("")
+        return("")
     }else{
-      return(chars)
+        return(chars)
     }
 }
