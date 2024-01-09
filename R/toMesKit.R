@@ -25,14 +25,13 @@ toMesKit <- function(maf, clinicalFile, ccfFile = NULL, nonSyn.vc = NULL,
                      use.indel.ccf = FALSE, ccf.conf.level = 0.95){
     # check whether the input maf is a multisample maf
     if (length(unique(maf$Tumor_Sample_Barcode)) <= 1 ) {
-      stop("MesKit is for multi-region data, your maf only contains one sample.")
+      stop("MesKit is for multi-region data, this maf only contains 1 sample.")
     }
     message("Transforming to MesKit maf...")
     # change refbuild
     refBuild <- switch(unique(maf$NCBI_Build), 
                        "GRCh37" = "hg19", "GRCh38" = "hg38")
-    
-    # change certain column names of maf so that they can be recognized by MesKit
+    # change certain column names of maf so they can be recognized by MesKit
     colnames(maf)[which(colnames(maf) == "t_ref_count")] <- "Ref_allele_depth"
     colnames(maf)[which(colnames(maf) == "t_alt_count")] <- "Alt_allele_depth"
     
