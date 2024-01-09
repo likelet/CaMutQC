@@ -374,7 +374,6 @@ helper <- function(num) {
     return(round(num, 1) - 0.1)
   }
 }
-
 maf_ext <- cbind(maf_ext, group = unlist(lapply(maf_ext$VAF, helper)))
 
 maf_ext$group <- as.character(maf_ext$group)
@@ -384,8 +383,9 @@ ggplot(data = maf_ext, mapping = aes(group)) +
   geom_bar(position = 'stack', aes(fill = Variant_Type)) +
   scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
                    labels = c(paste(as.character(seq(0, 0.9, 0.1)),
-                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
-  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, color = "black", size = 3) +
+                            as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
+  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, 
+            color = "black", size = 3) +
   scale_fill_manual(values = cols1[unique(maf_ext$Variant_Type)]) +
   labs(x = 'VAF', y = 'Number of Variants', 
        title = 'Distribution of VAF before filtration', fill = 'Variant Type') +
@@ -411,7 +411,7 @@ ggplot(data = mafFilteredTs_ext, mapping = aes(group)) +
   geom_bar(position = 'stack', aes(fill = Variant_Type)) +
   scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
                    labels = c(paste(as.character(seq(0, 0.9, 0.1)),
-                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
+                            as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
   geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, 
             color = "black", size = 3) +
   scale_fill_manual(values = cols1[unique(mafFilteredTs_ext$Variant_Type)]) +
