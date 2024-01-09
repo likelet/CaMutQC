@@ -139,7 +139,7 @@ experiments. Default: FALSE}
 set to TRUE. Default: "mutFilterCom.log"}
 }
 \value{
-An MAF data frame after applied filtering strategies in another study.
+An MAF data frame after applied filtering strategies in another study
 
 A filter report in HTML format
 }

@@ -21,7 +21,6 @@ mutFilterCom(
   dbVAF = 0.01,
   ExAC = TRUE,
   Genomesprojects1000 = TRUE,
-  ESP6500 = TRUE,
   gnomAD = TRUE,
   dbSNP = FALSE,
   keepCOSMIC = TRUE,
@@ -30,6 +29,7 @@ mutFilterCom(
   bedHeader = FALSE,
   bedFilter = TRUE,
   mutFilter = FALSE,
+  ESP6500 = TRUE,
   selectCols = TRUE,
   report = TRUE,
   assay = "MSK-v3",
@@ -90,9 +90,6 @@ cutoff(set in VAF parameter). Default: TRUE.}
 Genomesprojects1000 with VAF higher than cutoff(set in VAF parameter).
 Default: TRUE.}
 
-\item{ESP6500}{Whether to filter variants listed in ESP6500 with VAF higher
-than cutoff(set in VAF parameter). Default: TRUE.}
-
 \item{gnomAD}{Whether to filter variants listed in gnomAD with VAF higher
 than cutoff(set in VAF parameter). Default: TRUE.}
 
@@ -118,6 +115,9 @@ If FALSE, a simulation filtration process will be run, and the original MAF
 data frame with tags in CaTag column, and  a filter report will be returned.
 If TRUE, a filtered MAF data frame and a filter report will be generated.
 Default: FALSE.}
+
+\item{ESP6500}{Whether to filter variants listed in ESP6500 with VAF higher
+than cutoff(set in VAF parameter). Default: TRUE.}
 
 \item{selectCols}{Columns will be contained in the filtered data frame.
 By default (TRUE), the first 13 columns and 'Tumor_Sample_Barcode' column.

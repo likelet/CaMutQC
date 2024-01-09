@@ -98,10 +98,10 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                          tumorAD = 5, normalAD = Inf, VAF = 0.05, VAFratio = 0,
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50,
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01,
-                         ExAC = TRUE, Genomesprojects1000 = TRUE, ESP6500 = TRUE,
+                         ExAC = TRUE, Genomesprojects1000 = TRUE, 
                          gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE,
                          keepType = 'exonic', bedFile = NULL, bedHeader = FALSE,
-                         bedFilter = TRUE, mutFilter = FALSE, 
+                         bedFilter = TRUE, mutFilter = FALSE, ESP6500 = TRUE,
                          selectCols = TRUE, report = TRUE,
                          assay = 'MSK-v3', genelist = NULL,
                          mutType = 'nonsynonymous',
@@ -109,8 +109,6 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                          TMB = TRUE, cancerType = NULL, reference = NULL,
                          progressbar = TRUE, codelog = FALSE, 
                          codelogFile = "mutFilterCom.log") {
-
-
   # run mutFilterTech
   message("  Filtration for technical issue is running")
   mafFilteredT <- mutFilterTech(maf, panel = panel, tumorDP = tumorDP,
@@ -120,12 +118,10 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                                 SBscore = SBscore, maxIndelLen = maxIndelLen,
                                minInterval = minInterval, tagFILTER = tagFILTER,
                                progressbar = progressbar)
-
   # filter first for report usage
   mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == "0", ]
-
   # run mutSelection
-  cat("\n")
+  message("\n")
   message("  Cancer somatic variant selection is running")
   mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAC = ExAC,
                               Genomesprojects1000 = Genomesprojects1000,
@@ -134,7 +130,6 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
                               bedFile = bedFile, bedFilter = bedFilter,
                               bedHeader = bedHeader,
                               progressbar = progressbar)
-
   # filter first for report usage
   mafFilteredS2 <- mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
                  Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
@@ -144,28 +139,28 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
 
   mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
   if (nrow(mafFilteredF) == 0){
-    stop('No variants left after filtration.')
-  }
+    stop('No variants left after filtration.')}
   if (TMB){
     # check bed file
     if (is.null(bedFile)){
-      stop(paste0('A bed file is missing, which is required for TMB calculation.',
-          ' If you don\'t want to calculate TMB, please set TMB to FALSE.'))
+      mes <- paste0('Bed file is missing, but is required for TMB calculation.',
+                    ' If you don\'t want to calculate TMB, set TMB to FALSE.')
+      stop(mes)
     }else{
       bed <- readBed(bedFile, bedHeader = bedHeader)
       bedLen <- as.character(round(sum(bed[, 3] - bed[, 2])/1000000, 2))
       TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay,
                          genelist = genelist, mutType = mutType, 
                          bedHeader = bedHeader, bedFilter = bedFilter)
-      print(paste0("  Estimated tumor mutational burden (TMB): ", TMBvalue))
-      print(paste0("  Method used to calculate TMB: ", assay))
+      message(paste0("  Estimated tumor mutational burden (TMB): ", TMBvalue))
+      message(paste0("  Method used to calculate TMB: ", assay))
     }
   }
   # report generation
   if (report){
     rmarkdown::render(system.file("rmd", "CaMutQC-FilterReport.Rmd",
-                                  package = "CaMutQC"), output_file = reportFile,
-                      output_dir = reportDir)
+                                  package = "CaMutQC"), 
+                      output_file = reportFile, output_dir = reportDir)
   }
   # export codelog if asked
   if (codelog) {
@@ -173,24 +168,24 @@ mutFilterCom <- function(maf, panel = "Customized", tumorDP = 20, normalDP = 10,
     # export date and running code 
     writeLines(paste0(date(), " \n"), con=printer)
     running_code <- paste0("mutFilterCom(maf, panel=", panel, ", tumorDP=", 
-                           tumorDP, ", normalDP=", normalDP, ", tumorAD=", tumorAD,
-                           ", normalAD=", normalAD, ", VAF=", VAF, ", VAFratio=",
-                           VAFratio, ", SBmethod=", SBmethod, ", SBscore=", 
-                           SBscore, ", maxIndelLen=", maxIndelLen, ", minInterval=",
-                           minInterval, ", tagFILTER=", tagFILTER, ", dbVAF=",
-                           dbVAF, ", ExAC=", ExAC, ", Genomesprojects1000=", 
-                           Genomesprojects1000, ", ESP6500=", ESP6500, ", gnomAD=",
-                           gnomAD, ", dbSNP=", dbSNP, ", keepCOSMIC=", keepCOSMIC,
-                           ", keepType=", keepType, ", bedFile=", bedFile,
-                           ", bedHeader=", bedHeader, ", bedFilter=", bedFilter,
-                           ", mutFilter=", mutFilter, ", selectCols=", selectCols,
-                           ", report=", report, ", assay=", assay, ", genelist=",
-                           genelist, ", mutType=", mutType, 
-                           ", reportFile=", reportFile, ", reportDir=", reportDir,
-                           ", TMB=", TMB, ", cancerType=", cancerType, 
-                           ", reference=", reference, ", progressbar=", progressbar,
-                           ", codelog=", codelog, ", codelogFile=", codelogFile,
-                           ")")
+                    tumorDP, ", normalDP=", normalDP, ", tumorAD=", tumorAD,
+                    ", normalAD=", normalAD, ", VAF=", VAF, ", VAFratio=",
+                    VAFratio, ", SBmethod=", SBmethod, ", SBscore=", 
+                    SBscore, ", maxIndelLen=", maxIndelLen, ", minInterval=",
+                    minInterval, ", tagFILTER=", tagFILTER, ", dbVAF=",
+                    dbVAF, ", ExAC=", ExAC, ", Genomesprojects1000=", 
+                    Genomesprojects1000, ", ESP6500=", ESP6500, ", gnomAD=",
+                    gnomAD, ", dbSNP=", dbSNP, ", keepCOSMIC=", keepCOSMIC,
+                    ", keepType=", keepType, ", bedFile=", bedFile,
+                    ", bedHeader=", bedHeader, ", bedFilter=", bedFilter,
+                    ", mutFilter=", mutFilter, ", selectCols=", selectCols,
+                    ", report=", report, ", assay=", assay, ", genelist=",
+                    genelist, ", mutType=", mutType, 
+                    ", reportFile=", reportFile, ", reportDir=", reportDir,
+                    ", TMB=", TMB, ", cancerType=", cancerType, 
+                    ", reference=", reference, ", progressbar=", progressbar,
+                    ", codelog=", codelog, ", codelogFile=", codelogFile,
+                    ")")
     writeLines(running_code, con=printer)
     close(printer)
   }

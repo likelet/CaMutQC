@@ -68,7 +68,7 @@
 #' @param codelogFile Where to store the codelog, only useful when codelog is
 #' set to TRUE. Default: "mutFilterCom.log"
 #'
-#' @return An MAF data frame after applied filtering strategies in another study.
+#' @return An MAF data frame after applied filtering strategies in another study
 #' @return A filter report in HTML format
 #'
 #' @export mutFilterRef
