@@ -38,7 +38,6 @@
 #' package = "CaMutQC"))
 #' mafF <- mutSelection(maf)
 
-
 mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                          Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE,
@@ -55,7 +54,6 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     #message('Selection for germline variant database is in process.')
     if (progressbar) {
       setTxtProgressBar(pb, 40, title = progressbar)
-      message("\n")
     }
     maf <- mutFilterDB(maf, dbVAF = dbVAF, ExAC = ExAC,
                        Genomesprojects1000 = Genomesprojects1000, 
@@ -70,7 +68,6 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     # region selection
     if (progressbar) {
       setTxtProgressBar(pb, 80, title = progressbar)
-      message("\n")
     }
     maf <- mutFilterReg(maf, bedFile = bedFile, bedHeader = bedHeader,
                         bedFilter = bedFilter)

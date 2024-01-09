@@ -53,7 +53,7 @@ mutFilterPON <- function(maf) {
       # add tag qualified variants
       discard <- rownames(pon_maf[which(pon_maf$ID == 1),])
       maf[union(discard, preLabelled), 'CaTag'] <- paste0(maf[union(discard,
-                                                                    preLabelled),
+                                                             preLabelled),
                                                             'CaTag'], 'P')
       return(maf)
     }

@@ -1,7 +1,6 @@
 selectTrans <- function(maf, CSQdf, INFOdf) {
     # extract, assign and filter CSQ info from maf data frame
     for (n in seq_len(nrow(maf))) {
-      #print(n)
       CSQ_general <- strsplit(INFOdf$CSQ[n], split = ",")[[1]]
       CSQ_subinfo <- CSQdf[seq_len(length(CSQ_general)), ]
       rownames(CSQ_subinfo) <- seq_len(length(CSQ_general))
