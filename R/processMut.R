@@ -28,9 +28,10 @@ processMut <- function(mafList, processMethod = "union") {
     ## check MAF data frames
     for (i in seq_len(length(mafList))){
       if (!('CaTag' %in% colnames(mafList[[i]]))){
-        stop(paste0("'CaTag' column is missing in the ", i, " MAF frame, ",
-             "please make sure all input MAF frames have gone through at least "
-             , "1 CaMutQC filtration function."))
+        mes <- paste0("'CaTag' column is missing in the ", i, " MAF frame, ",
+               "please make sure all input MAF frame have gone through at least"
+                , " 1 CaMutQC filtration function.")
+        stop(mes)
       }
     }
     ## remove labeled mutations
