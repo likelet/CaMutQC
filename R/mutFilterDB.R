@@ -30,45 +30,44 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                         gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE){
     # create NULL tags first
     for (t in c("tags1", "tags2", "tags3", "tags4", "tags5", "tags6", "tags7")){
-      assign(t, NULL)
+        assign(t, NULL)
     }
     # ExAC filtration
     if (ExAC){
-      if ('ExAC_AF' %in% colnames(maf) & any(!(is.na(maf$ExAC_AF)))){
-        tags1 <-rownames(maf[(!(is.na(maf$ExAC_AF)) & (maf$ExAC_AF >= dbVAF)),])
-      }else{dbMessage("ExAC")}
-    }
+        if ('ExAC_AF' %in% colnames(maf) & any(!(is.na(maf$ExAC_AF)))){
+          tags1<-rownames(maf[((!(is.na(maf$ExAC_AF)))&(maf$ExAC_AF>= dbVAF)),])
+        }else{dbMessage("ExAC")}}
     # 1000 Genomesprojects filtration
     if (Genomesprojects1000){
-      if ('GMAF' %in% colnames(maf) & any(!(is.na(maf$GMAF)))){
-        tags2 <- rownames(maf[(!(is.na(maf$GMAF)) & (maf$GMAF >= dbVAF)), ])
-      }else{dbMessage("Genomesprojects1000")}
-    }
+        if ('GMAF' %in% colnames(maf) & any(!(is.na(maf$GMAF)))){
+          tags2 <- rownames(maf[((!(is.na(maf$GMAF))) & (maf$GMAF >= dbVAF)), ])
+        }else{dbMessage("Genomesprojects1000")}}
     # gnomAD filtration
     if (gnomAD){
-      if ('gnomAD_AF' %in% colnames(maf) & any(!(is.na(maf$gnomAD_AF))) ){
-        tags3 <- rownames(maf[(!(is.na(maf$gnomAD_AF)) & 
-                                 (maf$gnomAD_AF >= dbVAF)), ])
-      }else{dbMessage("gnomAD")}
-    }
+        if ('gnomAD_AF' %in% colnames(maf) & any(!(is.na(maf$gnomAD_AF))) ){
+          tags3 <- rownames(maf[((!(is.na(maf$gnomAD_AF))) & 
+                                   (maf$gnomAD_AF >= dbVAF)), ])
+        }else{dbMessage("gnomAD")}}
     # ESP6500 filtration
     if (ESP6500){
-      if ('AA_MAF' %in% colnames(maf) & any(!(is.na(maf$AA_MAF)))){
-        tags4 <- rownames(maf[(!(is.na(maf$AA_MAF)) & (maf$AA_MAF >= dbVAF)), ])
-      }else if ('EA_MAF' %in% colnames(maf) & any(!(is.na(maf$EA_MAF)))){
-        tags5 <- rownames(maf[(!(is.na(maf$EA_MAF)) & (maf$EA_MAF >= dbVAF)), ])
-      }else{ dbMessage("ESP6500")}
-    }
+        if ('AA_MAF' %in% colnames(maf) & any(!(is.na(maf$AA_MAF)))){
+          tags4<-rownames(maf[((!(is.na(maf$AA_MAF)))&(maf$AA_MAF >= dbVAF)), ])
+        }else if ('EA_MAF' %in% colnames(maf) & any(!(is.na(maf$EA_MAF)))){
+          tags5<-rownames(maf[((!(is.na(maf$EA_MAF)))&(maf$EA_MAF >= dbVAF)), ])
+        }else{ dbMessage("ESP6500")}}
     if (keepCOSMIC) {
-      tags6 <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
+        tags6 <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
     }
     if (dbSNP){
-      tags7 <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
+        tags7 <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
     }
     tags <- unique(c(tags1, tags2, tags3, tags4, tags5, tags6, tags7))
     tags <- tags[!(tags %in% tags6)]
-    tags <- intersect(tags, setdiff(rownames(maf),
-                    as.character(grep('athogenic', maf$CLIN_SIG))))
+    # patho tags: with pathogenic but removing pathogenicity
+    patho_tags <- setdiff(as.character(grep('pathogenic', maf$CLIN_SIG, 
+                  ignore.case = TRUE)), as.character(grep('pathogenicity', 
+                                        maf$CLIN_SIG, ignore.case = TRUE)))
+    tags <- intersect(tags, setdiff(rownames(maf), patho_tags))
     maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'D')
     return(maf)
 }
@@ -80,4 +79,3 @@ dbMessage <- function(db) {
     final_mes <- paste0(first_mes, second_mes)
     message(final_mes)
 }
-
