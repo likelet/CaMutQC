@@ -29,15 +29,15 @@ jointMAF <- function(mafdf, CSQ_info, vcfMain){
         VARIANT_CLAS=getValue(CSQ_info$VARIANT_CLASS),
         TSL=getValue(CSQ_info$TSL),HGVS_OFFSET = getValue(CSQ_info$HGVS_OFFSET),
         PHENO = getValue(CSQ_info$PHENO), MINIMISED = '', 
-        gnomAD_AF = getValue(CSQ_info$gnomAD_AF),
-        gnomAD_AFR_AF = getValue(CSQ_info$gnomAD_AFR_AF),
-        gnomAD_AMR_AF = getValue(CSQ_info$gnomAD_AMR_AF),
-        gnomAD_ASJ_AF = getValue(CSQ_info$gnomAD_ASJ_AF),
-        gnomAD_EAS_AF = getValue(CSQ_info$gnomAD_EAS_AF),
-        gnomAD_FIN_AF = getValue(CSQ_info$gnomAD_FIN_AF),
-        gnomAD_NFE_AF = getValue(CSQ_info$gnomAD_NFE_AF),
-        gnomAD_OTH_AF = getValue(CSQ_info$gnomAD_OTH_AF),
-        gnomAD_SAS_AF = getValue(CSQ_info$gnomAD_SAS_AF),
+        gnomAD_AF = getgnomInfo(CSQ_info, "AF"),
+        gnomAD_AFR_AF = getgnomInfo(CSQ_info, "AFR_AF"),
+        gnomAD_AMR_AF = getgnomInfo(CSQ_info, "AMR_AF"),
+        gnomAD_ASJ_AF = getgnomInfo(CSQ_info, "ASJ_AF"),
+        gnomAD_EAS_AF = getgnomInfo(CSQ_info, "EAS_AF"),
+        gnomAD_FIN_AF = getgnomInfo(CSQ_info, "FIN_AF"),
+        gnomAD_NFE_AF = getgnomInfo(CSQ_info, "NFE_AF"),
+        gnomAD_OTH_AF = getgnomInfo(CSQ_info, "OTH_AF"),
+        gnomAD_SAS_AF = getgnomInfo(CSQ_info, "SAS_AF"),
         ExAC_AF = getValue(CSQ_info$ExAC_AF),
         ExAC_AF_adj = getValue(CSQ_info$ExAC_AF_adj),
         ExAC_AF_AFR = getValue(CSQ_info$ExAC_AF_AFR),
@@ -56,3 +56,18 @@ getValue <- function(chars){
         return(chars)
     }
 }
+
+# handle gnomADe and gnomAD cases
+getgnomInfo <- function(CSQ_info, filedName){
+    # gnomAD changes to gnomADe in VEP v110 (at least)
+    fieldName1 <- paste("gnomAD", fieldName, sep = "_")
+    fieldName2 <- paste("gnomADe", fieldName, sep = "_")
+    if (fieldName1 %in% colnames(CSQ_info)){
+        return(CSQ_info[, fieldName1])
+    }else if (fieldName2 %in% colnames(CSQ_info)){
+        return(CSQ_info[, fieldName2])
+    }else{
+        return("")
+    }
+}
+
