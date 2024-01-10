@@ -134,8 +134,8 @@ mutCountRegion <- function(mutLoc, bedSingle){
 ## helper function for reading corresponding bed and panel file
 readBedPanel <- function(assay, genVer, maf){
     # give user a message about the bed used in CaMutQC
-    mes <- paste0("Bed files in CaMutQC are not accurate", 
-                " The result serves only as a reference")
+    mes <- paste0("Bed files in CaMutQC are not accurate.", 
+                " The result serves only as a reference.")
     warning(mes)
     # check genome version
     if (!(genVer %in% c("GRCh37", "GRCh38"))){ stop("Wrong genome version!") }
