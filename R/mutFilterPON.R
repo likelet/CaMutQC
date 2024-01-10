@@ -32,11 +32,11 @@ mutFilterPON <- function(maf) {
       message('  Loading PON data...')
       if (genomeVersion == 'GRCh37') {
         invisible(capture.output(somatic <- read.vcfR(
-          system.file("extdata/PON", "somatic-b37_Mutect2-exome-panel.vcf",
+          system.file("extdata/PON", "somatic-b37_Mutect2-exome-panel.vcf.gz",
                       package = "CaMutQC"))))
       } else if (genomeVersion == 'GRCh38') {
         invisible(capture.output(somatic <- read.vcfR(
-          system.file("extdata/PON", "somatic-hg38_1000g_pon.hg38.vcf",
+          system.file("extdata/PON", "somatic-hg38_1000g_pon.hg38.vcf.gz",
                       package = "CaMutQC"))))
       }
       message('  PON data has been loaded successfully!')
