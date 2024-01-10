@@ -1,93 +1,90 @@
-## select the proper transcript
-selectMut <- function(charMatrix) {
-    if (nrow(charMatrix) == 1 ) {
-      return(1)
-    } else {
-      numMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(charMatrix)))
-      for (i in seq_len(nrow(numMatrix))) {
-        # handle situation when biotype is null
-        if (charMatrix[i, 1] == '') {
+## select the proper transcript based on biotype, consequence and 
+## length of transcript
+selectMut <- function(charMatrix) { 
+  if (nrow(charMatrix) == 1 ) { return(1)
+  } else {
+    numMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(charMatrix)))
+    for (i in seq_len(nrow(numMatrix))) {
+      # handle situation when biotype is null
+      if (charMatrix[i, 1] == '') {
+        numMatrix[i, 1] <- 10
+      }else{
+        # handle biotypes that are not included
+        if (is.null(GetBiotypePriority(charMatrix[i, 1]))) {
           numMatrix[i, 1] <- 10
-        }else{
-          # handle biotypes that are not included
-          if (is.null(GetBiotypePriority(charMatrix[i, 1]))) {
-            numMatrix[i, 1] <- 10
-            warning("At least one biotype can not be recognized!")
-          }else{
-            numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])
-          }
-        }
+          warning("At least one biotype can not be recognized!")
+        }else{ numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])}
       }
-      Biotypefreq <- data.frame(table(numMatrix[, 1]))
-      Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing = FALSE), ]
-      if (Biotypefreq[1, 2] == 1){
-        # return the one with the highest biofunction priority
-        return(as.numeric(rownames(numMatrix[which(numMatrix$V1
-                                                   == Biotypefreq[1, 1]), ])))
-      } else {
-        # keep rows with the highest biofunction priority, sort by consequence
-        remMatrix <- charMatrix[which(numMatrix[, 1] == Biotypefreq[1, 1]), ]
-        remNumMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(remMatrix)))
-        rownames(remNumMatrix) <- rownames(remMatrix)
-        for (r in seq_len(nrow(remMatrix))) {
-          Consequence <- strsplit(remMatrix[r, 2], split = "&")[[1]]
-          conseqPriority <- 30
-          for (c in Consequence) {
-            conseqPriority <- min(conseqPriority, GetConsequencePriority(c))
-          }
-          remNumMatrix[r, 1] <- conseqPriority
+    }
+    Biotypefreq <- data.frame(table(numMatrix[, 1]))
+    Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing = FALSE), ]
+    if (Biotypefreq[1, 2] == 1){
+      # return the one with the highest biofunction priority
+      return(as.numeric(rownames(numMatrix[which(numMatrix$V1
+                                                 == Biotypefreq[1, 1]), ])))
+    } else {
+      # keep rows with the highest biofunction priority, sort by consequence
+      remMatrix <- charMatrix[which(numMatrix[, 1] == Biotypefreq[1, 1]), ]
+      remNumMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(remMatrix)))
+      rownames(remNumMatrix) <- rownames(remMatrix)
+      for (r in seq_len(nrow(remMatrix))) {
+        Consequence <- strsplit(remMatrix[r, 2], split = "&")[[1]]
+        conseqPriority <- 30
+        for (c in Consequence) {
+          conseqPriority <- min(conseqPriority, GetConsequencePriority(c))
         }
-        Conseqfreq <- data.frame(table(remNumMatrix[, 1]))
-        Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing = FALSE), ]
-        if (Conseqfreq[1, 2] == 1){
-          # return the one with the highest consequence priority
-          return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1]
-                                            == Conseqfreq[1, 1]), ])))
+        remNumMatrix[r, 1] <- conseqPriority
+      }
+      Conseqfreq <- data.frame(table(remNumMatrix[, 1]))
+      Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing = FALSE), ]
+      if (Conseqfreq[1, 2] == 1){
+        # return the one with the highest consequence priority
+        return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1]
+                                                      == Conseqfreq[1, 1]), ])))
+      } else {
+        # work on length
+        finalMatrix<-remMatrix[which(remNumMatrix[, 1] == Conseqfreq[1, 1]), ]
+        ## choose the first transcript if all cDNA position info is missing
+        if (all(finalMatrix$cDNA_position == 'Missing') |
+            length(unique(finalMatrix$cDNA_position)) == 1) {
+          return(as.numeric(rownames(finalMatrix)[1]))
+          ## choose the only one transcript with cDNA position info
+        } else if (sum(finalMatrix$cDNA_position != 'Missing') == 1) {
+          return(as.numeric(rownames(finalMatrix[which(finalMatrix[, 3]
+                                                       != 'Missing'), ])))
         } else {
-          # work on length
-          finalMatrix <- remMatrix[which(remNumMatrix[, 1] 
-                                         == Conseqfreq[1, 1]), ]
-          ## choose the first transcript if all cDNA position info is missing
-          if (all(finalMatrix$cDNA_position == 'Missing') |
-              length(unique(finalMatrix$cDNA_position)) == 1) {
-            return(as.numeric(rownames(finalMatrix)[1]))
-            ## choose the only one transcript with cDNA position info
-          } else if (sum(finalMatrix$cDNA_position != 'Missing') == 1) {
-            return(as.numeric(rownames(finalMatrix[which(finalMatrix[, 3]
-                                                         != 'Missing'), ])))
-          } else {
-            ## length of transcript
-            finalMatrix <- finalMatrix[which(finalMatrix$cDNA_position
-                                             != 'Missing'), ]
-            if (length(grep('/', finalMatrix$cDNA_position))){
-              Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "/")[[1]][2])
-              selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
-              for (l in seq(2,nrow(finalMatrix))) {
-                Tend <- as.numeric(strsplit(finalMatrix[l, 3], "/")[[1]][2])
-                if (Tend > Toplength) {
-                  Toplength <- Tend
-                  selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
-                }
+          ## length of transcript
+          finalMatrix <- finalMatrix[which(finalMatrix$cDNA_position
+                                           != 'Missing'), ]
+          if (length(grep('/', finalMatrix$cDNA_position))){
+            Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "/")[[1]][2])
+            selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
+            for (l in seq(2,nrow(finalMatrix))) {
+              Tend <- as.numeric(strsplit(finalMatrix[l, 3], "/")[[1]][2])
+              if (Tend > Toplength) {
+                Toplength <- Tend
+                selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
               }
-            }else if (length(grep('-', finalMatrix$cDNA_position))){
-              Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "-")[[1]][2])
-              selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
-              for (l in seq(2,nrow(finalMatrix))) {
-                Tend <- as.numeric(strsplit(finalMatrix[l, 3], "-")[[1]][2])
-                if (Tend > Toplength) {
-                  Toplength <- Tend
-                  selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
-                }
-              }
-            }else{
-              selectedTranscript <- as.numeric(rownames(
-                finalMatrix[which.max(finalMatrix$cDNA_position), ]))
             }
-            return(selectedTranscript)
+          }else if (length(grep('-', finalMatrix$cDNA_position))){
+            Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "-")[[1]][2])
+            selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
+            for (l in seq(2,nrow(finalMatrix))) {
+              Tend <- as.numeric(strsplit(finalMatrix[l, 3], "-")[[1]][2])
+              if (Tend > Toplength) {
+                Toplength <- Tend
+                selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
+              }
+            }
+          }else{
+            selectedTranscript <- as.numeric(rownames(
+              finalMatrix[which.max(finalMatrix$cDNA_position), ]))
           }
+          return(selectedTranscript)
         }
       }
     }
+  }
 }
 
 ## order biotype
