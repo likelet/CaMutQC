@@ -16,9 +16,7 @@
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
 #' @param bedFilter Whether to filter the information in bed file or not, which
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.
-#'
 #' @return A TMB value.
-#'
 #' @export calTMB
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
@@ -26,232 +24,159 @@
 #' TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed/Twist",
 #' "Twist_Exome_Target_hg19.bed",package = "CaMutQC"))
 
-
 calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3', 
-                   genelist = NULL, mutType = 'nonsynonymous', 
-                   bedFilter = TRUE) {
-  
-  # give user a message about the bed used in CaMutQC
-  message(paste0("Warning: the bed used in CaMutQC is ", 
-          "not the accurate bed file of corresponding assay. The result serves",
-          " only as a reference."))
-
-  # obtain genome build version
-  if (length(unique(maf$NCBI_Build)) == 1) {
-    genVer <- unique(maf$NCBI_Build)
-  }else{
-    stop("There is more than one unique NCBI_Build values in this dataset.")
-  }
-
-  ## select variants based on chosen assay
-  if (strsplit(assay, split = '-')[[1]][1] == 'MSK'){
-    # use corresponding bed when different assay is used
-    # filter based on genelist
-    if (assay == 'MSK-v3') {
-      MSK_v3 <- read.table(system.file("extdata/Panel_gene",
-                                       "MSK-IMPACT_gene_v3_468.txt",
-                                       package = "CaMutQC"))
-      maf <- maf[which(maf$Hugo_Symbol %in% MSK_v3$V1), ]
-      if (genVer == "GRCh37") {
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_468.bed",
-                               package = "CaMutQC")
-      }else if (genVer == "GRCh38") {
-        bedFile <- system.file("extdata/bed/panel_hg38", "hg38_MSK_468.bed",
-                               package = "CaMutQC")
-      }else{
-        stop("Wrong genome version!")
-      }
-
-    }else if (assay == 'MSK-v2') {
-      MSK_v2 <- read.table(system.file("extdata/Panel_gene",
-                                       "MSK-IMPACT_gene_v2_410.txt",
-                                       package = "CaMutQC"))
-      maf <- maf[which(maf$Hugo_Symbol %in% MSK_v2$V1), ]
-      if (genVer == "GRCh37") {
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_410.bed",
-                               package = "CaMutQC")
-      }else if (genVer == "GRCh38") {
-        bedFile <- system.file("extdata/bed/panel_hg38", "hg38_MSK_410.bed",
-                               package = "CaMutQC")
-      }else{
-        stop("Wrong genome version!")
-      }
-    }else if (assay == 'MSK-v1') {
-      MSK_v1 <- read.table(system.file("extdata/Panel_gene",
-                                       "MSK-IMPACT_gene_v1_341.txt",
-                                       package = "CaMutQC"))
-      maf <- maf[which(maf$Hugo_Symbol %in% MSK_v1$V1), ]
-      if (genVer == "GRCh37") {
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed",
-                               package = "CaMutQC")
-      }else if (genVer == "GRCh38") {
-        bedFile <- system.file("extdata/bed/panel_hg38", "hg38_MSK_341.bed",
-                               package = "CaMutQC")
-      }else{
-        stop("Wrong genome version!")
-      }
+                   genelist = NULL,mutType = 'nonsynonymous',bedFilter = TRUE) {
+    # obtain genome build version and filter maf 
+    if (length(unique(maf$NCBI_Build)) == 1) {
+        genVer <- unique(maf$NCBI_Build)
+        res <- readBedPanel(assay, genVer, maf)
+        maf <- res[[1]]
+        bedFile <- res[[2]]
+    }else{stop("More than 1 unique NCBI_Build value detected in this dataset.")}
+    ## select variants based on chosen assay
+    if (strsplit(assay, split = '-')[[1]][1] == 'MSK'){
+        # filter on VAF, VAFratio and AD
+        maf <- mutFilterQual(maf, tumorAD = 5, VAFratio = 5, VAF = 0.01,
+                             tumorDP = 0, normalDP = 0)
+        # filter for non-/hotspot genes (COSMIC genes)
+        maf_c <- maf[grep('COSV', maf[, 'Existing_variation']), ]
+        maf_nonc <- maf[setdiff(rownames(maf), rownames(maf_c)), ]
+        maf_c_f <- mutFilterQual(maf_c, tumorDP = 20, tumorAD = 8, normalDP = 0,
+                                 VAF = 0.02, VAFratio = 0)
+        maf_nonc_f <- mutFilterQual(maf_nonc, tumorDP = 20, tumorAD = 10,
+                                    normalDP = 0, VAF = 0.05, VAFratio = 0)
+        maf <- unique(rbind(maf_c_f, maf_nonc_f))
+        # filter non-exonic variants
+        maf <- mutFilterType(maf)
+    }else if (assay %in% c('FoundationOne', 'Pan-Cancer Panel')) {
+        # filter noncoding variants
+        noncoding <- read.table(system.file("extdata", "noncoding.txt",
+                                            package = "CaMutQC"), header = TRUE)
+        maf <- maf[which(!(maf$One_Consequence %in%
+                                          noncoding$Noncoding_Variant_Types)), ]
+        # filter dbsnp variants
+        tags1 <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
+        maf <- maf[setdiff(rownames(maf), tags1), ]
+        # filter variants with ExAC >= 2
+        ## detect whether the VCF file has ExAC annotation or not
+        if ('ExAC_AF' %in% colnames(maf)){ maf <- maf[maf$ExAC_AF < 2, ]
+        }else{
+            mes <- paste0('ExAC information cannot be found in VCF file.',
+                          ' No variants will be filtered based on ExAC.')
+            warning(mes)
+        }
+        # filter stop-gain variants in tumor suppressor genes
+        TSGs <- read.table(system.file("extdata", "TSGenelist.txt",
+                           package = "CaMutQC"), sep = "\t", header = TRUE)
+        TSGs_all<-c(TSGs$GeneSymbol,unique(unlist(strsplit(TSGs$Alias, "\\|"))))
+        maf <- maf[(!((maf$Hugo_Symbol %in% TSGs_all) &
+                             (maf$One_Consequence == 'stop_gained'))), ]
+        # filter variants in COSMIC
+        tags2 <- rownames(maf[grep('COSV', maf[, 'Existing_variation']), ])
+        maf <- maf[setdiff(rownames(maf), tags2), ]
+    }else if (assay == 'Customized'){
+        if (!(is.null(genelist))){
+            maf <- maf[(maf$Hugo_Symbol %in% genelist), ]
+        }
+        ## select certain variant type
+        maf <- mutFilterType(maf, keepType = mutType)
+    }
+    bed <- readBed(bedFile, bedHeader = bedHeader)
+    if (bedFilter) {
+        chromVaild <- c(paste0('chr', seq_len(22)), 'chrX', 'chrY')
+        bed <- bed[which(bed[, 1] %in% chromVaild), ]
+    }
+    # filter based on CaTag
+    maf <- maf[maf$CaTag == '0', ]
+    # return 0 if no variants left
+    if (nrow(maf) == 0){ return(0)
     }else{
-      stop(paste0('Invalid assay detected.',
-                  ' Please select from \'MSK-v3\', \'MSK-v2\',',
-                  ' \'MSK-v1\', \'FoundationOne\', \'Pan-Cancer Panel\'',
-                  ' and \'Customized\'. '))
+        ## sort bed object
+        bedProc <- unique(bed[, seq_len(3)])
+        colnames(bedProc) <- c('chrom', 'chromStart', 'chromEnd')
+        bedProc <- unique(cbind(bedProc,
+                          interval=bedProc$chromEnd-bedProc$chromStart,Num = 0))
+        rownames(bedProc) <- seq_len(nrow(bedProc))
+        maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
+        chrs <- unique(maf$Chromosome)
+        # warn if there is no overlap between the chr in maf and bed regions
+        if (length(intersect(chrs, unique(bed$V1))) == 0) {
+            mes<-paste0("No overlap between chr info in maf and chr info in  ", 
+                          "bed file.\n", "Maybe '1' in maf should be 'chr1'?")
+            stop(mes)
+        }
+        for (c in seq_len(length(chrs))) {
+            maf_target <- maf[which(maf$Chromosome == chrs[c]), ]
+            bed_target <- bedProc[which(bedProc$chrom == chrs[c]), ]
+            l <- rep(0, nrow(bed_target))
+            for(i in seq_len(nrow(bed_target))) {
+                l[i] <- mutCountRegion(maf_target, bed_target[i, ])
+            }
+            bedProc[which(bedProc$chrom == chrs[c]), 'Num'] <- l
+        }
+        TMB <- round(mean(bedProc$Num/bedProc$interval) * 1000000, 3)
+        return(TMB)
     }
-
-    # filter on VAF, VAFratio and AD
-    maf <- mutFilterQual(maf, tumorAD = 5, VAFratio = 5, VAF = 0.01,
-                         tumorDP = 0, normalDP = 0)
-
-    # filter for non-/hotspot genes (COSMIC genes)
-    maf_c <- maf[grep('COSV', maf[, 'Existing_variation']), ]
-    maf_nonc <- maf[setdiff(rownames(maf), rownames(maf_c)), ]
-
-    maf_c_f <- mutFilterQual(maf_c, tumorDP = 20, tumorAD = 8, normalDP = 0,
-                             VAF = 0.02, VAFratio = 0)
-    maf_nonc_f <- mutFilterQual(maf_nonc, tumorDP = 20, tumorAD = 10,
-                                normalDP = 0, VAF = 0.05, VAFratio = 0)
-    maf <- unique(rbind(maf_c_f, maf_nonc_f))
-
-    # filter non-exonic variants
-    maf <- mutFilterType(maf)
-
-  }else if (assay %in% c('FoundationOne', 'Pan-Cancer Panel')) {
-
-    # filter noncoding variants
-    noncoding <- read.table(system.file("extdata", "noncoding.txt",
-                                        package = "CaMutQC"), header = TRUE)
-    maf <- maf[which(!(maf$One_Consequence %in%
-                                      noncoding$Noncoding_Variant_Types)), ]
-
-    # filter germline variants(deprecated)
-
-    # filter dbsnp variants
-    tags1 <- rownames(maf[grep('rs', maf[, 'Existing_variation']), ])
-    maf <- maf[setdiff(rownames(maf), tags1), ]
-
-    # filter variants with ExAC >= 2
-    ## detect whether the VCF file has ExAC annotation or not
-    if ('ExAC_AF' %in% colnames(maf)){
-      maf <- maf[maf$ExAC_AF < 2, ]
-    }else{
-      warning(paste0('ExAC information cannot be found in VCF file.',
-                     ' No variants will be filtered based on ExAC.'))
-    }
-
-    # filter stop-gain variants in tumor suppressor genes
-    TSGs <- read.table(system.file("extdata", "TSGenelist.txt",
-                                   package = "CaMutQC"),
-                       sep = "\t", header = TRUE)
-    TSGs_all <- c(TSGs$GeneSymbol, unique(unlist(strsplit(TSGs$Alias, "\\|"))))
-    maf <- maf[(!((maf$Hugo_Symbol %in% TSGs_all) &
-                         (maf$One_Consequence == 'stop_gained'))), ]
-
-    # filter variants in COSMIC
-    tags2 <- rownames(maf[grep('COSV', maf[, 'Existing_variation']), ])
-    maf <- maf[setdiff(rownames(maf), tags2), ]
-
-    if (assay == 'FoundationOne') {
-      # filter based on genelist
-      FoundationOne <- read.table(system.file("extdata/Panel_gene",
-                                              "FoundationOne_genelist.txt",
-                                              package = "CaMutQC"))
-      maf <- maf[maf$Hugo_Symbol %in% FoundationOne$V1, ]
-      if (genVer == "GRCh37") {
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_FlCDx.bed",
-                               package = "CaMutQC")
-      }else if (genVer == "GRCh38") {
-        bedFile <- system.file("extdata/bed/panel_hg38", "hg38_FlCDx.bed",
-                               package = "CaMutQC")
-      }else{
-        stop("Wrong genome version!")
-      }
-    }else{
-      pan <- read.table(system.file("extdata/Panel_gene",
-                                    "Pan-cancer_genelist.txt",
-                                    package = "CaMutQC"), header = TRUE)
-      maf <- maf[maf$Hugo_Symbol %in% pan$Gene_Symbol, ]
-      maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0,
-                           tumorAD = 0, VAF = 0.05, VAFratio = 0)
-      if (genVer == "GRCh37") {
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_Pan-cancer.bed",
-                               package = "CaMutQC")
-      }else if (genVer == "GRCh38") {
-        bedFile <- system.file("extdata/bed/panel_hg38", "hg38_Pan-cancer.bed",
-                               package = "CaMutQC")
-      }else{
-        stop("Wrong genome version!")
-      }
-    }
-  }else if (assay == 'Customized'){
-
-    ## genelist
-    if (!(is.null(genelist))){
-      maf <- maf[(maf$Hugo_Symbol %in% genelist), ]
-    }
-
-    ## select certain variant type
-    maf <- mutFilterType(maf, keepType = mutType)
-
-  }else{
-    stop(paste0('Invalid assay detected.',
-                ' Please select from \'MSK-v3\', \'MSK-v2\',',
-                ' \'MSK-v1\', \'FoundationOne\', \'Pan-Cancer Panel\'',
-                ' and \'Customized\'. '))
-  }
-
-  bed <- readBed(bedFile, bedHeader = bedHeader)
-  if (bedFilter) {
-    chromVaild <- c(paste0('chr', 1:22), 'chrX', 'chrY')
-    bed <- bed[which(bed[, 1] %in% chromVaild), ]
-  }
-  
-  # filter based on CaTag
-  maf <- maf[maf$CaTag == '0', ]
-
-  # return 0 if no variants left
-  if (nrow(maf) == 0){
-    return(0)
-  }else{
-    ## sort bed object
-    bedProc <- unique(bed[, 1:3])
-    colnames(bedProc) <- c('chrom', 'chromStart', 'chromEnd')
-    bedProc <- unique(cbind(bedProc,
-                            interval = bedProc$chromEnd - bedProc$chromStart,
-                            Num = 0))
-    rownames(bedProc) <- seq_len(nrow(bedProc))
-
-    maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
-    chrs <- unique(maf$Chromosome)
-    # set a warning if there is no overlap between the chromosome field of maf
-    # and bed regions
-    if (length(intersect(chrs, unique(bed$V1))) == 0) {
-      stop(paste0("No overlap between chromosome field in maf and chromosome field", 
-                  "in bed file. \n", "Maybe '1' in maf should be 'chr1'?"))
-    }
-    
-    for (c in seq_len(length(chrs))) {
-      maf_target <- maf[which(maf$Chromosome == chrs[c]), ]
-      bed_target <- bedProc[which(bedProc$chrom == chrs[c]), ]
-      l <- rep(0, nrow(bed_target))
-      for(i in seq_len(nrow(bed_target))) {
-        l[i] <- mutCountRegion(maf_target, bed_target[i, ])
-      }
-      bedProc[which(bedProc$chrom == chrs[c]), 'Num'] <- l
-    }
-
-    TMB <- round(mean(bedProc$Num/bedProc$interval) * 1000000, 3)
-    return(TMB)
-  }
 }
-
 
 ## helper function for counting variants in specific region
 mutCountRegion <- function(mutLoc, bedSingle){
-  count <- bedSingle[1, 'Num']
-  for (i in seq_len(nrow(mutLoc))) {
-    if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
-        mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
-      count <- count  + 1
+    count <- bedSingle[1, 'Num']
+    for (i in seq_len(nrow(mutLoc))) {
+        if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
+            mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
+            count <- count  + 1
+        }
     }
-  }
-  return(count)
+    return(count)
+}
+
+## helper function for reading corresponding bed and panel file
+readBedPanel <- function(assay, genVer, maf){
+    # give user a message about the bed used in CaMutQC
+    mes <- paste0("Bed files in CaMutQC are not accurate.", 
+                " The result serves only as a reference.")
+    warning(mes)
+    # check genome version
+    if (!(genVer %in% c("GRCh37", "GRCh38"))){ stop("Wrong genome version!") }
+    if (assay == 'MSK-v3') {
+        panel_gene <- read.table(system.file("extdata/Panel_gene",
+                             "MSK-IMPACT_gene_v3_468.txt", package = "CaMutQC"))
+        if (genVer == "GRCh37") {
+            bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_468.bed",
+                                   package = "CaMutQC")
+        }else{ bedFile <- str_replace_all(bedFile, "19", "38")}
+    }else if (assay == 'MSK-v2') {
+        panel_gene <- read.table(system.file("extdata/Panel_gene",
+                             "MSK-IMPACT_gene_v2_410.txt", package = "CaMutQC"))
+        if (genVer == "GRCh37") {
+            bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_410.bed",
+                                   package = "CaMutQC")
+        }else{ bedFile <- str_replace_all(bedFile, "19", "38")}
+    }else if (assay == 'MSK-v1') {
+        panel_gene <- read.table(system.file("extdata/Panel_gene",
+                             "MSK-IMPACT_gene_v1_341.txt", package = "CaMutQC"))
+        if (genVer == "GRCh37") {
+            bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed",
+                                   package = "CaMutQC")
+        }else{ bedFile <- str_replace_all(bedFile, "19", "38")}
+    }else if (assay == 'FoundationOne') {
+        panel_gene <- read.table(system.file("extdata/Panel_gene",
+                            "FoundationOne_genelist.txt",package = "CaMutQC"))
+        if (genVer == "GRCh37") {
+            bedFile <- system.file("extdata/bed/panel_hg19", "hg19_FlCDx.bed",
+                                   package = "CaMutQC")
+        }else{ bedFile <- str_replace_all(bedFile, "19", "38")}
+    } else if (assay == 'Pan-Cancer Panel') {
+        panel_gene <- read.table(system.file("extdata/Panel_gene",
+                                "Pan-cancer_genelist.txt", package = "CaMutQC"))
+        maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0,
+                             tumorAD = 0, VAF = 0.05, VAFratio = 0)
+        if (genVer == "GRCh37") {
+            bedFile <- system.file("extdata/bed/panel_hg19", 
+                                   "hg19_Pan-cancer.bed", package = "CaMutQC")
+        }else { bedFile <- str_replace_all(bedFile, "19", "38")}
+    }else{ stop('Invalid assay!') }
+    maf <- maf[which(maf$Hugo_Symbol %in% panel_gene$V1), ]
+    return(list(maf, bedFile))
 }

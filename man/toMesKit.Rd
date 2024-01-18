@@ -21,13 +21,14 @@ Tumor_ID, Patient_ID. Tumor_Sample_Label is optional.}
 
 \item{ccfFile}{A CCF file of somatic mutations. Default NULL.}
 
-\item{nonSyn.vc}{List of Variant classifications which are considered as non-silent. 
-Default NULL.}
+\item{nonSyn.vc}{List of Variant classifications 
+which are considered as non-silent. Default NULL.}
 
 \item{use.indel.ccf}{Whether include indels in ccfFile. Default FALSE.}
 
-\item{ccf.conf.level}{The confidence level of CCF to identify clonal or subclonal. 
-Only works when "CCF_std" or "CCF_CI_high" is provided in ccfFile. Default 0.95.}
+\item{ccf.conf.level}{The confidence level of CCF to identify 
+clonal or subclonal. Only works when "CCF_std" or "CCF_CI_high" 
+is provided in ccfFile. Default 0.95.}
 }
 \value{
 An maf object that can be recognized by MesKit.
@@ -37,7 +38,7 @@ Transform a CaMutQC maf object to a MesKit maf object.
 }
 \examples{
 maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-sample/",
-package = "CaMutQC"), multiSample = TRUE)
+package = "CaMutQC"), multiVCF = TRUE)
 clin_file <- system.file("extdata", "clin.txt", package = "CaMutQC")
 maf_MesKit <- toMesKit(maf_CaMutQC, clinicalFile=clin_file)
 }

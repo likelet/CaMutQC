@@ -13,67 +13,48 @@
 #' package = "CaMutQC"))
 #' mafF <- mutFilterPON(maf)
 
-
 ## PON filtration using external dataset and info flag
 mutFilterPON <- function(maf) {
-
-  # first filter using the flag in maf column
-  if('PON' %in% colnames(maf)) {
-    # add P tag if variants have been labelled
-    preLabelled <- rownames(maf[!(is.na(maf$PON)), ])
-    #maf[preLabelled, 'CaTag'] <- paste0(maf[preLabelled, 'CaTag'], 'P')
-  }else{
-    preLabelled <- NULL
-  }
-
-  # joint useful information for matching
-  genomeVersion <- unique(maf$NCBI_Build)
-  if (length(genomeVersion) > 1){
-    stop('There are more than one version of genome in this dataset.')
-  } else if (!(genomeVersion %in% c('GRCh38', 'GRCh37'))){
-    stop('Invaild genome version.')
-  } else {
-    message('  Loading PON data...')
-    if (genomeVersion == 'GRCh37') {
-      invisible(capture.output(somatic <- read.vcfR(
-        system.file("extdata/PON", "somatic-b37_Mutect2-exome-panel.vcf",
-                    package = "CaMutQC"))))
-    } else if (genomeVersion == 'GRCh38') {
-      invisible(capture.output(somatic <- read.vcfR(
-        system.file("extdata/PON", "somatic-hg38_1000g_pon.hg38.vcf",
-                    package = "CaMutQC"))))
+    # first filter using the flag in maf column
+    if('PON' %in% colnames(maf)) {
+      # add P tag if variants have been labelled
+      preLabelled <- rownames(maf[!(is.na(maf$PON)), ])
+    }else{
+      preLabelled <- NULL
     }
-    message('  PON data has been loaded successfully!')
-  #   extSomatic <- rep(NA, nrow(somatic@fix))
-  #   for (k in seq_len(nrow(somatic@fix))) {
-  #     extSomatic[k] <- paste(somatic@fix[k, c(1, 2, 4, 5)], collapse = ";")
-  #   }
-  # 
-  #   # combine useful info for matching
-  #   for (i in seq_len(nrow(maf))) {
-  #     info <- paste(c(str_extract(maf$Chromosome[i], '[:digit:]+'),
-  #                     maf[i, c(6, 11, 13)]), collapse = ";")
-  #     if (info %in% extSomatic) {
-  #       discard[i] <- i
-  #     }
-  #   }
-  # }
-  #
-    # # first change PON dataframe to a dataframe, so we can use $ to get 
-    # ponDat <- data.frame(somatic@fix)
-    # ponDat$ID <- 1
-    somatic@fix[, 3] <- 1
-    # get the intersect veriants using merging action
-    pon_maf <- merge(maf, somatic@fix, all.x = T, 
-                     by = c("Chromosome", "Start_Position", "Reference_Allele", 
-                            "Tumor_Seq_Allele2"), 
-                     by.y = c("CHROM", "POS", "REF", "ALT"), all.y = F)
+  # joint useful information for matching
+    genomeVersion <- unique(maf$NCBI_Build)
+    if (length(genomeVersion) > 1){
+      stop('There are more than one version of genome in this dataset.')
+    } else if (!(genomeVersion %in% c('GRCh38', 'GRCh37'))){
+      stop('Invaild genome version.')
+    } else {
+      message('\n  Loading PON data...')
+      if (genomeVersion == 'GRCh37') {
+        invisible(capture.output(somatic <- read.vcfR(
+          system.file("extdata/PON", "somatic-b37_Mutect2-exome-panel.vcf.gz",
+                      package = "CaMutQC"))))
+      } else if (genomeVersion == 'GRCh38') {
+        invisible(capture.output(somatic <- read.vcfR(
+          system.file("extdata/PON", "somatic-hg38_1000g_pon.hg38.vcf.gz",
+                      package = "CaMutQC"))))
+      }
+      message('  PON data has been loaded successfully!')
+      # # first change PON dataframe to a dataframe, so we can use $ to get 
+      # ponDat <- data.frame(somatic@fix)
+      # ponDat$ID <- 1
+      somatic@fix[, 3] <- 1
+      # get the intersect veriants using merging action
+      pon_maf <- merge(maf, somatic@fix, all.x = TRUE, 
+                       by = c("Chromosome", "Start_Position", 
+                              "Reference_Allele", "Tumor_Seq_Allele2"), 
+                       by.y = c("CHROM", "POS", "REF", "ALT"), all.y = FALSE)
   
-    # add tag qualified variants
-    discard <- rownames(pon_maf[which(pon_maf$ID == 1),])
-    maf[union(discard, preLabelled), 'CaTag'] <- paste0(maf[union(discard,
-                                                                  preLabelled),
-                                                          'CaTag'], 'P')
-    return(maf)
-  }
+      # add tag qualified variants
+      discard <- rownames(pon_maf[which(pon_maf$ID == 1),])
+      maf[union(discard, preLabelled), 'CaTag'] <- paste0(maf[union(discard,
+                                                             preLabelled),
+                                                            'CaTag'], 'P')
+      return(maf)
+    }
 }

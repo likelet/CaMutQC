@@ -27,8 +27,8 @@ that is going to be transformed. Files should be in .vcf or .vcf.gz format.}
 \item{multiVCF}{Logical, whether the input is a path that leads to several
 VCFs that come from multi-region/sample/caller sequencing. Default: FALSE}
 
-\item{inputStrelka}{The type of variants ('indel' or 'SNV') in VCF file if it is
-from Strelka. Default: FALSE}
+\item{inputStrelka}{The type of variants ('indel' or 'SNV') in VCF file 
+if it is from Strelka. Default: FALSE}
 
 \item{writeFile}{Whether to directly write MAF file to the disk. If FALSE,
 a MAF data frame will be returned. If TRUE, a MAF file will be saved.
@@ -41,18 +41,18 @@ TRUE.}
 TRUE.}
 
 \item{tumorSampleName}{Name of the tumor sample(s) in the VCF file(s).
-If it is set as 'Extracted', tumorSampleName would be extracted automatically
-from the VCF file. Default: 'Extracted'.}
+If it is set as 'Extracted', tumorSampleName would be extracted 
+automatically from the VCF file. Default: 'Extracted'.}
 
 \item{normalSampleName}{Name the normal sample in the VCF file.
-If it is set as 'Extracted', normalSampleName would be extracted automatically
-from the VCF file. Default: 'Extracted'.}
+If it is set as 'Extracted', normalSampleName would be extracted 
+automatically from the VCF file. Default: 'Extracted'.}
 
 \item{ncbiBuild}{The reference genome used for the alignment, which will be
 presented as value in 'NCBIbuild' column in MAF file. Default: 'GRCh38'.}
 
 \item{MAFcenter}{One or more genome sequencing center reporting the variant,
-which will be presented as value in 'Center' column in MAF file. Default: '.'.}
+which will be presented as value in 'Center' column in MAF. Default: '.'.}
 
 \item{MAFstrand}{Genomic strand of the reported allele, which will be
 presented as value in 'Strand' column in MAF file. Default: '+'.}
@@ -60,8 +60,8 @@ presented as value in 'Strand' column in MAF file. Default: '+'.}
 \item{filterGene}{Logical. Whether to filter variants without Hugo Symbol.
 Default: FALSE}
 
-\item{simplified}{Logical. Whether to extract the first thirteen columns after
-converting to MAF file. Default: FALSE}
+\item{simplified}{Logical. Whether to extract the first thirteen columns 
+after converting to MAF file. Default: FALSE}
 }
 \value{
 A detailed MAF data frame

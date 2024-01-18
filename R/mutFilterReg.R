@@ -22,22 +22,19 @@
 
 mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
                          bedFilter = TRUE){
-
   if (is.null(bedFile)){
-    #cat("\n")
     message('  No bed file detected, so no variants will get an R flag.')
   }else{
     # read input bed file
     bed <- readBed(bedFile, bedHeader = bedHeader)
     if (bedFilter) {
-      chromVaild <- c(paste0('chr', 1:22), 'chrX', 'chrY')
+      chromVaild <- c(paste0('chr', seq_len(22)), 'chrX', 'chrY')
       bed <- bed[which(bed[, 1] %in% chromVaild), ]
     }
 
     ## sort bed object
-    bedProc <- unique(bed[, 1:3])
+    bedProc <- unique(bed[, seq_len(3)])
     colnames(bedProc) <- c("chr", 'chromStart', 'chromEnd')
-
     ## process maf data and start targeting
     mafTar <- maf[, c("Chromosome", "Start_Position", "End_Position")]
     chrs <- unique(maf$Chromosome)
@@ -53,16 +50,12 @@ mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
       }
       allTar[[c]] <- l
     }
-
     # get complement subset (variants not in bed region)
     tags <- setdiff(rownames(maf), unique(unlist(allTar)))
-
     maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
   }
-
   return(maf)
 }
-
 
 # helper function to target variants in specific region
 mutRegionTag <- function(mutLoc, bedSingle){
