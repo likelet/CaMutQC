@@ -29,7 +29,7 @@ mutFilterPON <- function(maf) {
     } else if (!(genomeVersion %in% c('GRCh38', 'GRCh37'))){
       stop('Invaild genome version.')
     } else {
-      message('  Loading PON data...')
+      message('\n  Loading PON data...')
       if (genomeVersion == 'GRCh37') {
         invisible(capture.output(somatic <- read.vcfR(
           system.file("extdata/PON", "somatic-b37_Mutect2-exome-panel.vcf.gz",

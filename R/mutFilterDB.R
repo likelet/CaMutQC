@@ -74,7 +74,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
 
 # generate message when certain database annotation is missing
 dbMessage <- function(db) {
-    first_mes <-paste0('  This VCF file wasn\'t annotated by ', db,' database.')
+    first_mes<-paste0('\n  This VCF file wasn\'t annotated by ',db,' database.')
     second_mes <- paste0(' No variants will be filtered based on ', db , '.')
     final_mes <- paste0(first_mes, second_mes)
     message(final_mes)
