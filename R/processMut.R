@@ -52,21 +52,21 @@ processMafs <- function(mafs, method){
         return(mafs[[1]])
     }else if (length(mafs) == 2){
         if (method == "union"){
-            return(dplyr::union(mafs[[1]][,c(1,5,6,7,9:13)], 
-                                    mafs[[2]][,c(1,5,6,7,9:13)]))
+            return(dplyr::union(mafs[[1]][,c(4,5,6,7,10,11,13)], 
+                                    mafs[[2]][,c(4,5,6,7,10,11,13)]))
         }else{
-            return(dplyr::intersect(mafs[[1]][,c(1,5,6,7,9:13)], 
-                                    mafs[[2]][,c(1,5,6,7,9:13)]))
+            return(dplyr::intersect(mafs[[1]][,c(4,5,6,7,10,11,13)], 
+                                    mafs[[2]][,c(4,5,6,7,10,11,13)]))
         }
     }else if (length(mafs) == 3){
         if (method == "union"){
-            temp_maf <- dplyr::union(mafs[[1]][,c(1,5,6,7,9:13)], 
-                                    mafs[[2]][,c(1,5,6,7,9:13)])
-            return(dplyr::union(temp_maf, mafs[[3]][,c(1,5,6,7,9:13)]))
+            temp_maf <- dplyr::union(mafs[[1]][,c(4,5,6,7,10,11,13)], 
+                                    mafs[[2]][,c(4,5,6,7,10,11,13)])
+            return(dplyr::union(temp_maf, mafs[[3]][,c(4,5,6,7,10,11,13)]))
         }else{
-            temp_maf <- dplyr::intersect(mafs[[1]][,c(1,5,6,7,9:13)], 
-                                    mafs[[2]][,c(1,5,6,7,9:13)])
-            return(dplyr::intersect(temp_maf, mafs[[3]][,c(1,5,6,7,9:13)]))
+            temp_maf <- dplyr::intersect(mafs[[1]][,c(4,5,6,7,10,11,13)], 
+                                    mafs[[2]][,c(4,5,6,7,10,11,13)])
+            return(dplyr::intersect(temp_maf, mafs[[3]][,c(4,5,6,7,10,11,13)]))
         }
     }
 }
