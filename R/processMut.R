@@ -9,16 +9,13 @@
 #'
 #' @export processMut
 #' @examples
-#' maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller",
-#' "P01_MuSE.vep.vcf",package = "CaMutQC"))
-#' maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE)
 #' maf_MuTect2 <- vcfToMAF(system.file("extdata/Multi-caller",
-#' "P01_MuTect2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_mutect2_filter_snp.vep.vcf",package = "CaMutQC"))
 #' maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE)
 #' maf_VarScan2 <- vcfToMAF(system.file("extdata/Multi-caller",
-#' "P01_VarScan2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_varscan_filter_snp.vep.vcf",package = "CaMutQC"))
 #' maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE)
-#' mafs <- list(maf_MuSE_f, maf_MuTect2_f, maf_VarScan2_f)
+#' mafs <- list( maf_MuTect2_f, maf_VarScan2_f)
 #' maf_union <- processMut(mafs, processMethod = "union")
 
 processMut <- function(mafList, processMethod = "union") {

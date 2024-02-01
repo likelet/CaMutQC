@@ -69,7 +69,7 @@ including filtration for sequencing quality, strand bias, adjacent indel
 tag, normal depth, panel of normal (PON) and FILTER field.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
-package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata",
+"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 mafF <- mutFilterTech(maf)
 }

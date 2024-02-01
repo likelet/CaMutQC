@@ -32,7 +32,7 @@ Default: FALSE.}
 
 \item{mutType}{A group of variant classifications that will be kept,
 only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
-including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
+including 'exonic', 'nonsynonymous'. and 'all' Default: 'nonsynonymous'.}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
 only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.}
@@ -44,8 +44,8 @@ A TMB value.
 Calculate Tumor Mutational Burden (TMB) in specific regions.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
+maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 package = "CaMutQC"))
-TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed/Twist",
-"Twist_Exome_Target_hg19.bed",package = "CaMutQC"))
+TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed/panel_hg38",
+"hg38_Pan-cancer.bed",package = "CaMutQC"))
 }

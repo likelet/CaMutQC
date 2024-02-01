@@ -48,7 +48,7 @@
 #' 
 #' @export tomaftools
 #' @examples
-#' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-sample/",
+#' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-caller/",
 #' package = "CaMutQC"), multiVCF = TRUE)
 #' maf_maftools <- tomaftools(maf_CaMutQC)
 

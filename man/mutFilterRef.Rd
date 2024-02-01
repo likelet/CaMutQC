@@ -148,8 +148,8 @@ Use the same filtering strategies that a specific study used, or
 top-rated strategies shared by users.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata/Multi-sample",
-"SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata",
+"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 mafR <- mutFilterRef(maf, reference = "Zhu_et_al-Nat_Commun-2020-KIRP",
 TMB = FALSE)
 }

@@ -73,8 +73,8 @@
 #'
 #' @export mutFilterCan
 #' @examples
-#' maf <- vcfToMAF(system.file("extdata/Multi-sample",
-#' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
+#' maf <- vcfToMAF(system.file("extdata",
+#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 #' mafF <- mutFilterCan(maf, cancerType = 'BRCA', TMB = FALSE)
 
 mutFilterCan <- function(maf, cancerType, panel = 'Customized', tumorDP = 0,

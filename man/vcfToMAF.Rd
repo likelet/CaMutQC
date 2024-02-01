@@ -70,6 +70,6 @@ A detailed MAF data frame
 Format transformation from VCF to MAF.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
+maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 package = "CaMutQC"))
 }

@@ -73,8 +73,8 @@
 #'
 #' @export mutFilterRef
 #' @examples
-#' maf <- vcfToMAF(system.file("extdata/Multi-sample",
-#' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
+#' maf <- vcfToMAF(system.file("extdata",
+#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 #' mafR <- mutFilterRef(maf, reference = "Zhu_et_al-Nat_Commun-2020-KIRP",
 #' TMB = FALSE)
 

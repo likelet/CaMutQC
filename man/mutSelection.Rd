@@ -66,7 +66,7 @@ An MAF data frame with variants after selection.
 Select candidate variants for cancer research.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
-package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata",
+"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 mafF <- mutSelection(maf)
 }

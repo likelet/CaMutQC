@@ -19,10 +19,10 @@ accepted to be included. Default: 10}
 An MAF data frame after filtration for adjacent variants.
 }
 \description{
-Filter variants based on adjacent indel tags
+Filter SNVs with adjacent indels
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
-package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata",
+"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 mafF <- mutFilterAdj(maf)
 }

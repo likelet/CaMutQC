@@ -14,10 +14,10 @@
 #'
 #' @export mutFilterReg
 #' @examples
-#' maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
+#' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 #' package = "CaMutQC"))
-#' mafF <- mutFilterReg(maf, bedFile = system.file("extdata/bed/Twist",
-#' "Twist_Exome_Target_hg19.bed",package = "CaMutQC"))
+#' mafF <- mutFilterReg(maf, bedFile = system.file("extdata/bed/panel_hg38",
+#' "hg38_Pan-cancer.bed",package = "CaMutQC"))
 
 
 mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,

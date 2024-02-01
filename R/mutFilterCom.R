@@ -89,8 +89,8 @@
 #'
 #' @export mutFilterCom
 #' @examples
-#' maf <- vcfToMAF(system.file("extdata/Multi-sample",
-#' "SRR3670028.somatic.filter.HC.vep.vcf",package = "CaMutQC"))
+#' maf <- vcfToMAF(system.file("extdata",
+#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 #' mafF <- mutFilterCom(maf, TMB = FALSE, report = FALSE)
 
 

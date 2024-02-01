@@ -37,7 +37,7 @@ An maf object that can be recognized by MesKit.
 Transform a CaMutQC maf object to a MesKit maf object.
 }
 \examples{
-maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-sample/",
+maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-caller/",
 package = "CaMutQC"), multiVCF = TRUE)
 clin_file <- system.file("extdata", "clin.txt", package = "CaMutQC")
 maf_MesKit <- toMesKit(maf_CaMutQC, clinicalFile=clin_file)
