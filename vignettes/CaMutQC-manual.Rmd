@@ -76,7 +76,7 @@ MAF data frame with special labels from CaMutQC will be returned after each filt
 
 
 ### 3.2 Multiple VCF
-CaMutQC supports VEP annotated multi-sample or multi-caller VCF files as input, which should be under the same file path. **Support caller: MuTect2, VarScan2, MuSE.**
+CaMutQC supports VEP annotated multi-sample or multi-caller VCF files as input, which should be under the same file path. **Supported caller: MuTect2, VarScan2, MuSE.**
 
 
 &nbsp;
@@ -101,16 +101,16 @@ devtools::install_github("likelet/CaMutQC")
 
 VCF and MAF both are important formats in oncology and bioinformatics, but additional tools are needed when transforming between these two formats. `vcfToMAF` function in CaMutQC is able to perform this transformation using one line command in a few seconds. In addition, parameter `filterGene` can filter variants without Hugo Symbol when it is set as `TRUE`.
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(CaMutQC)
-MAFdat <- vcfToMAF(system.file("extdata/Multi-sample", "SRR3670028.somatic.filter.HC.vep.vcf", package = "CaMutQC"))
+MAFdat <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf", package = "CaMutQC"))
 MAFdat[1:5, 1:13]
 ```
 
-Load multi-sample data that consists of several VCF files by setting `multiVCF` as `TRUE`.
+Load multi-caller data that consists of several VCF files by setting `multiVCF` as `TRUE`.
 
 ```{r, message=FALSE}
-vcfPath <- system.file("extdata/Multi-sample", package = "CaMutQC")
+vcfPath <- system.file("extdata/Multi-caller", package = "CaMutQC")
 multiVCFs <- vcfToMAF(vcfPath, multiVCF = TRUE)
 unique(multiVCFs$Tumor_Sample_Barcode)
 ```
@@ -378,8 +378,7 @@ CaMutQC supports four methods for TMB calculation, including FoundationOne, MSK-
 **Note: the bed region files mentioned above are generated only from CDS regions, NOT the exact bed region, so the TMB results are only for reference.**
 
 ```{r, message=FALSE}
-tmb_value <- calTMB(MAFdat, 
-                    bedFile = system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed", package = "CaMutQC"), assay = 'MSK-v1')
+tmb_value <- calTMB(MAFdat, assay = 'Customized', bedFile = system.file("extdata/bed/panel_hg38","hg38_Pan-cancer.bed",package = "CaMutQC"))
 tmb_value
 ```
 
@@ -394,16 +393,15 @@ After verifying on published data sets, We believed combining CaMutQC filtered m
 ![](Union_strategy.png){width=50%}
 
 ```{r, message=FALSE}
-maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller", 
-                                 "P01_MuSE.vep.vcf",package = "CaMutQC"))
-maf_MuSE_f <- mutFilterCom(maf_MuSE, report = FALSE, TMB = FALSE, progressbar = FALSE)
 maf_MuTect2 <- vcfToMAF(system.file("extdata/Multi-caller", 
-                                    "P01_MuTect2.vep.vcf",package = "CaMutQC"))
+                                    "WES_EA_T_1_mutect2_filter_snp.vep.vcf",
+                                    package = "CaMutQC"))
 maf_MuTect2_f <- mutFilterCom(maf_MuTect2, report = FALSE, TMB = FALSE, progressbar = FALSE)
 maf_VarScan2 <- vcfToMAF(system.file("extdata/Multi-caller", 
-                                     "P01_VarScan2.vep.vcf",package = "CaMutQC")) 
+                                     "WES_EA_T_1_varscan_filter_snp.vep.vcf",
+                                     package = "CaMutQC")) 
 maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report = FALSE, TMB = FALSE, progressbar = FALSE)
-mafs <- list(maf_MuSE_f, maf_MuTect2_f, maf_VarScan2_f)
+mafs <- list(maf_MuTect2_f, maf_VarScan2_f)
 maf_union <- processMut(mafs, processMethod = "union")
 maf_union
 ```
