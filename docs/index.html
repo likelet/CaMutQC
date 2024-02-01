@@ -11,7 +11,7 @@
 
 <meta name="author" content="Xin Wang sylviawang555@gmail.com" />
 
-<meta name="date" content="2024-01-31" />
+<meta name="date" content="2024-02-01" />
 
 <title>CaMutQC: Cancer Mutation Quality Control</title>
 
@@ -2831,7 +2831,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">CaMutQC: Cancer Mutation Quality
 Control</h1>
 <h4 class="author">Xin Wang <a href="mailto:sylviawang555@gmail.com" class="email">sylviawang555@gmail.com</a></h4>
-<h4 class="date">2024-01-31</h4>
+<h4 class="date">2024-02-01</h4>
 
 </div>
 
@@ -3341,14 +3341,14 @@ example filter report can be found <a href="https://github.com/likelet/CaMutQC/b
 Details about TMB can be found in <a href="#tmb">Mutational analysis</a>
 section.</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>MAFCom_tmb <span class="ot">&lt;-</span> <span class="fu">mutFilterCom</span>(MAFdat, <span class="at">panel =</span> <span class="st">&quot;WES&quot;</span>, <span class="at">report =</span> <span class="cn">FALSE</span>, <span class="at">TMB =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>                           <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/Twist&quot;</span>, <span class="st">&quot;Twist_Exome_Target_hg19.bed&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">progressbar =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>                           <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg38&quot;</span>, <span class="st">&quot;hg38_Pan-cancer.bed&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">progressbar =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>## Warning in readBedPanel(assay = assay, genVer = genVer, maf = maf, bedFile = bedFile): Bed files in CaMutQC are not accurate. The result serves only as a reference.</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">table</span>(MAFCom_tmb<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
-##      0  0NDTR   0NTR     0Q  0QATR  0QDTR  0QNTR  0QPTR    0QR    0QS 0QSDTR 
-##      2      1      1      8      2      8      2      2     44      2      3 
-##  0QSTR    0QT   0QTR     0R    0TR 
-##     12      1    105     28     45</code></pre>
+##      0  0NDTR   0NTR     0Q  0QATR  0QDTR  0QNTR  0QPTR    0QR 0QSDTR   0QSR 
+##      5      1      1     10      2      8      2      2     42      3      2 
+##  0QSTR    0QT   0QTR     0R     0T    0TR 
+##     12      5    101     25      2     43</code></pre>
 <p> </p>
 </div>
 </div>
