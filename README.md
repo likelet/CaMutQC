@@ -1,4 +1,4 @@
-<img src="https://github.com/likelet/CaMutQC/blob/WX/vignettes/CaMutQC-logo.png" align="left" height="100" /></a>
+<img src="https://github.com/likelet/CaMutQC/blob/WX/vignettes/CaMutQC_logo.png" align="left" height="100" /></a>
 
 
 ### &emsp; Integrative quality control of cancer somatic mutations with  <br />&emsp; [Ca]()ncer [Mut]()ation [Q]()uality [C]()ontrol
