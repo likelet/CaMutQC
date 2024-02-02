@@ -1,4 +1,9 @@
-# Integrative quality control of cancer somatic mutations with [Ca]()ncer [Mut]()ation [Q]()uality [C]()ontrol
+<img src="https://github.com/likelet/CaMutQC/blob/WX/vignettes/CaMutQC-logo.png" align="left" height="100" /></a>
+
+
+### &emsp; Integrative quality control of cancer somatic mutations with  <br />&emsp; [Ca]()ncer [Mut]()ation [Q]()uality [C]()ontrol
+
+## Introduction
 
 The quality control of cancer somatic mutations has a great significance in the research of cancer genomics. It helps reduce the noise, systematic bias, as well as the false positive rate in dataset, and to pick out candidate mutations related to tumorigenesis. However, existing tools were not designed especially for cancer somatic mutations, and parameters and filtering standards used are different among them. Besides, there is no such a platform, database or tool stores or summarizes the standards for filtration of cancer somatic mutations applied in previous studies, which increases the time and energy spent on related research.  
 
