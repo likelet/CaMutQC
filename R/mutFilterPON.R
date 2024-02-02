@@ -30,14 +30,11 @@ mutFilterPON <- function(maf) {
       stop('Invaild genome version.')
     } else {
       message('\n  Loading PON data...')
+      load(system.file("extdata", "sysdata.rda", package = "CaMutQC"))
       if (genomeVersion == 'GRCh37') {
-        invisible(capture.output(somatic <- read.vcfR(
-          system.file("extdata/PON", "somatic-b37_Mutect2-exome-panel.vcf.gz",
-                      package = "CaMutQC"))))
+          somatic <- somatic_37
       } else if (genomeVersion == 'GRCh38') {
-        invisible(capture.output(somatic <- read.vcfR(
-          system.file("extdata/PON", "somatic-hg38_1000g_pon.hg38.vcf.gz",
-                      package = "CaMutQC"))))
+          somatic <- somatic_38
       }
       message('  PON data has been loaded successfully!')
       # # first change PON dataframe to a dataframe, so we can use $ to get 

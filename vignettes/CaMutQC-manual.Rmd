@@ -269,7 +269,7 @@ table(MAF_type$Variant_Classification[which(MAF_type$CaTag == '0')])
 In this step, users are able to further select variants related to cancer development by providing an additional BED file, and variants will be searched only in target regions covered in the BED file. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file (only leaves segments in `Chr1-Ch22`, `ChrX` and `ChrY`).
 
 ```{r, message=FALSE}
-MAF_reg <- mutFilterReg(MAFdat, bedFile = system.file("extdata/bed/panel_hg19", "hg19_FlCDx.bed", package = "CaMutQC"))
+MAF_reg <- mutFilterReg(MAFdat, bedFile = system.file("extdata/bed/panel_hg19", "FlCDx-hg19.rds", package = "CaMutQC"))
 table(MAF_reg$CaTag)
 ```
 
@@ -333,7 +333,7 @@ By default, a vivid and detailed filter report will be saved automatically each 
 
 ```{r, message=FALSE}
 MAFCom_tmb <- mutFilterCom(MAFdat, panel = "WES", report = FALSE, TMB = TRUE, 
-                           bedFile = system.file("extdata/bed/panel_hg38", "hg38_Pan-cancer.bed", package = "CaMutQC"), progressbar = FALSE)
+                           bedFile = system.file("extdata/bed/panel_hg38", "Pan-cancer-hg38.rds", package = "CaMutQC"), progressbar = FALSE)
 table(MAFCom_tmb$CaTag)
 ```
 
@@ -378,7 +378,7 @@ CaMutQC supports four methods for TMB calculation, including FoundationOne, MSK-
 **Note: the bed region files mentioned above are generated only from CDS regions, NOT the exact bed region, so the TMB results are only for reference.**
 
 ```{r, message=FALSE}
-tmb_value <- calTMB(MAFdat, assay = 'Customized', bedFile = system.file("extdata/bed/panel_hg38","hg38_Pan-cancer.bed",package = "CaMutQC"))
+tmb_value <- calTMB(MAFdat, assay = 'Customized', bedFile = system.file("extdata/bed/panel_hg38","Pan-cancer-hg38.rds",package = "CaMutQC"))
 tmb_value
 ```
 

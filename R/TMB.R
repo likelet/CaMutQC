@@ -22,7 +22,7 @@
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 #' package = "CaMutQC"))
 #' TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed/panel_hg38",
-#' "hg38_Pan-cancer.bed",package = "CaMutQC"))
+#' "FlCDx-hg38.rds",package = "CaMutQC"))
 
 calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3', 
                    genelist = NULL, mutType = 'nonsynonymous',bedFilter = TRUE){
@@ -143,7 +143,7 @@ readBedPanel <- function(assay, genVer, maf, bedFile){
     if (assay == 'MSK-v3') {
         panel_gene <- read.table(system.file("extdata/Panel_gene",
                              "MSK-IMPACT_gene_v3_468.txt", package = "CaMutQC"))
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_468.bed",
+        bedFile <- system.file("extdata/bed/panel_hg19", "MSK_v3-hg19.rds",
                                package = "CaMutQC")
         if (genVer == "GRCh38") {
             bedFile <- str_replace_all(bedFile, "19", "38")
@@ -151,7 +151,7 @@ readBedPanel <- function(assay, genVer, maf, bedFile){
     }else if (assay == 'MSK-v2') {
         panel_gene <- read.table(system.file("extdata/Panel_gene",
                              "MSK-IMPACT_gene_v2_410.txt", package = "CaMutQC"))
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_410.bed",
+        bedFile <- system.file("extdata/bed/panel_hg19", "MSK_v2-hg19.rds",
                                package = "CaMutQC")
         if (genVer == "GRCh38") {
             bedFile <- str_replace_all(bedFile, "19", "38")
@@ -159,7 +159,7 @@ readBedPanel <- function(assay, genVer, maf, bedFile){
     }else if (assay == 'MSK-v1') {
         panel_gene <- read.table(system.file("extdata/Panel_gene",
                              "MSK-IMPACT_gene_v1_341.txt", package = "CaMutQC"))
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_MSK_341.bed",
+        bedFile <- system.file("extdata/bed/panel_hg19", "MSK_v1-hg19.rds",
                                package = "CaMutQC")
         if (genVer == "GRCh38") {
             bedFile <- str_replace_all(bedFile, "19", "38")
@@ -167,7 +167,7 @@ readBedPanel <- function(assay, genVer, maf, bedFile){
     }else if (assay == 'FoundationOne') {
         panel_gene <- read.table(system.file("extdata/Panel_gene",
                             "FoundationOne_genelist.txt",package = "CaMutQC"))
-        bedFile <- system.file("extdata/bed/panel_hg19", "hg19_FlCDx.bed",
+        bedFile <- system.file("extdata/bed/panel_hg19", "FlCDx-hg19.rds",
                                package = "CaMutQC")
         if (genVer == "GRCh38") {
             bedFile <- str_replace_all(bedFile, "19", "38")
@@ -178,7 +178,7 @@ readBedPanel <- function(assay, genVer, maf, bedFile){
         maf <- mutFilterQual(maf, tumorDP = 0, normalDP = 0,
                              tumorAD = 0, VAF = 0.05, VAFratio = 0)
         bedFile <- system.file("extdata/bed/panel_hg19", 
-                               "hg19_Pan-cancer.bed", package = "CaMutQC")
+                               "Pan-cancer-hg19.rds", package = "CaMutQC")
         if (genVer == "GRCh38") {
             bedFile <- str_replace_all(bedFile, "19", "38")
         }
