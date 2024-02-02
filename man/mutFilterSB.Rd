@@ -27,7 +27,7 @@ have S tag in CaTag column for strand bias filtration
 Filter variants based on strand bias.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
-package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata",
+"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 mafF <- mutFilterSB(maf)
 }

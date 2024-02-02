@@ -1,7 +1,6 @@
 readINFO <- function(vcfHeader, vcfMain) {
     Info <- strsplit(vcfHeader[,1][grep("INFO=<ID=", vcfHeader[,1])],
                      split = "##INFO=<ID=")
-  
     for (i in seq_len(length(Info))) {
       Info[[i]] <- Info[[i]][2]
     }

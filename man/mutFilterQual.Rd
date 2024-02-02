@@ -42,7 +42,7 @@ have Q tag in CaTag column for sequencing quality filtration
 Filter variants in low sequencing quality or low confidence.
 }
 \examples{
-maf <- vcfToMAF(system.file("extdata", "GC48-2_mutect2.vep.vcf",
-package = "CaMutQC"))
+maf <- vcfToMAF(system.file("extdata",
+"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 mafF <- mutFilterQual(maf)
 }
