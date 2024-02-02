@@ -11,7 +11,7 @@
 
 <meta name="author" content="Xin Wang sylviawang555@gmail.com" />
 
-<meta name="date" content="2024-02-01" />
+<meta name="date" content="2024-02-02" />
 
 <title>CaMutQC: Cancer Mutation Quality Control</title>
 
@@ -2831,7 +2831,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">CaMutQC: Cancer Mutation Quality
 Control</h1>
 <h4 class="author">Xin Wang <a href="mailto:sylviawang555@gmail.com" class="email">sylviawang555@gmail.com</a></h4>
-<h4 class="date">2024-02-01</h4>
+<h4 class="date">2024-02-02</h4>
 
 </div>
 
@@ -3257,7 +3257,7 @@ will be searched only in target regions covered in the BED file.
 Besides, parameter <code>bedFilter</code> can be set as
 <code>TRUE</code> to clean the bed file (only leaves segments in
 <code>Chr1-Ch22</code>, <code>ChrX</code> and <code>ChrY</code>).</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>MAF_reg <span class="ot">&lt;-</span> <span class="fu">mutFilterReg</span>(MAFdat, <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg19&quot;</span>, <span class="st">&quot;hg19_FlCDx.bed&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>))</span>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>MAF_reg <span class="ot">&lt;-</span> <span class="fu">mutFilterReg</span>(MAFdat, <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg19&quot;</span>, <span class="st">&quot;FlCDx-hg19.rds&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>))</span>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">table</span>(MAF_reg<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0R 
@@ -3341,7 +3341,7 @@ example filter report can be found <a href="https://github.com/likelet/CaMutQC/b
 Details about TMB can be found in <a href="#tmb">Mutational analysis</a>
 section.</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>MAFCom_tmb <span class="ot">&lt;-</span> <span class="fu">mutFilterCom</span>(MAFdat, <span class="at">panel =</span> <span class="st">&quot;WES&quot;</span>, <span class="at">report =</span> <span class="cn">FALSE</span>, <span class="at">TMB =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>                           <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg38&quot;</span>, <span class="st">&quot;hg38_Pan-cancer.bed&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">progressbar =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>                           <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg38&quot;</span>, <span class="st">&quot;Pan-cancer-hg38.rds&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">progressbar =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>## Warning in readBedPanel(assay = assay, genVer = genVer, maf = maf, bedFile = bedFile): Bed files in CaMutQC are not accurate. The result serves only as a reference.</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">table</span>(MAFCom_tmb<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
@@ -3423,7 +3423,7 @@ as <code>Customized</code>.</p>
 <p><strong>Note: the bed region files mentioned above are generated only
 from CDS regions, NOT the exact bed region, so the TMB results are only
 for reference.</strong></p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>tmb_value <span class="ot">&lt;-</span> <span class="fu">calTMB</span>(MAFdat, <span class="at">assay =</span> <span class="st">&#39;Customized&#39;</span>, <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg38&quot;</span>,<span class="st">&quot;hg38_Pan-cancer.bed&quot;</span>,<span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>tmb_value <span class="ot">&lt;-</span> <span class="fu">calTMB</span>(MAFdat, <span class="at">assay =</span> <span class="st">&#39;Customized&#39;</span>, <span class="at">bedFile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bed/panel_hg38&quot;</span>,<span class="st">&quot;Pan-cancer-hg38.rds&quot;</span>,<span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>))</span></code></pre></div>
 <pre><code>## Warning in readBedPanel(assay = assay, genVer = genVer, maf = maf, bedFile = bedFile): Bed files in CaMutQC are not accurate. The result serves only as a reference.</code></pre>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>tmb_value</span></code></pre></div>
 <pre><code>## [1] 1.501</code></pre>
