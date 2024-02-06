@@ -48,7 +48,7 @@ mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20,
     }
     ## add VAF column
     if (!("VAF" %in% colnames(maf))) {
-      maf$VAF <- maf$t_alt_count/maf$t_depth
+      maf$VAF <- VAF_helper(maf$t_alt_count, maf$t_depth)
     }
     ## VAF filtering
     tags <- rownames(maf[maf$VAF < VAF, ])
@@ -63,4 +63,12 @@ mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20,
     tags <- union(tags, rownames(maf[VAFr < VAFratio, ]))
     maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'] , 'Q')
     return(maf)
+}
+
+# A helper function for calculating VAF and avoiding NA generation
+VAF_helper <- function(alt, depth) {
+    res <- alt/depth
+    # handle situation when depth is 0
+    res[is.na(res)] <- 0
+    return(res)
 }

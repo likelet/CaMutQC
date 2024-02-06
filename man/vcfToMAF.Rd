@@ -27,7 +27,7 @@ that is going to be transformed. Files should be in .vcf or .vcf.gz format.}
 \item{multiVCF}{Logical, whether the input is a path that leads to several
 VCFs that come from multi-region/sample/caller sequencing. Default: FALSE}
 
-\item{inputStrelka}{The type of variants ('indel' or 'SNV') in VCF file 
+\item{inputStrelka}{The type of variants ('INDEL' or 'SNV') in VCF file 
 if it is from Strelka. Default: FALSE}
 
 \item{writeFile}{Whether to directly write MAF file to the disk. If FALSE,

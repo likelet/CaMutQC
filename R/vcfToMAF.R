@@ -5,7 +5,7 @@
 #' that is going to be transformed. Files should be in .vcf or .vcf.gz format.
 #' @param multiVCF Logical, whether the input is a path that leads to several
 #' VCFs that come from multi-region/sample/caller sequencing. Default: FALSE
-#' @param inputStrelka The type of variants ('indel' or 'SNV') in VCF file 
+#' @param inputStrelka The type of variants ('INDEL' or 'SNV') in VCF file 
 #' if it is from Strelka. Default: FALSE
 #' @param writeFile Whether to directly write MAF file to the disk. If FALSE,
 #' a MAF data frame will be returned. If TRUE, a MAF file will be saved.
@@ -278,7 +278,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
           }
         }else{
           # if no AD field detected in the VCF, it should be output from Strelka
-          if (inputStrelka == 'indel'){
+          if (inputStrelka == 'INDEL'){
             TIR_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'TIR'
             TAR_loc <- strsplit(vcf_additional[i, 1], ":")[[1]] == 'TAR'
             tTIR <-strsplit(vcf_additional[i,tumorSampleName],":")[[1]][TIR_loc]
@@ -356,6 +356,8 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                                    == tumorSampleName)] <- 'tumorSampleInfo'
     colnames(vcf_additional)[which(colnames(vcf_additional) 
                                    == normalSampleName)] <- 'normalSampleInfo'
+    # handle cases when VAF is NA because t_depth = 0
+    maf[is.na(maf$VAF),'VAF'] <- 0
     maf <- cbind(maf1, VAF = maf[ ,'VAF'], vcf_additional)
     # change column type
     maf$Start_Position <- as.numeric(maf$Start_Position)
