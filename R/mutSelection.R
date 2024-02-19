@@ -26,6 +26,8 @@
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @import vcfR stringr
 #' @importFrom  dplyr filter
@@ -43,39 +45,39 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE,
                          keepCOSMIC = TRUE, keepType = 'exonic',
                          bedFile = NULL, bedHeader = FALSE,
-                         bedFilter = TRUE, progressbar = TRUE){
+                         bedFilter = TRUE, progressbar = TRUE, verbose = TRUE){
   
     # build a progress bar and turn it on is asked
-    # pb <- txtProgressBar(min = 0, max = 100, style = 3)
     if (progressbar) {
-      pb <- txtProgressBar(min = 0, max = 100, style = 3)
+        pb <- txtProgressBar(min = 0, max = 100, style = 3)
     }
     # database selection
     #message('Selection for germline variant database is in process.')
     if (progressbar) {
-      setTxtProgressBar(pb, 40, title = progressbar)
+        setTxtProgressBar(pb, 40, title = progressbar)
     }
     maf <- mutFilterDB(maf, dbVAF = dbVAF, ExAC = ExAC,
                        Genomesprojects1000 = Genomesprojects1000, 
                        ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP, 
-                       keepCOSMIC = keepCOSMIC)
+                       keepCOSMIC = keepCOSMIC, verbose = verbose)
     # variant type selection
-    #message('Selection for variant type is in process.')
     if (progressbar) {
-      setTxtProgressBar(pb, 60, title = progressbar)
+        setTxtProgressBar(pb, 60, title = progressbar)
     }
     maf <- mutFilterType(maf, keepType = keepType)
     # region selection
     if (progressbar) {
-      setTxtProgressBar(pb, 80, title = progressbar)
+        setTxtProgressBar(pb, 80, title = progressbar)
     }
     maf <- mutFilterReg(maf, bedFile = bedFile, bedHeader = bedHeader,
-                        bedFilter = bedFilter)
+                        bedFilter = bedFilter, verbose = verbose)
     # complete selection
     if (progressbar) {
-      setTxtProgressBar(pb, 100, title = progressbar)
-      close(pb)
+        setTxtProgressBar(pb, 100, title = progressbar)
+        close(pb)
     }
-    message('  Cancer somatic variant selection is done!')
+    if (verbose) {
+        message('  Cancer somatic variant selection is done!')
+    }
     return(maf)
 }

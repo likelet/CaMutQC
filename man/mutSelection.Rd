@@ -17,7 +17,8 @@ mutSelection(
   bedFile = NULL,
   bedHeader = FALSE,
   bedFilter = TRUE,
-  progressbar = TRUE
+  progressbar = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -58,6 +59,9 @@ only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}
 
 \item{progressbar}{Whether to show progress bar when running this function
 Default: TRUE}
+
+\item{verbose}{Whether to generate message/notification during the 
+filtration process. Default: TRUE.}
 }
 \value{
 An MAF data frame with variants after selection.
