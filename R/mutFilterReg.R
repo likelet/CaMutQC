@@ -8,6 +8,8 @@
 #' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @return An MAF data frame where some variants
 #' have R tag in CaTag column for region filtration.
@@ -21,15 +23,17 @@
 
 
 mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
-                         bedFilter = TRUE){
+                         bedFilter = TRUE, verbose = TRUE){
   if (is.null(bedFile)){
-    message('  No bed file detected, so no variants will get an R flag.')
+      if (verbose) {
+          message('\n  No bed file detected, so no variants will get an R flag.')
+      }
   }else{
     # read input bed file
     bed <- readBed(bedFile, bedHeader = bedHeader)
     if (bedFilter) {
-      chromVaild <- c(paste0('chr', seq_len(22)), 'chrX', 'chrY')
-      bed <- bed[which(bed[, 1] %in% chromVaild), ]
+        chromVaild <- c(paste0('chr', seq_len(22)), 'chrX', 'chrY')
+        bed <- bed[which(bed[, 1] %in% chromVaild), ]
     }
 
     ## sort bed object
@@ -41,32 +45,31 @@ mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
     # nums <- rep(0, length(chrs))
     allTar <- list()
     for (c in seq_len(length(chrs))) {
-      # split the bed file into small bed based on chromosome
-      mafSepc <- mafTar[which(mafTar$Chromosome == chrs[c]), ]
-      bedSepc <- bedProc[which(bedProc$chr == chrs[c]), ]
-      l <- list()
-      for(i in seq_len(nrow(bedSepc))) {
-        l[[i]] <- mutRegionTag(mafSepc, bedSepc[i, ])
-      }
-      allTar[[c]] <- l
+        # split the bed file into small bed based on chromosome
+        mafSepc <- mafTar[which(mafTar$Chromosome == chrs[c]), ]
+        bedSepc <- bedProc[which(bedProc$chr == chrs[c]), ]
+        l <- list()
+        for(i in seq_len(nrow(bedSepc))) {
+          l[[i]] <- mutRegionTag(mafSepc, bedSepc[i, ])
+        }
+        allTar[[c]] <- l
     }
-    # get complement subset (variants not in bed region)
-    tags <- setdiff(rownames(maf), unique(unlist(allTar)))
-    maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
+        # get complement subset (variants not in bed region)
+        tags <- setdiff(rownames(maf), unique(unlist(allTar)))
+        maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
   }
   return(maf)
 }
 
 # helper function to target variants in specific region
 mutRegionTag <- function(mutLoc, bedSingle){
-  # count <- bedSingle[1, 'Num']
-  inRegion <- rep(NA, nrow(mutLoc))
-  for (i in seq_len(nrow(mutLoc))) {
-    if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
-        mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
-      # count <- count  + 1
-      inRegion[i] <- rownames(mutLoc[i, ])
+    # count <- bedSingle[1, 'Num']
+    inRegion <- rep(NA, nrow(mutLoc))
+    for (i in seq_len(nrow(mutLoc))) {
+        if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
+            mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
+            inRegion[i] <- rownames(mutLoc[i, ])
+        }
     }
-  }
-  return(na.omit(inRegion))
+    return(na.omit(inRegion))
 }

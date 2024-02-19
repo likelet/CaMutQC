@@ -71,6 +71,8 @@
 #' experiments. Default: FALSE
 #' @param codelogFile Where to store the codelog, only useful when codelog is
 #' set to TRUE. Default: "mutFilterCom.log"
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @return An MAF data frame after applied filtering strategies in another study
 #' @return A filter report in HTML format
@@ -93,7 +95,8 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                          bedFilter = TRUE, mutFilter = FALSE,selectCols = FALSE, 
                          report = TRUE, reportFile = 'FilterReport.html', 
                          reportDir = './', TMB = FALSE, progressbar = TRUE, 
-                         codelog = FALSE, codelogFile = "mutFilterCom.log") {
+                         codelog = FALSE, codelogFile = "mutFilterCom.log",
+                         verbose = TRUE) {
   # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC" PMID: 25194673
   if (reference == "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
@@ -108,7 +111,8 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                     report = report, reportFile = reportFile, codelog = codelog,
                     reportDir = reportDir, reference = reference, 
                     codelogFile = codelogFile, progressbar = progressbar, 
-                    PONformat = PONformat, PONfile = PONfile)
+                    PONformat = PONformat, PONfile = PONfile,
+                    verbose = verbose)
   # "Cherniack_et_al-Cancer_Cell-2017-UCS" PMID: 28292439
   }else if(reference == "Cherniack_et_al-Cancer_Cell-2017-UCS"){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
@@ -123,7 +127,8 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                     reportFile = reportFile, reportDir = reportDir, TMB = TMB,
                     reference = reference, codelog = codelog,
                     codelogFile = codelogFile, progressbar = progressbar, 
-                    PONformat = PONformat, PONfile = PONfile)
+                    PONformat = PONformat, PONfile = PONfile,
+                    verbose = verbose)
 
   # "Gerlinger_et_al-Engl_J_Med-2012-KIRC" PMID: 22397650
   }else if(reference == "Gerlinger_et_al-Engl_J_Med-2012-KIRC"){
@@ -139,7 +144,8 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                     report = report, reportFile = reportFile, codelog = codelog,
                     reportDir = reportDir, reference = reference, 
                     codelogFile = codelogFile, progressbar = progressbar, 
-                    PONformat = PONformat, PONfile = PONfile)
+                    PONformat = PONformat, PONfile = PONfile,
+                    verbose = verbose)
   # "Zhu_et_al-Nat_Commun-2020-KIRP" PMID: 32555180
   }else if(reference == "Zhu_et_al-Nat_Commun-2020-KIRP"){
     mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.04,
@@ -157,7 +163,7 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
                                 codelogFile = codelogFile, 
-                                progressbar = progressbar, 
+                                progressbar = progressbar, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
 
   # "Mason_et_al-Leukemia-2015-LCML"  PMID: 26648538
@@ -177,7 +183,7 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 reference = reference, codelog = codelog,
                                 codelogFile = codelogFile, 
-                                progressbar = progressbar, 
+                                progressbar = progressbar, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
   }else{
     stop('Invaild reference input detected, please provide a vaild reference.')

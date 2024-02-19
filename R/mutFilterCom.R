@@ -86,6 +86,8 @@
 #' experiments. Default: FALSE
 #' @param codelogFile Where to store the codelog, only useful when codelog is
 #' set to TRUE. Default: "mutFilterCom.log"
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
@@ -115,33 +117,39 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                          reportFile = 'FilterReport.html', reportDir = './',
                          TMB = TRUE, cancerType = NULL, reference = NULL,
                          progressbar = TRUE, codelog = FALSE, 
-                         codelogFile = "mutFilterCom.log") {
+                         codelogFile = "mutFilterCom.log", verbose = TRUE) {
     # run mutFilterTech
-    message("  Filtration for technical issue is running")
+    if (verbose) {
+        message("  Filtration for technical issue is running")
+    }
     mafFilteredT <- mutFilterTech(maf, panel = panel, tumorDP = tumorDP,
                             normalDP = normalDP, tumorAD = tumorAD, VAF = VAF,
                             normalAD = normalAD, VAFratio = VAFratio, 
                             SBmethod = SBmethod, SBscore = SBscore, 
                             maxIndelLen = maxIndelLen,minInterval = minInterval, 
                             tagFILTER = tagFILTER, progressbar = progressbar,
-                            PONfile = PONfile, PONformat = PONformat)
+                            PONfile = PONfile, PONformat = PONformat, 
+                            verbose = verbose)
     # filter first for report usage
     mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == "0", ]
     # run mutSelection
-    message("\n")
-    message("  Cancer somatic variant selection is running")
+    if (verbose) {
+        message("\n")
+        message("  Cancer somatic variant selection is running")
+    }
     mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAC = ExAC,
                             Genomesprojects1000 = Genomesprojects1000,
                             ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
                             keepCOSMIC = keepCOSMIC, keepType = keepType,
                             bedFile = bedFile, bedFilter = bedFilter,
-                            bedHeader = bedHeader, progressbar = progressbar)
+                            bedHeader = bedHeader, progressbar = progressbar,
+                            verbose = verbose)
     # filter first for report usage
     mafFilteredS2 <- mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
                    Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
                    ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC,
                    keepType = keepType, bedFile = bedFile,bedHeader = bedHeader,
-                   bedFilter = bedFilter, progressbar = FALSE)
+                   bedFilter = bedFilter, progressbar = FALSE, verbose = FALSE)
     mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
     if (nrow(mafFilteredF) == 0){ stop('No variants left after filtration.')}
     if (TMB){
@@ -181,7 +189,7 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                       ", cancerType=", cancerType, ", reference=", reference, 
                       ", progressbar=", progressbar, ", codelog=", codelog, 
                       ", codelogFile=", codelogFile, ", PONfile=", PONfile, 
-                      ", PONformat=", PONformat, ")")
+                      ", PONformat=", PONformat, ", verbose=", verbose, ")")
         writeLines(running_code, con=printer)
         close(printer)
     }

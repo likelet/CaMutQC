@@ -71,6 +71,8 @@
 #' experiments. Default: FALSE
 #' @param codelogFile Where to store the codelog, only useful when codelog is
 #' set to TRUE. Default: "mutFilterCan.log"
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @return An MAF data frame after common strategy filtration for a cancer type.
 #' @return A filter report in HTML format
@@ -96,7 +98,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                          selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',
                          TMB = FALSE, progressbar = TRUE, codelog = FALSE, 
-                         codelogFile = "mutFilterCan.log") {
+                         codelogFile = "mutFilterCan.log", verbose = TRUE) {
   # BLCA
   if (cancerType == 'BLCA'){
     mafFiltered <- mutFilterCom(maf, SBmethod = 'Fisher', SBscore = 20,
@@ -111,7 +113,8 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                     reportFile = reportFile, reportDir = reportDir, TMB = TMB, 
                     cancerType = cancerType, progressbar = progressbar, 
                     codelog = codelog, codelogFile = codelogFile, 
-                    PONformat = PONformat, PONfile = PONfile)
+                    PONformat = PONformat, PONfile = PONfile,
+                    verbose = verbose)
   # BRCA
   }else if(cancerType == 'BRCA'){
     mafFiltered <- mutFilterCom(maf, tumorAD = 5, VAF = 0.1,
@@ -127,7 +130,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                     reportDir = reportDir, TMB = TMB, cancerType = cancerType,
                     progressbar = progressbar, codelog = codelog, 
                     codelogFile = codelogFile, PONformat = PONformat, 
-                    PONfile = PONfile)
+                    PONfile = PONfile, verbose = verbose)
   # COADREAD
   }else if(cancerType == 'COADREAD'){
     mafFiltered <- mutFilterCom(maf, tumorDP = 5, VAF = 0.2,
@@ -143,7 +146,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                     reportFile = reportFile, reportDir = reportDir, TMB = TMB,
                     cancerType = cancerType, progressbar = progressbar,
                     codelog = codelog, codelogFile = codelogFile, 
-                    PONformat = PONformat, PONfile = PONfile)
+                    PONformat = PONformat, PONfile = PONfile, verbose = verbose)
   # UCEC
   }else if(cancerType == 'UCEC'){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
@@ -160,7 +163,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                      reportDir = reportDir, cancerType = cancerType,
                      progressbar = progressbar, codelog = codelog,
                      codelogFile = codelogFile, PONformat = PONformat, 
-                     PONfile = PONfile)
+                     PONfile = PONfile, verbose = verbose)
 
   # UCS
   }else if(cancerType == 'UCS'){
@@ -180,7 +183,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
                                 progressbar = progressbar, codelog = codelog,
-                                codelogFile = codelogFile, 
+                                codelogFile = codelogFile, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
   # KIRC
   }else if(cancerType == 'KIRC'){
@@ -201,7 +204,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
                                 progressbar = progressbar, codelog = codelog,
-                                codelogFile = codelogFile, 
+                                codelogFile = codelogFile, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
   # KIRP
   }else if(cancerType == 'KIRP'){
@@ -221,7 +224,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
                                 progressbar = progressbar, codelog = codelog,
-                                codelogFile = codelogFile, 
+                                codelogFile = codelogFile, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
   # LCML
   }else if(cancerType == 'LCML'){
@@ -241,7 +244,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
                                 progressbar = progressbar, codelog = codelog,
-                                codelogFile = codelogFile, 
+                                codelogFile = codelogFile, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
   # LAML
   }else if(cancerType == 'LAML'){
@@ -260,7 +263,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
                                 progressbar = progressbar, codelog = codelog,
-                                codelogFile = codelogFile, 
+                                codelogFile = codelogFile, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
   # LIHC
   }else if(cancerType == 'LIHC'){
@@ -280,7 +283,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                                 reportDir = reportDir, TMB = TMB,
                                 cancerType = cancerType,
                                 progressbar = progressbar, codelog = codelog,
-                                codelogFile = codelogFile, 
+                                codelogFile = codelogFile, verbose = verbose,
                                 PONformat = PONformat, PONfile = PONfile)
     }else{
       stop('Invaild cancer type detected, please provide a vaild cancer type.')

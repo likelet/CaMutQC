@@ -40,7 +40,8 @@ mutFilterCan(
   TMB = FALSE,
   progressbar = TRUE,
   codelog = FALSE,
-  codelogFile = "mutFilterCan.log"
+  codelogFile = "mutFilterCan.log",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -149,6 +150,9 @@ experiments. Default: FALSE}
 
 \item{codelogFile}{Where to store the codelog, only useful when codelog is
 set to TRUE. Default: "mutFilterCan.log"}
+
+\item{verbose}{Whether to generate message/notification during the 
+filtration process. Default: TRUE.}
 }
 \value{
 An MAF data frame after common strategy filtration for a cancer type.

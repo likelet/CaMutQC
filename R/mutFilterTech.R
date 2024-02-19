@@ -30,6 +30,8 @@
 #' set to NULL if you want to skip this filter. Default: 'PASS'
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @import dplyr
 #'
@@ -47,7 +49,7 @@ mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                           normalAD = Inf, VAF = 0.05, VAFratio = 0, 
                           SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
                           minInterval = 10, tagFILTER = 'PASS', 
-                          progressbar = TRUE){
+                          progressbar = TRUE, verbose = TRUE){
     # build a progress bar and turn it on is asked
     if (progressbar) { pb <- txtProgressBar(min = 0, max = 100, style = 3)}
     # sequencing quality filtration
@@ -62,30 +64,33 @@ mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
     maf <- mutFilterAdj(maf, maxIndelLen=maxIndelLen, minInterval = minInterval)
     # normalDP filtration
     if (progressbar) {setTxtProgressBar(pb, 60, title = progressbar)}
-    maf <- mutFilterNormalDP(maf)
+    maf <- mutFilterNormalDP(maf, verbose = verbose)
     # PON filtration
     if (progressbar) {
-      setTxtProgressBar(pb, 80, title = progressbar)
+        setTxtProgressBar(pb, 80, title = progressbar)
     }
-    maf <- mutFilterPON(maf, PONfile = PONfile, PONformat = PONformat)
+    maf <- mutFilterPON(maf, PONfile = PONfile, PONformat = PONformat, 
+                        verbose = verbose)
     # FILTER field filtration
     if (!(is.null(tagFILTER))){
-      if (progressbar) {
-        setTxtProgressBar(pb, 100, title = progressbar)
-        # close progres bar
-        close(pb)
-      }
-      tagFilter <- rownames(maf[((!(is.na(maf$FILTER))) &
-                                   (maf$FILTER != tagFILTER)), ])
-      maf[tagFilter, 'CaTag'] <-  paste0(maf[tagFilter, 'CaTag'], 'F')
+        if (progressbar) {
+            setTxtProgressBar(pb, 100, title = progressbar)
+            # close progres bar
+            close(pb)
+        }
+        tagFilter <- rownames(maf[((!(is.na(maf$FILTER))) &
+                                     (maf$FILTER != tagFILTER)), ])
+        maf[tagFilter, 'CaTag'] <-  paste0(maf[tagFilter, 'CaTag'], 'F')
     }else{
-      if (progressbar) {
-        setTxtProgressBar(pb, 100, title = progressbar)
-        # close progres bar
-        close(pb)
-      }
+        if (progressbar) {
+            setTxtProgressBar(pb, 100, title = progressbar)
+            # close progres bar
+            close(pb)
+        }
     }
     # complete filtration
-    message('  Filtration for technical issue is done!')
+    if (verbose) {
+        message('  Filtration for technical issue is done!')
+    }
     return(maf)
 }

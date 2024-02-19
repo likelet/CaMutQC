@@ -15,6 +15,8 @@
 #' @param dbSNP Whether to filter variants listed in dbSNP. Default: FALSE.
 #' @param keepCOSMIC Whether to keep variants in COSMIC even
 #' they are present in germline database. Default: TRUE.
+#' @param verbose Whether to generate message/notification during the 
+#' filtration process. Default: TRUE.
 #'
 #' @return An MAF data frame after filtration for database
 #' and clinical significance
@@ -27,7 +29,8 @@
 
 mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                         Genomesprojects1000 = TRUE, ESP6500 = TRUE,
-                        gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE){
+                        gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE,
+                        verbose = TRUE){
     # create NULL tags first
     for (t in c("tags1", "tags2", "tags3", "tags4", "tags5", "tags6", "tags7")){
         assign(t, NULL)
@@ -36,25 +39,25 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     if (ExAC){
         if ('ExAC_AF' %in% colnames(maf) & any(!(is.na(maf$ExAC_AF)))){
           tags1<-rownames(maf[((!(is.na(maf$ExAC_AF)))&(maf$ExAC_AF>= dbVAF)),])
-        }else{dbMessage("ExAC")}}
+        }else{if (verbose) {dbMessage("ExAC")}}}
     # 1000 Genomesprojects filtration
     if (Genomesprojects1000){
         if ('GMAF' %in% colnames(maf) & any(!(is.na(maf$GMAF)))){
           tags2 <- rownames(maf[((!(is.na(maf$GMAF))) & (maf$GMAF >= dbVAF)), ])
-        }else{dbMessage("Genomesprojects1000")}}
+        }else{if (verbose) {dbMessage("Genomesprojects1000")}}}
     # gnomAD filtration
     if (gnomAD){
         if ('gnomAD_AF' %in% colnames(maf) & any(!(is.na(maf$gnomAD_AF))) ){
           tags3 <- rownames(maf[((!(is.na(maf$gnomAD_AF))) & 
                                    (maf$gnomAD_AF >= dbVAF)), ])
-        }else{dbMessage("gnomAD")}}
+        }else{if (verbose) {dbMessage("gnomAD")}}}
     # ESP6500 filtration
     if (ESP6500){
         if ('AA_MAF' %in% colnames(maf) & any(!(is.na(maf$AA_MAF)))){
           tags4<-rownames(maf[((!(is.na(maf$AA_MAF)))&(maf$AA_MAF >= dbVAF)), ])
         }else if ('EA_MAF' %in% colnames(maf) & any(!(is.na(maf$EA_MAF)))){
           tags5<-rownames(maf[((!(is.na(maf$EA_MAF)))&(maf$EA_MAF >= dbVAF)), ])
-        }else{ dbMessage("ESP6500")}}
+        }else{if (verbose) {dbMessage("ESP6500")}}}
     if (keepCOSMIC) {
         tags6 <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
     }

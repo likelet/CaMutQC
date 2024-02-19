@@ -38,7 +38,8 @@ mutFilterRef(
   TMB = FALSE,
   progressbar = TRUE,
   codelog = FALSE,
-  codelogFile = "mutFilterCom.log"
+  codelogFile = "mutFilterCom.log",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -145,6 +146,9 @@ experiments. Default: FALSE}
 
 \item{codelogFile}{Where to store the codelog, only useful when codelog is
 set to TRUE. Default: "mutFilterCom.log"}
+
+\item{verbose}{Whether to generate message/notification during the 
+filtration process. Default: TRUE.}
 }
 \value{
 An MAF data frame after applied filtering strategies in another study

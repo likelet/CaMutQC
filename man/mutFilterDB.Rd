@@ -12,7 +12,8 @@ mutFilterDB(
   ESP6500 = TRUE,
   gnomAD = TRUE,
   dbSNP = FALSE,
-  keepCOSMIC = TRUE
+  keepCOSMIC = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ than cutoff (set in dbVAF parameter). Default: TRUE.}
 
 \item{keepCOSMIC}{Whether to keep variants in COSMIC even
 they are present in germline database. Default: TRUE.}
+
+\item{verbose}{Whether to generate message/notification during the 
+filtration process. Default: TRUE.}
 }
 \value{
 An MAF data frame after filtration for database
