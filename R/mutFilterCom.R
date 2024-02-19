@@ -180,7 +180,8 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                       ", reportFile=", reportFile, ", TMB=", TMB, 
                       ", cancerType=", cancerType, ", reference=", reference, 
                       ", progressbar=", progressbar, ", codelog=", codelog, 
-                      ", codelogFile=", codelogFile, ")")
+                      ", codelogFile=", codelogFile, ", PONfile=", PONfile, 
+                      ", PONformat=", PONformat, ")")
         writeLines(running_code, con=printer)
         close(printer)
     }
@@ -191,7 +192,7 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
             }else{
                 if (all(selectCols %in% colnames(mafFilteredF))){
                     return(mafFilteredF[, selectCols])
-                }else{ stop('Not all selected columns can be found in MAF. ') }
+                }else{ stop('Not all selected columns can be found in MAF.') }
             }
         }
     }else{ return(mafFilteredS) }
