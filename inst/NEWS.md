@@ -11,3 +11,7 @@ Changes in version 0.99.1 (2024-02-02)
 + Standardization of datasets, including replacing clinical dataset with public dataset, add detailed description for data, panel list and regions used in CaMutQC
 + Add logo
 + Make `readBed` function more flexible, enabling the reading of .rds file
+
+Changes in version 0.99.4 (2024-02-27)
++ Update CITATION file by adding doi and http information
++ Further remove some mutations from example VCF files to satisfy 5Mb limit

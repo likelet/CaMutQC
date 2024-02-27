@@ -132,12 +132,12 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
 
   # "Gerlinger_et_al-Engl_J_Med-2012-KIRC" PMID: 22397650
   }else if(reference == "Gerlinger_et_al-Engl_J_Med-2012-KIRC"){
-    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE,
+    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, dbVAF = 0, 
                     Genomesprojects1000 = Genomesprojects1000,tumorDP = tumorDP, 
                     VAF = VAF, normalDP = normalDP, tumorAD = tumorAD,
                     VAFratio = VAFratio, SBmethod = SBmethod, SBscore = SBscore, 
                     maxIndelLen = maxIndelLen, minInterval = minInterval, 
-                    ExAC = ExAC, tagFILTER = tagFILTER, dbVAF = dbVAF,
+                    ExAC = ExAC, tagFILTER = tagFILTER,
                     ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC, 
                     keepType = keepType,bedFile = bedFile,bedFilter = bedFilter,
                     mutFilter = mutFilter, selectCols = selectCols, TMB = TMB,

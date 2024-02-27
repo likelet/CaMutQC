@@ -9,5 +9,7 @@ citEntry(
                        ),
    journal = "AACR annual meeting 2022",
    year = 2022,
+   url = "https://aacrjournals.org/cancerres/article/82/12_Supplement/5004/700670/",
+   doi = "10.1158/1538-7445.AM2022-5004",
    textVersion = "Xin Wang, Jian Ren, Qi Zhao, Integrative quality control of cancer somatic mutations with CaMutQC through somatic alterations (abstract), AACR annual meeting 2022"
 )
