@@ -15,3 +15,6 @@ Changes in version 0.99.1 (2024-02-02)
 Changes in version 0.99.4 (2024-02-27)
 + Update CITATION file by adding doi and http information
 + Further remove some mutations from example VCF files to satisfy 5Mb limit
+
+Changes in version 0.99.5 (2024-02-27)
++ Further remove some mutations from example VCF files to satisfy 5Mb limit

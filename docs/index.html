@@ -3099,7 +3099,7 @@ this panel</strong></p>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">table</span>(MAF_qual<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0Q 
-##  69 141</code></pre>
+##  61 108</code></pre>
 <p> </p>
 </div>
 <div id="strand-of-bias-filtration" class="section level4">
@@ -3126,7 +3126,7 @@ for strand of bias score is set as <span style="color:#ED6F3E"><strong>3</strong
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">table</span>(MAF_sb<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0S 
-## 171  39</code></pre>
+## 136  33</code></pre>
 <p> </p>
 </div>
 <div id="adjacent-indel-filtration" class="section level4">
@@ -3140,7 +3140,7 @@ found in the tumor sample.</p>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">table</span>(MAF_adj<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0A 
-## 208   2</code></pre>
+## 167   2</code></pre>
 <p> </p>
 </div>
 <div id="normal-depth-filtration" class="section level4">
@@ -3152,7 +3152,7 @@ depth for both dbsnp/non-dbsnp variants, where cutoffs are <span style="color:#E
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">table</span>(MAF_normaldp<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0N 
-## 207   3</code></pre>
+## 166   3</code></pre>
 <p> </p>
 </div>
 <div id="panel-of-normals-filtration" class="section level4">
@@ -3180,7 +3180,7 @@ from GATK resource bundle:</p>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="fu">table</span>(MAF_pon<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0P 
-## 208   2</code></pre>
+## 168   1</code></pre>
 <p> </p>
 </div>
 <div id="database-filtration" class="section level4">
@@ -3211,7 +3211,7 @@ other databases.</p>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">table</span>(MAF_db<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0D  0S 0SD 
-##  92  79  17  22</code></pre>
+##  77  59  15  18</code></pre>
 <p> </p>
 </div>
 <div id="variant-type-filtration" class="section level4">
@@ -3245,11 +3245,11 @@ Variation</a>.</p>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">table</span>(MAF_type<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0  0T 
-##  41 169</code></pre>
+##  34 135</code></pre>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">table</span>(MAF_type<span class="sc">$</span>Variant_Classification[<span class="fu">which</span>(MAF_type<span class="sc">$</span>CaTag <span class="sc">==</span> <span class="st">&#39;0&#39;</span>)])</span></code></pre></div>
 <pre><code>## 
-##   Frame_Shift_Del      In_Frame_Del Missense_Mutation  Nonstop_Mutation 
-##                 2                 4                34                 1</code></pre>
+##      In_Frame_Del Missense_Mutation  Nonstop_Mutation 
+##                 4                29                 1</code></pre>
 <p> </p>
 </div>
 <div id="region-selection" class="section level4">
@@ -3265,7 +3265,7 @@ and <code>ChrY</code>).</p>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">table</span>(MAF_reg<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##  0R 
-## 210</code></pre>
+## 169</code></pre>
 <p> </p>
 </div>
 </div>
@@ -3296,8 +3296,8 @@ as the default tag.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>MAF_tech <span class="ot">&lt;-</span> <span class="fu">mutFilterTech</span>(MAFdat, <span class="at">panel =</span> <span class="st">&quot;Customized&quot;</span>, <span class="at">tumorDP =</span> <span class="dv">8</span>, <span class="at">minInterval =</span> <span class="dv">9</span>, <span class="at">tagFILTER =</span> <span class="cn">NULL</span>, <span class="at">progressbar =</span> <span class="cn">FALSE</span>, <span class="at">PONfile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;PON_test.txt&quot;</span>,<span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">PONformat =</span> <span class="st">&quot;txt&quot;</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="fu">table</span>(MAF_tech<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
-##   0  0A  0N  0P  0Q 0QA 0QN 0QP 0QS  0S 
-## 103   1   1   1  85   1   2   1   4  11</code></pre>
+##   0  0A 0NP  0Q 0QA 0QN 0QS  0S 
+##  85   1   1  66   1   2   4   9</code></pre>
 <p> </p>
 </div>
 <div id="candidate-variant-selection" class="section level4">
@@ -3315,7 +3315,7 @@ incorporated in the <code>mutSelection</code> function.</p>
 <span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="fu">table</span>(MAF_selec<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
 ##   0 0DT  0T 
-##  41   5 164</code></pre>
+##  34   5 130</code></pre>
 <p> </p>
 </div>
 <div id="combined-function-mutfilercom" class="section level4">
@@ -3330,8 +3330,8 @@ turning on the <code>codelog</code> setting and specify
 <span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>                       <span class="at">PONfile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;PON_test.txt&quot;</span>,<span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">PONformat =</span> <span class="st">&quot;txt&quot;</span>)</span>
 <span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="fu">table</span>(MAFCom<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
-##     0  0NDT   0PT    0Q  0QAT  0QDT  0QNT  0QPT   0QS 0QSDT  0QST   0QT    0T 
-##    26     1     1    38     2     8     2     1     2     2    11    87    29</code></pre>
+##     0 0NPDT    0Q  0QAT  0QDT  0QNT   0QS 0QSDT  0QST   0QT    0T 
+##    22     1    29     2     7     2     2     2     9    66    27</code></pre>
 <p> </p>
 <div id="filter-report" class="section level5">
 <h5>6.2.3.1 Filter report</h5>
@@ -3350,10 +3350,10 @@ section.</p>
 <pre><code>## Warning in readBedPanel(assay = assay, genVer = genVer, maf = maf, bedFile = bedFile): Bed files in CaMutQC are not accurate. The result serves only as a reference.</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">table</span>(MAFCom_tmb<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
-##      0  0NDTR   0PTR     0Q  0QATR  0QDTR  0QNTR  0QPTR    0QR 0QSDTR   0QSR 
-##      5      1      1      7      2      8      2      1     31      2      2 
-##  0QSTR    0QT   0QTR     0R     0T    0TR 
-##     11      4     83     21      2     27</code></pre>
+##      0 0NPDTR     0Q  0QATR  0QDTR  0QNTR    0QR 0QSDTR   0QSR  0QSTR    0QT 
+##      5      1      7      2      7      2     22      2      2      9      3 
+##   0QTR     0R     0T    0TR 
+##     63     17      2     25</code></pre>
 <p> </p>
 </div>
 </div>
@@ -3376,8 +3376,8 @@ cancer type, for a more precise and customized filtration.</p>
 <span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>                       <span class="at">PONfile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;PON_test.txt&quot;</span>,<span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">PONformat =</span> <span class="st">&quot;txt&quot;</span>)</span>
 <span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="fu">table</span>(MAFCan<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
-##    0   0D  0ND   0P   0Q  0QD 0QND 
-##   73  117    2    2   12    3    1</code></pre>
+##    0   0D  0ND 0NPD   0Q  0QD 0QND 
+##   64   92    1    1    8    2    1</code></pre>
 <p> </p>
 </div>
 <div id="reference-based-filtration" class="section level3">
@@ -3391,8 +3391,8 @@ study will be applied automatically on your data.</p>
 <span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>                       <span class="at">PONfile =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;PON_test.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;CaMutQC&quot;</span>), <span class="at">PONformat =</span> <span class="st">&quot;txt&quot;</span>)</span>
 <span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="fu">table</span>(MAFRef<span class="sc">$</span>CaTag)</span></code></pre></div>
 <pre><code>## 
-##    0   0D  0ND   0P   0Q  0QD 0QND  0QP 
-##   68   67    2    1   39   31    1    1</code></pre>
+##    0   0D  0ND 0NPD   0Q  0QD 0QND 
+##   61   52    1    1   31   22    1</code></pre>
 </div>
 </div>
 <div id="tmb" class="section level2">
@@ -3460,7 +3460,7 @@ take intersection of MAFs when asked.</p>
 <span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a>maf_union</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["NCBI_Build"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Chromosome"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Start_Position"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["End_Position"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Variant_Type"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Reference_Allele"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Tumor_Seq_Allele2"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"GRCh38","2":"chr1","3":"1049980","4":"1049980","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr2","3":"94874876","4":"94874876","5":"SNP","6":"T","7":"A"},{"1":"GRCh38","2":"chr2","3":"96145043","4":"96145043","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr2","3":"160107762","4":"160107762","5":"SNP","6":"T","7":"A"},{"1":"GRCh38","2":"chr3","3":"56617279","4":"56617279","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr5","3":"157743914","4":"157743914","5":"SNP","6":"A","7":"C"},{"1":"GRCh38","2":"chr5","3":"160354994","4":"160354994","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr7","3":"128815876","4":"128815876","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr9","3":"129102404","4":"129102404","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr9","3":"130307566","4":"130307566","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr10","3":"98415129","4":"98415129","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr11","3":"72822508","4":"72822508","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr13","3":"24690373","4":"24690373","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr13","3":"25169964","4":"25169964","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr13","3":"25541937","4":"25541937","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr14","3":"39247883","4":"39247883","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr14","3":"49840710","4":"49840710","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr15","3":"78999882","4":"78999882","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr16","3":"4454855","4":"4454855","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr18","3":"36067342","4":"36067342","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr22","3":"29141977","4":"29141977","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr2","3":"45006212","4":"45006212","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr3","3":"184141962","4":"184141962","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr3","3":"184357968","4":"184357968","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr3","3":"186164998","4":"186164998","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr4","3":"86769842","4":"86769842","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr5","3":"150080891","4":"150080891","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr5","3":"150204585","4":"150204585","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr6","3":"168066830","4":"168066830","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr7","3":"73469636","4":"73469636","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr7","3":"131504508","4":"131504508","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr8","3":"98951689","4":"98951689","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr9","3":"5769270","4":"5769270","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr9","3":"137879161","4":"137879161","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr10","3":"71762019","4":"71762019","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr10","3":"72375880","4":"72375880","5":"SNP","6":"A","7":"C"},{"1":"GRCh38","2":"chr11","3":"92982015","4":"92982015","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr13","3":"37746422","4":"37746422","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr13","3":"113425168","4":"113425168","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr14","3":"94463232","4":"94463232","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr15","3":"84036951","4":"84036951","5":"SNP","6":"A","7":"T"},{"1":"GRCh38","2":"chr17","3":"4545725","4":"4545725","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr17","3":"5007047","4":"5007047","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr17","3":"7588500","4":"7588500","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr17","3":"7675088","4":"7675088","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr18","3":"80136552","4":"80136552","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr18","3":"80138229","4":"80138229","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr19","3":"6755018","4":"6755018","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr19","3":"42274467","4":"42274467","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr20","3":"41164014","4":"41164014","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr20","3":"41165772","4":"41165772","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr2","3":"31366061","4":"31366061","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr3","3":"130409353","4":"130409353","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr3","3":"195725999","4":"195725999","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr3","3":"195726001","4":"195726002","5":"DNP","6":"AG","7":"CA"},{"1":"GRCh38","2":"chr4","3":"133155028","4":"133155028","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr4","3":"154491219","4":"154491219","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr4","3":"176120051","4":"176120052","5":"DNP","6":"AG","7":"GA"},{"1":"GRCh38","2":"chr5","3":"7886680","4":"7886680","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr7","3":"143294765","4":"143294765","5":"SNP","6":"A","7":"C"},{"1":"GRCh38","2":"chr8","3":"132141243","4":"132141243","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr8","3":"138737577","4":"138737577","5":"SNP","6":"C","7":"A"},{"1":"GRCh38","2":"chr9","3":"113369792","4":"113369792","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr10","3":"32567833","4":"32567833","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr12","3":"49649096","4":"49649096","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr13","3":"25541937","4":"25541938","5":"DNP","6":"GA","7":"CT"},{"1":"GRCh38","2":"chr14","3":"50246124","4":"50246125","5":"INS","6":"-","7":"A"},{"1":"GRCh38","2":"chr14","3":"94382908","4":"94382908","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr14","3":"94467338","4":"94467338","5":"SNP","6":"A","7":"G"},{"1":"GRCh38","2":"chr15","3":"74280669","4":"74280669","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr16","3":"79675","4":"79675","5":"SNP","6":"C","7":"A"},{"1":"GRCh38","2":"chr16","3":"25221523","4":"25221523","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr17","3":"76212499","4":"76212500","5":"INS","6":"-","7":"TCCTGACCTCAGGTGATCCATCCGCCTCGGCCTCCCAAAGTGCTGGG"},{"1":"GRCh38","2":"chr19","3":"12580948","4":"12580948","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr21","3":"44330790","4":"44330813","5":"DEL","6":"GGCAGCCGCGGCCCCTAGCGGCCC","7":"-"},{"1":"GRCh38","2":"chr22","3":"23875150","4":"23875150","5":"SNP","6":"G","7":"A"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["NCBI_Build"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Chromosome"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Start_Position"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["End_Position"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Variant_Type"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Reference_Allele"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Tumor_Seq_Allele2"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"GRCh38","2":"chr5","3":"160354994","4":"160354994","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr3","3":"186164998","4":"186164998","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr4","3":"86769842","4":"86769842","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr5","3":"150204585","4":"150204585","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr7","3":"73469636","4":"73469636","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr16","3":"4454855","4":"4454855","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr17","3":"4545725","4":"4545725","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr17","3":"5007047","4":"5007047","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr18","3":"80138229","4":"80138229","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr19","3":"6755018","4":"6755018","5":"SNP","6":"T","7":"C"},{"1":"GRCh38","2":"chr1","3":"1049980","4":"1049980","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr2","3":"31366061","4":"31366061","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr3","3":"130409353","4":"130409353","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr3","3":"195725999","4":"195725999","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr3","3":"195726001","4":"195726002","5":"DNP","6":"AG","7":"CA"},{"1":"GRCh38","2":"chr4","3":"133155028","4":"133155028","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr4","3":"154491219","4":"154491219","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr4","3":"176120051","4":"176120052","5":"DNP","6":"AG","7":"GA"},{"1":"GRCh38","2":"chr5","3":"7886680","4":"7886680","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr7","3":"143294765","4":"143294765","5":"SNP","6":"A","7":"C"},{"1":"GRCh38","2":"chr8","3":"138737577","4":"138737577","5":"SNP","6":"C","7":"A"},{"1":"GRCh38","2":"chr9","3":"113369792","4":"113369792","5":"SNP","6":"G","7":"A"},{"1":"GRCh38","2":"chr10","3":"32567833","4":"32567833","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr12","3":"49649096","4":"49649096","5":"SNP","6":"C","7":"T"},{"1":"GRCh38","2":"chr14","3":"49840710","4":"49840710","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr14","3":"50246124","4":"50246125","5":"INS","6":"-","7":"A"},{"1":"GRCh38","2":"chr14","3":"94382908","4":"94382908","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr14","3":"94463232","4":"94463232","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr14","3":"94467338","4":"94467338","5":"SNP","6":"A","7":"G"},{"1":"GRCh38","2":"chr15","3":"74280669","4":"74280669","5":"SNP","6":"G","7":"T"},{"1":"GRCh38","2":"chr16","3":"79675","4":"79675","5":"SNP","6":"C","7":"A"},{"1":"GRCh38","2":"chr16","3":"25221523","4":"25221523","5":"SNP","6":"G","7":"C"},{"1":"GRCh38","2":"chr17","3":"76212499","4":"76212500","5":"INS","6":"-","7":"TCCTGACCTCAGGTGATCCATCCGCCTCGGCCTCCCAAAGTGCTGGG"},{"1":"GRCh38","2":"chr18","3":"36067342","4":"36067342","5":"SNP","6":"C","7":"G"},{"1":"GRCh38","2":"chr21","3":"44330790","4":"44330813","5":"DEL","6":"GGCAGCCGCGGCCCCTAGCGGCCC","7":"-"},{"1":"GRCh38","2":"chr22","3":"23875150","4":"23875150","5":"SNP","6":"G","7":"A"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p> </p>
@@ -3499,7 +3499,7 @@ username. Start using, sharing and contributing NOW!</p>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] CaMutQC_0.99.4
+## [1] CaMutQC_0.99.5
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] RColorBrewer_1.1-3      shape_1.4.6             rstudioapi_0.15.0      
