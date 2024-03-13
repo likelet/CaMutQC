@@ -1,5 +1,5 @@
 ## get correct variant Position, Variant_Type, Ref allele and Alt allele
-getVarfeature <- function(vcfPos, ref, alt, csqalt) {
+getVarFeature <- function(vcfPos, ref, alt, csqalt) {
     vcfPos <- as.numeric(vcfPos)
     # first decide which alt is correct
     if (alt != csqalt){

@@ -1,4 +1,4 @@
-getVarclass <- function(vcfConsequence, variantType, inframe) {
+getVarClass <- function(vcfConsequence, variantType, inframe) {
   if (vcfConsequence %in% c('splice_acceptor_variant', 'splice_donor_variant', 
                              'transcript_ablation', 'exon_loss_variant')) {
     return('Splice_Site')

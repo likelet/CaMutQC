@@ -202,7 +202,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
       ## ENTREZID
       maf[i, 2] <- IDs$ENTREZID[which(IDs$ENSEMBL == csqInfo$Gene[i])][1]
       ## get correct variant Position, Variant_Type, Ref allele and Alt allele
-      posType <- getVarfeature(maf[i, 6], maf[i, 11], maf[i, 13], csqInfo[i, 1])
+      posType <- getVarFeature(maf[i, 6], maf[i, 11], maf[i, 13], csqInfo[i, 1])
       maf[i, 6] <- posType[[1]] # start
       maf[i, 7] <- posType[[2]] # end
       maf[i, 10] <- posType[[3]] # Variant_Type
@@ -214,7 +214,7 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
       cons <- strsplit(csqInfo[i, 2], split='&')[[1]]
       csqInfo[i, 2] <- cons[which.min(unlist(vapply(cons,
                                               getConsequencePriority, 10)))]
-      maf[i, 9] <- getVarclass(csqInfo[i, 2], maf[i, 10], inframe)
+      maf[i, 9] <- getVarClass(csqInfo[i, 2], maf[i, 10], inframe)
       ## get AD and DP in INFO or FORMAT
       ## if RD field is contained in the INFO column
       if (any(strsplit(vcfAdditional[i, 1], ":")[[1]] == 'RD')) {
