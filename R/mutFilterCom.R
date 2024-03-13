@@ -162,9 +162,9 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
         TMBvalue <- calTMB(maf, bedFile=bedFile, assay=assay,
                             genelist=genelist, mutType=mutType, 
                             bedHeader=bedHeader, bedFilter=bedFilter)
-        mes <- paste0("  Method used to calculate TMB: ", assay)
+        mes <- paste0("Method used to calculate TMB: ", assay, ".")
         message(mes)
-        mes <- paste0("  Estimated TMB is: ", TMBvalue)
+        mes <- paste0("Estimated TMB is: ", TMBvalue, ".")
         message(mes)
     }
     # report generation
