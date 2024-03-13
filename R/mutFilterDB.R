@@ -17,6 +17,7 @@
 #' they are present in germline database. Default: TRUE.
 #' @param verbose Whether to generate message/notification during the 
 #' filtration process. Default: TRUE.
+#' @importFrom methods is
 #'
 #' @return An MAF data frame after filtration for database
 #' and clinical significance
@@ -31,6 +32,11 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                         Genomesprojects1000 = TRUE, ESP6500 = TRUE,
                         gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE,
                         verbose = TRUE){
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+        stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     # create NULL tags first
     for (t in c("tags1", "tags2", "tags3", "tags4", "tags5", "tags6", "tags7")){
         assign(t, NULL)
@@ -38,7 +44,7 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     # ExAC filtration
     if (ExAC){
         if ('ExAC_AF' %in% colnames(maf) & any(!(is.na(maf$ExAC_AF)))){
-          tags1<-rownames(maf[((!(is.na(maf$ExAC_AF)))&(maf$ExAC_AF>= dbVAF)),])
+            tags1 <- rownames(maf[((!(is.na(maf$ExAC_AF)))&(maf$ExAC_AF >= dbVAF)), ])
         }else{if (verbose) {dbMessage("ExAC")}}}
     # 1000 Genomesprojects filtration
     if (Genomesprojects1000){
@@ -54,9 +60,9 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     # ESP6500 filtration
     if (ESP6500){
         if ('AA_MAF' %in% colnames(maf) & any(!(is.na(maf$AA_MAF)))){
-          tags4<-rownames(maf[((!(is.na(maf$AA_MAF)))&(maf$AA_MAF >= dbVAF)), ])
+          tags4 <- rownames(maf[((!(is.na(maf$AA_MAF)))&(maf$AA_MAF >= dbVAF)), ])
         }else if ('EA_MAF' %in% colnames(maf) & any(!(is.na(maf$EA_MAF)))){
-          tags5<-rownames(maf[((!(is.na(maf$EA_MAF)))&(maf$EA_MAF >= dbVAF)), ])
+          tags5 <- rownames(maf[((!(is.na(maf$EA_MAF)))&(maf$EA_MAF >= dbVAF)), ])
         }else{if (verbose) {dbMessage("ESP6500")}}}
     if (keepCOSMIC) {
         tags6 <- rownames(maf[grep('COS', maf[, 'Existing_variation']), ])
@@ -67,18 +73,18 @@ mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,
     tags <- unique(c(tags1, tags2, tags3, tags4, tags5, tags6, tags7))
     tags <- tags[!(tags %in% tags6)]
     # patho tags: with pathogenic but removing pathogenicity
-    patho_tags <- setdiff(as.character(grep('pathogenic', maf$CLIN_SIG, 
-                  ignore.case = TRUE)), as.character(grep('pathogenicity', 
-                                        maf$CLIN_SIG, ignore.case = TRUE)))
-    tags <- intersect(tags, setdiff(rownames(maf), patho_tags))
+    pathoTags <- setdiff(as.character(grep('pathogenic', maf$CLIN_SIG, 
+                  ignore.case=TRUE)), as.character(grep('pathogenicity', 
+                                        maf$CLIN_SIG, ignore.case=TRUE)))
+    tags <- intersect(tags, setdiff(rownames(maf), pathoTags))
     maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'D')
     return(maf)
 }
 
 # generate message when certain database annotation is missing
 dbMessage <- function(db) {
-    first_mes<-paste0('\n  This VCF file wasn\'t annotated by ',db,' database.')
-    second_mes <- paste0(' No variants will be filtered based on ', db , '.')
-    final_mes <- paste0(first_mes, second_mes)
-    message(final_mes)
+    firstMes <- paste0('\n  This VCF file wasn\'t annotated by ', db,' database.')
+    secondMes <- paste0(' No variants will be filtered based on ', db , '.')
+    finalMes <- paste0(firstMes, secondMes)
+    message(finalMes)
 }

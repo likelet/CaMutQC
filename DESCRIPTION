@@ -36,5 +36,6 @@ Imports:
     maftools,
     data.table,
     utils,
-    stats
+    stats,
+    methods
 License: GPL-3

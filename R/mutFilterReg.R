@@ -10,6 +10,7 @@
 #' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
 #' @param verbose Whether to generate message/notification during the 
 #' filtration process. Default: TRUE.
+#' @importFrom methods is
 #'
 #' @return An MAF data frame where some variants
 #' have R tag in CaTag column for region filtration.
@@ -24,6 +25,16 @@
 
 mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
                          bedFilter = TRUE, verbose = TRUE){
+  # check user input
+  if (!(is(maf, "data.frame"))) {
+    stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+  }
+  
+  # check user input
+  if (!(is(maf, "data.frame"))) {
+    stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+  }
+  
   if (is.null(bedFile)){
       if (verbose) {
           message('\n  No bed file detected, so no variants will get an R flag.')
@@ -50,13 +61,13 @@ mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
         bedSepc <- bedProc[which(bedProc$chr == chrs[c]), ]
         l <- list()
         for(i in seq_len(nrow(bedSepc))) {
-          l[[i]] <- mutRegionTag(mafSepc, bedSepc[i, ])
+            l[[i]] <- mutRegionTag(mafSepc, bedSepc[i, ])
         }
         allTar[[c]] <- l
     }
-        # get complement subset (variants not in bed region)
-        tags <- setdiff(rownames(maf), unique(unlist(allTar)))
-        maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
+    # get complement subset (variants not in bed region)
+    tags <- setdiff(rownames(maf), unique(unlist(allTar)))
+    maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
   }
   return(maf)
 }

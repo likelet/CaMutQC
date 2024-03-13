@@ -31,6 +31,7 @@
 #'
 #' @import vcfR stringr
 #' @importFrom  dplyr filter
+#' @importFrom methods is
 #'
 #' @return An MAF data frame with variants after selection.
 #'
@@ -46,34 +47,38 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                          keepCOSMIC = TRUE, keepType = 'exonic',
                          bedFile = NULL, bedHeader = FALSE,
                          bedFilter = TRUE, progressbar = TRUE, verbose = TRUE){
-  
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+      stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     # build a progress bar and turn it on is asked
     if (progressbar) {
-        pb <- txtProgressBar(min = 0, max = 100, style = 3)
+        pb <- txtProgressBar(min=0, max=100, style=3)
     }
     # database selection
     #message('Selection for germline variant database is in process.')
     if (progressbar) {
-        setTxtProgressBar(pb, 40, title = progressbar)
+        setTxtProgressBar(pb, 40, title=progressbar)
     }
-    maf <- mutFilterDB(maf, dbVAF = dbVAF, ExAC = ExAC,
-                       Genomesprojects1000 = Genomesprojects1000, 
-                       ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP, 
-                       keepCOSMIC = keepCOSMIC, verbose = verbose)
+    maf <- mutFilterDB(maf, dbVAF=dbVAF, ExAC=ExAC,
+                       Genomesprojects1000=Genomesprojects1000, 
+                       ESP6500=ESP6500, gnomAD=gnomAD, dbSNP=dbSNP, 
+                       keepCOSMIC=keepCOSMIC, verbose=verbose)
     # variant type selection
     if (progressbar) {
-        setTxtProgressBar(pb, 60, title = progressbar)
+        setTxtProgressBar(pb, 60, title=progressbar)
     }
-    maf <- mutFilterType(maf, keepType = keepType)
+    maf <- mutFilterType(maf, keepType=keepType)
     # region selection
     if (progressbar) {
-        setTxtProgressBar(pb, 80, title = progressbar)
+        setTxtProgressBar(pb, 80, title=progressbar)
     }
-    maf <- mutFilterReg(maf, bedFile = bedFile, bedHeader = bedHeader,
-                        bedFilter = bedFilter, verbose = verbose)
+    maf <- mutFilterReg(maf, bedFile=bedFile, bedHeader=bedHeader,
+                        bedFilter=bedFilter, verbose=verbose)
     # complete selection
     if (progressbar) {
-        setTxtProgressBar(pb, 100, title = progressbar)
+        setTxtProgressBar(pb, 100, title=progressbar)
         close(pb)
     }
     if (verbose) {

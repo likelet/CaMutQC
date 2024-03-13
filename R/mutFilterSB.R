@@ -10,6 +10,7 @@
 #' s-Exact-Test)
 #' @param SBscore Cutoff strand bias score used to filter variants.
 #' Default: 3
+#' @importFrom methods is
 #'
 #' @return An MAF data frame where some variants
 #' have S tag in CaTag column for strand bias filtration
@@ -21,6 +22,11 @@
 #' mafF <- mutFilterSB(maf)
 
 mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
+  # check user input
+  if (!(is(maf, "data.frame"))) {
+    stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+  }
+  
   if (method == 'Fisher') {
     # use for loop to get the SB score for each variation
     for (i in seq_len(nrow(maf))) {
@@ -42,7 +48,7 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
           SBcharmatix <- paste(rf, rv, af, av, sep = ',')
         }
       }else{
-        SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'],':')[[1]][SBindex]
+        SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][SBindex]
       }
       if (calSBscore(SBcharmatix, method) > SBscore) {
         maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
@@ -51,15 +57,15 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
   }else if (method == 'SOR'){
     for (i in seq_len(nrow(maf))) {
       if(length(grep('ALT_F1R2', maf$FORMAT[i]))){
-        ALT_F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'ALT_F1R2'
-        ALT_F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'ALT_F2R1'
-        REF_F1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'REF_F1R2'
-        REF_F2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'REF_F2R1'
-        ALT_F1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][ALT_F1R2index]
-        ALT_F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][ALT_F2R1index]
-        REF_F1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][REF_F1R2index]
-        REF_F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][REF_F2R1index]
-        SBcharmatix <- paste(REF_F1R2, REF_F2R1, ALT_F1R2, ALT_F2R1, sep = ',')
+        altF1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'ALT_F1R2'
+        altF2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'ALT_F2R1'
+        refF1R2index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'REF_F1R2'
+        refF2R1index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'REF_F2R1'
+        altF1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][altF1R2index]
+        altF2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][altF2R1index]
+        refF1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][refF1R2index]
+        refF2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][refF2R1index]
+        SBcharmatix <- paste(refF1R2, refF2R1, altF1R2, altF2R1, sep = ',')
         if (calSBscore(SBcharmatix, method, rorder = TRUE) > SBscore) {
           maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
         }
@@ -70,7 +76,7 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
         F2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][F2R1index]
         SBcharmatix <- paste(F1R2, F2R1, sep = ',')
         if (calSBscore(SBcharmatix, method) > SBscore) {
-          maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
+            maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
         }
       }else if (length(grep('DP4', maf$FORMAT[i]))){
         DP4index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'DP4'
@@ -116,9 +122,9 @@ calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
       P1 <- calP(refFw, refRv, altFw, altRv)
       # check P1 whether it is over the depth
       if (is.na(P1)){
-        mes <- paste0('Data is in high coverage, so the factorial of its depth',
-                      ' cannot be obtained, ', ' use \'SOR\' method instead.')
-        stop(mes)
+          mes <- paste0('Data is in high coverage, so the factorial of its depth',
+                        ' cannot be obtained, ', ' use \'SOR\' method instead.')
+          stop(mes)
       }
       # probability of observing more extreme data
       vaildP <- c()
@@ -126,31 +132,31 @@ calSBscore <- function(charmatrix, method = 'SOR', rorder = FALSE){
       maxR <- min(Row1, Col1)
       minR <- max(0, Row1-Col2)
       for (i in seq(minR, maxR)){
-        exP <- calP(i, Row1-i, Col1-i, Col2 - Row1 + i)
-        if(exP <= P1){
-          vaildP <- c(vaildP, exP)
-        }
+          exP <- calP(i, Row1-i, Col1-i, Col2 - Row1 + i)
+          if(exP <= P1){
+              vaildP <- c(vaildP, exP)
+          }
       }
       # get sum of P
       Pt <- sum(P1, vaildP)
       # get Phred score
       score <- -10 * log10(Pt)
     }else {
-      stop('Please select a method from SOR and Fisher')
+        stop('Please select a method from SOR and Fisher')
     }
     return(score)
 }
 
-
+# healper function to calculate probability P
 calP <- function(refFw, refRv, altFw, altRv){
-  R1 <- refRv + refFw
-  R2 <- altRv + altFw
-  C1 <- refFw + altFw
-  C2 <- refRv + altRv
-  # probability P
-  P <- (factorial(R1) * factorial(R2) * factorial(C1) * factorial(C2))/
-    (factorial(R1 + R2) * factorial(refRv) * factorial(refFw) *
-       factorial(altFw) * factorial(altRv))
-  return(P)
+    R1 <- refRv + refFw
+    R2 <- altRv + altFw
+    C1 <- refFw + altFw
+    C2 <- refRv + altRv
+    # probability P
+    P <- (factorial(R1) * factorial(R2) * factorial(C1) * factorial(C2))/
+      (factorial(R1 + R2) * factorial(refRv) * factorial(refFw) *
+         factorial(altFw) * factorial(altRv))
+    return(P)
 }
 

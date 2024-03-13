@@ -1,60 +1,60 @@
-jointMAF <- function(mafdf, CSQ_info, vcfMain){
-    mafFinal <- cbind(mafdf, Allele = CSQ_info$Allele, Gene = CSQ_info$Gene, 
-        Feature = CSQ_info$Feature, Feature_type = CSQ_info$Feature_type,
-        One_Consequence=CSQ_info$Consequence,Consequence = CSQ_info$Consequence,
-        cDNA_position=getValue(CSQ_info$cDNA_position),
-        CDS_position=getValue(CSQ_info$CDS_position),
-        Protein_position = getValue(CSQ_info$Protein_position),
-        Amino_acids = getValue(CSQ_info$Amino_acids), 
-        Codons = getValue(CSQ_info$Codons),
-        Existing_variation = getValue(CSQ_info$Existing_variation),
-        ALLELE_NUM = getValue(CSQ_info$ALLELE_NUM),
-        DISTANCE = getValue(CSQ_info$DISTANCE), 
-        TRANSCRIPT_STRAND = getValue(CSQ_info$STRAND), 
-        SYMBOL = getValue(CSQ_info$SYMBOL), 
-        SYMBOL_SOURCE = getValue(CSQ_info$SYMBOL_SOURCE), 
-        HGNC_ID = getValue(CSQ_info$HGNC_ID), 
-        BIOTYPE = getValue(CSQ_info$BIOTYPE), 
-        CANONICAL = getValue(CSQ_info$CANONICAL),
-        CCDS = getValue(CSQ_info$CCDS), ENSP = getValue(CSQ_info$ENSP), 
-        SWISSPROT=getValue(CSQ_info$SWISSPROT),TREMBL=getValue(CSQ_info$TREMBL), 
-        UNIPARC = getValue(CSQ_info$UNIPARC),RefSeq = getValue(CSQ_info$RefSeq), 
-        SIFT = getValue(CSQ_info$SIFT), PolyPhen = getValue(CSQ_info$PolyPhen), 
-        Exon = getValue(CSQ_info$EXON), INTRON = getValue(CSQ_info$INTRON), 
-        DOMAINS = getValue(CSQ_info$DOMAINS), GMAF=getValue(CSQ_info$AF), 
-        AFR_MAF = getValue(CSQ_info$AFR_AF),AMR_MAF = getValue(CSQ_info$AMR_AF), 
-        ASN_MAF=getValue(CSQ_info$ASN_MAF), EAS_MAF = getValue(CSQ_info$EAS_AF),
-        EUR_MAF = getValue(CSQ_info$EUR_AF),SAS_MAF = getValue(CSQ_info$SAS_AF), 
-        AA_MAF = getValue(CSQ_info$AA_AF), EA_MAF = getValue(CSQ_info$EA_AF), 
-        CLIN_SIG=getValue(CSQ_info$CLIN_SIG),SOMATIC=getValue(CSQ_info$SOMATIC), 
-        PUBMED = getValue(CSQ_info$PUBMED),
-        MOTIF_NAME=getValue(CSQ_info$MOTIF_NAME),
-        MOTIF_POS = getValue(CSQ_info$MOTIF_POS),
-        HIGH_INF_POS = getValue(CSQ_info$HIGH_INF_POS),
-        MOTIF_SCORE_CHANGE = getValue(CSQ_info$MOTIF_SCORE_CHANGE),
-        IMPACT = getValue(CSQ_info$IMPACT), PICK = getValue(CSQ_info$PICK),
-        VARIANT_CLAS=getValue(CSQ_info$VARIANT_CLASS),
-        TSL=getValue(CSQ_info$TSL),HGVS_OFFSET = getValue(CSQ_info$HGVS_OFFSET),
-        PHENO = getValue(CSQ_info$PHENO), MINIMISED = '', 
-        gnomAD_AF = getgnomInfo(CSQ_info, fieldName = "AF"),
-        gnomAD_AFR_AF = getgnomInfo(CSQ_info, fieldName = "AFR_AF"),
-        gnomAD_AMR_AF = getgnomInfo(CSQ_info, fieldName = "AMR_AF"),
-        gnomAD_ASJ_AF = getgnomInfo(CSQ_info, fieldName = "ASJ_AF"),
-        gnomAD_EAS_AF = getgnomInfo(CSQ_info, fieldName = "EAS_AF"),
-        gnomAD_FIN_AF = getgnomInfo(CSQ_info, fieldName = "FIN_AF"),
-        gnomAD_NFE_AF = getgnomInfo(CSQ_info, fieldName = "NFE_AF"),
-        gnomAD_OTH_AF = getgnomInfo(CSQ_info, fieldName = "OTH_AF"),
-        gnomAD_SAS_AF = getgnomInfo(CSQ_info, fieldName = "SAS_AF"),
-        ExAC_AF = getValue(CSQ_info$ExAC_AF),
-        ExAC_AF_adj = getValue(CSQ_info$ExAC_AF_adj),
-        ExAC_AF_AFR = getValue(CSQ_info$ExAC_AF_AFR),
-        ExAC_AF_AMR = getValue(CSQ_info$ExAC_AF_AMR),
-        ExAC_AF_EAS = getValue(CSQ_info$ExAC_AF_EAS),
-        ExAC_AF_FIN = getValue(CSQ_info$ExAC_AF_FIN),
-        ExAC_AF_NFE = getValue(CSQ_info$ExAC_AF_NFE),
-        ExAC_AF_OTH = getValue(CSQ_info$ExAC_AF_OTH),
-        ExAC_AF_SAS = getValue(CSQ_info$ExAC_AF_SAS),
-        GENE_PHENO = getValue(CSQ_info$GENE_PHENO), FILTER = vcfMain$FILTER)}
+jointMAF <- function(mafDat, csqInfo, vcfMain){
+    mafFinal <- cbind(mafDat, Allele = csqInfo$Allele, Gene = csqInfo$Gene, 
+        Feature = csqInfo$Feature, Feature_type = csqInfo$Feature_type,
+        One_Consequence = csqInfo$Consequence, Consequence = csqInfo$Consequence,
+        cDNA_position = getValue(csqInfo$cDNA_position),
+        CDS_position = getValue(csqInfo$CDS_position),
+        Protein_position = getValue(csqInfo$Protein_position),
+        Amino_acids = getValue(csqInfo$Amino_acids), 
+        Codons = getValue(csqInfo$Codons),
+        Existing_variation = getValue(csqInfo$Existing_variation),
+        ALLELE_NUM = getValue(csqInfo$ALLELE_NUM),
+        DISTANCE = getValue(csqInfo$DISTANCE), 
+        TRANSCRIPT_STRAND = getValue(csqInfo$STRAND), 
+        SYMBOL = getValue(csqInfo$SYMBOL), 
+        SYMBOL_SOURCE = getValue(csqInfo$SYMBOL_SOURCE), 
+        HGNC_ID = getValue(csqInfo$HGNC_ID), 
+        BIOTYPE = getValue(csqInfo$BIOTYPE), 
+        CANONICAL = getValue(csqInfo$CANONICAL),
+        CCDS = getValue(csqInfo$CCDS), ENSP = getValue(csqInfo$ENSP), 
+        SWISSPROT = getValue(csqInfo$SWISSPROT), TREMBL = getValue(csqInfo$TREMBL), 
+        UNIPARC = getValue(csqInfo$UNIPARC), RefSeq = getValue(csqInfo$RefSeq), 
+        SIFT = getValue(csqInfo$SIFT), PolyPhen = getValue(csqInfo$PolyPhen), 
+        Exon = getValue(csqInfo$EXON), INTRON = getValue(csqInfo$INTRON), 
+        DOMAINS = getValue(csqInfo$DOMAINS), GMAF = getValue(csqInfo$AF), 
+        AFR_MAF = getValue(csqInfo$AFR_AF), AMR_MAF = getValue(csqInfo$AMR_AF), 
+        ASN_MAF = getValue(csqInfo$ASN_MAF), EAS_MAF = getValue(csqInfo$EAS_AF),
+        EUR_MAF = getValue(csqInfo$EUR_AF), SAS_MAF = getValue(csqInfo$SAS_AF), 
+        AA_MAF = getValue(csqInfo$AA_AF), EA_MAF = getValue(csqInfo$EA_AF), 
+        CLIN_SIG = getValue(csqInfo$CLIN_SIG), SOMATIC = getValue(csqInfo$SOMATIC), 
+        PUBMED = getValue(csqInfo$PUBMED),
+        MOTIF_NAME = getValue(csqInfo$MOTIF_NAME),
+        MOTIF_POS = getValue(csqInfo$MOTIF_POS),
+        HIGH_INF_POS = getValue(csqInfo$HIGH_INF_POS),
+        MOTIF_SCORE_CHANGE = getValue(csqInfo$MOTIF_SCORE_CHANGE),
+        IMPACT = getValue(csqInfo$IMPACT), PICK = getValue(csqInfo$PICK),
+        VARIANT_CLAS = getValue(csqInfo$VARIANT_CLASS),
+        TSL = getValue(csqInfo$TSL), HGVS_OFFSET = getValue(csqInfo$HGVS_OFFSET),
+        PHENO = getValue(csqInfo$PHENO), MINIMISED = '', 
+        gnomAD_AF = getGnominfo(csqInfo, fieldName="AF"),
+        gnomAD_AFR_AF = getGnominfo(csqInfo, fieldName="AFR_AF"),
+        gnomAD_AMR_AF = getGnominfo(csqInfo, fieldName="AMR_AF"),
+        gnomAD_ASJ_AF = getGnominfo(csqInfo, fieldName="ASJ_AF"),
+        gnomAD_EAS_AF = getGnominfo(csqInfo, fieldName="EAS_AF"),
+        gnomAD_FIN_AF = getGnominfo(csqInfo, fieldName="FIN_AF"),
+        gnomAD_NFE_AF = getGnominfo(csqInfo, fieldName="NFE_AF"),
+        gnomAD_OTH_AF = getGnominfo(csqInfo, fieldName="OTH_AF"),
+        gnomAD_SAS_AF = getGnominfo(csqInfo, fieldName="SAS_AF"),
+        ExAC_AF = getValue(csqInfo$ExAC_AF),
+        ExAC_AF_adj = getValue(csqInfo$ExAC_AF_adj),
+        ExAC_AF_AFR = getValue(csqInfo$ExAC_AF_AFR),
+        ExAC_AF_AMR = getValue(csqInfo$ExAC_AF_AMR),
+        ExAC_AF_EAS = getValue(csqInfo$ExAC_AF_EAS),
+        ExAC_AF_FIN = getValue(csqInfo$ExAC_AF_FIN),
+        ExAC_AF_NFE = getValue(csqInfo$ExAC_AF_NFE),
+        ExAC_AF_OTH = getValue(csqInfo$ExAC_AF_OTH),
+        ExAC_AF_SAS = getValue(csqInfo$ExAC_AF_SAS),
+        GENE_PHENO = getValue(csqInfo$GENE_PHENO), FILTER = vcfMain$FILTER)}
 
 getValue <- function(chars){
     if (is.null(chars)){
@@ -65,14 +65,14 @@ getValue <- function(chars){
 }
 
 # handle gnomADe and gnomAD cases
-getgnomInfo <- function(CSQ_info, fieldName){
+getGnominfo <- function(csqInfo, fieldName){
     # gnomAD changes to gnomADe in VEP v110 (at least)
     fieldName1 <- paste("gnomAD", fieldName, sep = "_")
     fieldName2 <- paste("gnomADe", fieldName, sep = "_")
-    if (fieldName1 %in% colnames(CSQ_info)){
-        return(CSQ_info[, fieldName1])
-    }else if (fieldName2 %in% colnames(CSQ_info)){
-        return(CSQ_info[, fieldName2])
+    if (fieldName1 %in% colnames(csqInfo)){
+        return(csqInfo[, fieldName1])
+    }else if (fieldName2 %in% colnames(csqInfo)){
+        return(csqInfo[, fieldName2])
     }else{
         return("")
     }

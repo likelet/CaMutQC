@@ -34,6 +34,7 @@
 #' filtration process. Default: TRUE.
 #'
 #' @import dplyr
+#' @importFrom methods is
 #'
 #' @return An MAF data frame after filtration for technical issue
 #'
@@ -50,31 +51,36 @@ mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                           SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
                           minInterval = 10, tagFILTER = 'PASS', 
                           progressbar = TRUE, verbose = TRUE){
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+        stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     # build a progress bar and turn it on is asked
-    if (progressbar) { pb <- txtProgressBar(min = 0, max = 100, style = 3)}
+    if (progressbar) { pb <- txtProgressBar(min=0, max=100, style=3)}
     # sequencing quality filtration
-    maf <- mutFilterQual(maf, panel = panel, tumorDP = tumorDP, 
-                         tumorAD = tumorAD, normalDP = normalDP, 
-                         normalAD = normalAD, VAF = VAF, VAFratio = VAFratio)
+    maf <- mutFilterQual(maf, panel=panel, tumorDP=tumorDP, 
+                         tumorAD=tumorAD, normalDP=normalDP, 
+                         normalAD=normalAD, VAF=VAF, VAFratio=VAFratio)
     # strand bias filtration
-    if (progressbar) { setTxtProgressBar(pb, 30, title = progressbar)}
-    maf <- mutFilterSB(maf, method = SBmethod, SBscore = SBscore)
+    if (progressbar) { setTxtProgressBar(pb, 30, title=progressbar)}
+    maf <- mutFilterSB(maf, method=SBmethod, SBscore=SBscore)
     # adjacent indel tag filtration
-    if (progressbar) {setTxtProgressBar(pb, 50, title = progressbar)}
-    maf <- mutFilterAdj(maf, maxIndelLen=maxIndelLen, minInterval = minInterval)
+    if (progressbar) {setTxtProgressBar(pb, 50, title=progressbar)}
+    maf <- mutFilterAdj(maf, maxIndelLen=maxIndelLen, minInterval=minInterval)
     # normalDP filtration
-    if (progressbar) {setTxtProgressBar(pb, 60, title = progressbar)}
-    maf <- mutFilterNormalDP(maf, verbose = verbose)
+    if (progressbar) {setTxtProgressBar(pb, 60, title=progressbar)}
+    maf <- mutFilterNormalDP(maf, verbose=verbose)
     # PON filtration
     if (progressbar) {
-        setTxtProgressBar(pb, 80, title = progressbar)
+        setTxtProgressBar(pb, 80, title=progressbar)
     }
-    maf <- mutFilterPON(maf, PONfile = PONfile, PONformat = PONformat, 
-                        verbose = verbose)
+    maf <- mutFilterPON(maf, PONfile=PONfile, PONformat=PONformat, 
+                        verbose=verbose)
     # FILTER field filtration
     if (!(is.null(tagFILTER))){
         if (progressbar) {
-            setTxtProgressBar(pb, 100, title = progressbar)
+            setTxtProgressBar(pb, 100, title=progressbar)
             # close progres bar
             close(pb)
         }
@@ -83,7 +89,7 @@ mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
         maf[tagFilter, 'CaTag'] <-  paste0(maf[tagFilter, 'CaTag'], 'F')
     }else{
         if (progressbar) {
-            setTxtProgressBar(pb, 100, title = progressbar)
+            setTxtProgressBar(pb, 100, title=progressbar)
             # close progres bar
             close(pb)
         }

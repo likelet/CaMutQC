@@ -17,7 +17,8 @@ and "intersection". Default: "union".}
 A data frame includes mutations after taking union or intersection.
 }
 \description{
-Takes union or intersection on multiple MAF data frame.
+Takes union or intersection on multiple MAF data frame, 
+and return 7 important columns.
 }
 \examples{
 maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller",

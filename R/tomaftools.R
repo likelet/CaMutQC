@@ -45,6 +45,7 @@
 #' @return An maf object that can be recognized by maftools.
 #' 
 #' @importFrom maftools read.maf
+#' @importFrom methods is
 #' 
 #' @export tomaftools
 #' @examples
@@ -58,23 +59,27 @@ tomaftools <- function(maf, clinicalData = NULL, rmFlags = FALSE,
                        gisticDelGenesFile = NULL, gisticScoresFile = NULL, 
                        cnLevel = 'all', cnTable = NULL, isTCGA = FALSE, 
                        vc_nonSyn = NULL, verbose = TRUE){
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+        stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     message("Transforming to maftools maf...")
     # write to a temporary file and read it using MesKit immediately
-    write.table(maf, "./tmp_maf_for_maftools.maf", sep = "\t", 
-                quote = FALSE, row.names = FALSE)
-    maf_final <- maftools::read.maf("./tmp_maf_for_maftools.maf", 
-                  clinicalData = clinicalData, rmFlags = rmFlags, 
-                  removeDuplicatedVariants = removeDuplicatedVariants, 
-                  useAll = useAll, 
-                  gisticAllLesionsFile = gisticAllLesionsFile, 
-                  gisticAmpGenesFile = gisticAmpGenesFile,
-                  gisticDelGenesFile = gisticDelGenesFile, 
-                  gisticScoresFile = gisticScoresFile, 
-                  cnLevel = cnLevel, cnTable = cnTable, isTCGA = isTCGA, 
-                  vc_nonSyn = vc_nonSyn, verbose = verbose)
+    write.table(maf, "./tmp_maf_for_maftools.maf", sep="\t", 
+                quote=FALSE, row.names=FALSE)
+    mafFinal <- maftools::read.maf("./tmp_maf_for_maftools.maf", 
+                  clinicalData=clinicalData, rmFlags=rmFlags, 
+                  removeDuplicatedVariants=removeDuplicatedVariants, 
+                  useAll=useAll, gisticAllLesionsFile=gisticAllLesionsFile, 
+                  gisticAmpGenesFile=gisticAmpGenesFile,
+                  gisticDelGenesFile=gisticDelGenesFile, 
+                  gisticScoresFile=gisticScoresFile, 
+                  cnLevel=cnLevel, cnTable=cnTable, isTCGA=isTCGA, 
+                  vc_nonSyn=vc_nonSyn, verbose=verbose)
     # remove temporary file immediately
-    unlink("./tmp_maf_for_maftools.maf", recursive = FALSE, force = FALSE)
+    unlink("./tmp_maf_for_maftools.maf", recursive=FALSE, force=FALSE)
     # return maftools object maf
-    return(maf_final)
+    return(mafFinal)
 }
 
