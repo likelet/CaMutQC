@@ -35,6 +35,10 @@ calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3',
     # obtain genome build version and filter maf 
     if (length(unique(maf$NCBI_Build)) == 1) {
         genVer <- unique(maf$NCBI_Build)
+        # give user a message about the bed used in CaMutQC
+        mes <- paste0("Bed files in CaMutQC are not accurate.", 
+                      " The result serves only as a reference. \n")
+        warning(mes)
         res <- readBedPanel(assay=assay, genVer=genVer, maf=maf, bedFile=bedFile)
         maf <- res[[1]]
         bedFile <- res[[2]]
@@ -139,10 +143,6 @@ mutCountRegion <- function(mutLoc, bedSingle){
 
 ## helper function for reading corresponding bed and panel file
 readBedPanel <- function(assay, genVer, maf, bedFile){
-    # give user a message about the bed used in CaMutQC
-    mes <- paste0("Bed files in CaMutQC are not accurate.", 
-                " The result serves only as a reference. \n")
-    warning(mes)
     # check genome version
     if (!(genVer %in% c("GRCh37", "GRCh38"))){ stop("Invalid human genome version!") }
     if (assay == 'MSK-v3') {
