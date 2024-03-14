@@ -92,6 +92,7 @@
 #' @return An MAF data frame after common strategy filtration
 #' @return A filter report in HTML format
 #' @import ggplot2 DT
+#' @importFrom methods is
 #'
 #' @export mutFilterCom
 #' @examples
@@ -118,18 +119,23 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                          TMB = TRUE, cancerType = NULL, reference = NULL,
                          progressbar = TRUE, codelog = FALSE, 
                          codelogFile = "mutFilterCom.log", verbose = TRUE) {
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+        stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     # run mutFilterTech
     if (verbose) {
         message("  Filtration for technical issue is running")
     }
-    mafFilteredT <- mutFilterTech(maf, panel = panel, tumorDP = tumorDP,
-                            normalDP = normalDP, tumorAD = tumorAD, VAF = VAF,
-                            normalAD = normalAD, VAFratio = VAFratio, 
-                            SBmethod = SBmethod, SBscore = SBscore, 
-                            maxIndelLen = maxIndelLen,minInterval = minInterval, 
-                            tagFILTER = tagFILTER, progressbar = progressbar,
-                            PONfile = PONfile, PONformat = PONformat, 
-                            verbose = verbose)
+    mafFilteredT <- mutFilterTech(maf, panel=panel, tumorDP=tumorDP,
+                            normalDP=normalDP, tumorAD=tumorAD, VAF=VAF,
+                            normalAD=normalAD, VAFratio=VAFratio, 
+                            SBmethod=SBmethod, SBscore=SBscore, 
+                            maxIndelLen=maxIndelLen, minInterval=minInterval, 
+                            tagFILTER=tagFILTER, progressbar=progressbar,
+                            PONfile=PONfile, PONformat=PONformat, 
+                            verbose=verbose)
     # filter first for report usage
     mafFilteredTs <- mafFilteredT[mafFilteredT$CaTag == "0", ]
     # run mutSelection
@@ -137,34 +143,34 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
         message("\n")
         message("  Cancer somatic variant selection is running")
     }
-    mafFilteredS <- mutSelection(mafFilteredT, dbVAF = dbVAF, ExAC = ExAC,
-                            Genomesprojects1000 = Genomesprojects1000,
-                            ESP6500 = ESP6500, gnomAD = gnomAD, dbSNP = dbSNP,
-                            keepCOSMIC = keepCOSMIC, keepType = keepType,
-                            bedFile = bedFile, bedFilter = bedFilter,
-                            bedHeader = bedHeader, progressbar = progressbar,
-                            verbose = verbose)
+    mafFilteredS <- mutSelection(mafFilteredT, dbVAF=dbVAF, ExAC=ExAC,
+                            Genomesprojects1000=Genomesprojects1000,
+                            ESP6500=ESP6500, gnomAD=gnomAD, dbSNP=dbSNP,
+                            keepCOSMIC=keepCOSMIC, keepType=keepType,
+                            bedFile=bedFile, bedFilter=bedFilter,
+                            bedHeader=bedHeader, progressbar=progressbar,
+                            verbose=verbose)
     # filter first for report usage
-    mafFilteredS2 <- mutSelection(mafFilteredTs, dbVAF = dbVAF, ExAC = ExAC,
-                   Genomesprojects1000 = Genomesprojects1000, dbSNP = dbSNP,
-                   ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC,
-                   keepType = keepType, bedFile = bedFile,bedHeader = bedHeader,
-                   bedFilter = bedFilter, progressbar = FALSE, verbose = FALSE)
+    mafFilteredS2 <- mutSelection(mafFilteredTs, dbVAF=dbVAF, ExAC=ExAC,
+                   Genomesprojects1000=Genomesprojects1000, dbSNP=dbSNP,
+                   ESP6500=ESP6500, gnomAD=gnomAD, keepCOSMIC=keepCOSMIC,
+                   keepType=keepType, bedFile=bedFile,bedHeader=bedHeader,
+                   bedFilter=bedFilter, progressbar = FALSE, verbose = FALSE)
     mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
     if (nrow(mafFilteredF) == 0){ stop('No variants left after filtration.')}
     if (TMB){
-        TMBvalue <- calTMB(maf, bedFile = bedFile, assay = assay,
-                            genelist = genelist, mutType = mutType, 
-                            bedHeader = bedHeader, bedFilter = bedFilter)
-        mes <- paste0("  Method used to calculate TMB: ", assay)
+        TMBvalue <- calTMB(maf, bedFile=bedFile, assay=assay,
+                            genelist=genelist, mutType=mutType, 
+                            bedHeader=bedHeader, bedFilter=bedFilter)
+        mes <- paste0("Method used to calculate TMB: ", assay, ".")
         message(mes)
-        mes <- paste0("  Estimated TMB is: ", TMBvalue)
+        mes <- paste0("Estimated TMB is: ", TMBvalue, ".")
         message(mes)
     }
     # report generation
     if (report){
         rmarkdown::render(system.file("rmd", "CaMutQC-FilterReport.Rmd",
-        package = "CaMutQC"), output_file = reportFile, output_dir = reportDir)
+        package="CaMutQC"), output_file=reportFile, output_dir=reportDir)
     }
     # export codelog if asked
     if (codelog) {

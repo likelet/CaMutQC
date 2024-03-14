@@ -10,6 +10,7 @@
 #' @return An MAF data frame after filtration for adjacent variants.
 #'
 #' @import dplyr
+#' @importFrom methods is
 #'
 #' @export mutFilterAdj
 #' @examples
@@ -17,19 +18,23 @@
 #' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
 #' mafF <- mutFilterAdj(maf)
 
-
 mutFilterAdj <- function(maf, maxIndelLen = 50, minInterval = 10){
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+      stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+  
     if ("DEL" %in% unique(maf$Variant_Type) | 
         "INS" %in% unique(maf$Variant_Type)) {
         # create an indel bed with indels of length <= maxIndelLen
-        bed_frame <- selectIndel(maf, maxIndelLen, minInterval)
-        snp_frame <- maf[which(maf$Variant_Type == "SNP"), ]
+        bedFrame <- selectIndel(maf, maxIndelLen, minInterval)
+        snpFrame <- maf[which(maf$Variant_Type == "SNP"), ]
         # add tags to variants in expanded bed
-        n_tags <- rownames(snp_frame[snp_frame$Chromosome 
-                                     %in% bed_frame$Chromosome 
-                                     & snp_frame$Start_Position 
-                                     %in% bed_frame$Location,])
-        maf[n_tags, 'CaTag'] <- paste0(maf[n_tags, 'CaTag'] , 'A')
+        nTags <- rownames(snpFrame[snpFrame$Chromosome 
+                                     %in% bedFrame$Chromosome 
+                                     & snpFrame$Start_Position 
+                                     %in% bedFrame$Location,])
+        maf[nTags, 'CaTag'] <- paste0(maf[nTags, 'CaTag'] , 'A')
     }
     # else: directly return maf if there is no INDEL in maf data frame
     return(maf)
@@ -51,13 +56,25 @@ selectIndel <- function(mafDat, maxIndelLen = 50, minInterval = 10) {
     colnames(finalbed) <- c("Chromosome", "Location")
     # iterate through every row of bed file, split it into single base
     for (i in seq_len(nrow(tmpbed))) {
-      nbase <- length(tmpbed[i,2]:tmpbed[i,3])
-      currentbed <- data.frame(rep(tmpbed[i, 1]), tmpbed[i,2]:tmpbed[i,3])
-      colnames(currentbed) <- c("Chromosome", "Location")
-      finalbed <- rbind(finalbed, currentbed)
+        currentbed <- data.frame(rep(tmpbed[i, 1]), tmpbed[i, 2]:tmpbed[i, 3])
+        colnames(currentbed) <- c("Chromosome", "Location")
+        finalbed <- rbind(finalbed, currentbed)
     }
+    
     # remove duplicated rows
-    finalbed <- na.omit(finalbed[!duplicated(finalbed),])
+    finalbed <- na.omit(finalbed[!duplicated(finalbed), ])
     rownames(finalbed) <- seq_len(nrow(finalbed))
     return(finalbed)
 }
+
+# # split bed into pieces, 1 base each row
+# splitBed <- function(bedRow) {
+#     currentbed <- data.frame(
+#         Chromosome = rep(bedRow["Chromosome"], 
+#                          bedRow["End_Position"] - bedRow["Start_Position"] + 1),
+#         Location = bedRow["Start_Position"]:bedRow["End_Position"]
+#     )
+#     return(currentbed)
+# }
+
+

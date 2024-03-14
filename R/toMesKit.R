@@ -14,6 +14,7 @@
 #' 
 #' @return An maf object that can be recognized by MesKit.
 #' @importFrom MesKit readMaf
+#' @importFrom methods is
 #' @export toMesKit
 #' @examples
 #' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-caller/",
@@ -23,28 +24,31 @@
 
 toMesKit <- function(maf, clinicalFile, ccfFile = NULL, nonSyn.vc = NULL,
                      use.indel.ccf = FALSE, ccf.conf.level = 0.95){
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+      stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
     # check whether the input maf is a multisample maf
     if (length(unique(maf$Tumor_Sample_Barcode)) <= 1 ) {
       stop("MesKit is for multi-region data, this maf only contains 1 sample.")
     }
     message("Transforming to MesKit maf...")
     # change refbuild
-    refBuild <- switch(unique(maf$NCBI_Build), 
-                       "GRCh37" = "hg19", "GRCh38" = "hg38")
+    refBuild <- switch(unique(maf$NCBI_Build), "GRCh37"="hg19", "GRCh38"="hg38")
     # change certain column names of maf so they can be recognized by MesKit
     colnames(maf)[which(colnames(maf) == "t_ref_count")] <- "Ref_allele_depth"
     colnames(maf)[which(colnames(maf) == "t_alt_count")] <- "Alt_allele_depth"
     
     # write to a temporary file and read it using MesKit immediately
-    write.table(maf, "./tmp_maf_for_MesKit.maf", sep = "\t", 
-                quote = FALSE, row.names = FALSE)
-    maf_final <- MesKit::readMaf(mafFile = "./tmp_maf_for_MesKit.maf",
-                        clinicalFile = clinicalFile, ccfFile = ccfFile,
-                         nonSyn.vc = nonSyn.vc, use.indel.ccf = use.indel.ccf,
-                        ccf.conf.level = ccf.conf.level, refBuild = refBuild)
+    write.table(maf, "./tmp_maf_for_MesKit.maf", sep="\t", 
+                quote=FALSE, row.names=FALSE)
+    mafFinal <- MesKit::readMaf(mafFile="./tmp_maf_for_MesKit.maf",
+                        clinicalFile=clinicalFile, ccfFile=ccfFile,
+                         nonSyn.vc=nonSyn.vc, use.indel.ccf=use.indel.ccf,
+                        ccf.conf.level=ccf.conf.level, refBuild=refBuild)
     # remove temporary file immediately
-    unlink("./tmp_maf_for_MesKit.maf", recursive = FALSE, force = FALSE)
+    unlink("./tmp_maf_for_MesKit.maf", recursive=FALSE, force=FALSE)
     # return MesKit object maf
-    return(maf_final)
+    return(mafFinal)
 }
 

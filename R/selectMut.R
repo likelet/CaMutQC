@@ -3,21 +3,21 @@
 selectMut <- function(charMatrix) { 
   if (nrow(charMatrix) == 1 ) { return(1)
   } else {
-    numMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(charMatrix)))
+    numMatrix <- as.data.frame(matrix(ncol=2, nrow=nrow(charMatrix)))
     for (i in seq_len(nrow(numMatrix))) {
       # handle situation when biotype is null
       if (charMatrix[i, 1] == '') {
         numMatrix[i, 1] <- 10
       }else{
         # handle biotypes that are not included
-        if (is.null(GetBiotypePriority(charMatrix[i, 1]))) {
+        if (is.null(getBiotypePriority(charMatrix[i, 1]))) {
           numMatrix[i, 1] <- 10
           warning("At least one biotype can not be recognized!")
-        }else{ numMatrix[i, 1] <- GetBiotypePriority(charMatrix[i, 1])}
+        }else{ numMatrix[i, 1] <- getBiotypePriority(charMatrix[i, 1])}
       }
     }
     Biotypefreq <- data.frame(table(numMatrix[, 1]))
-    Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing = FALSE), ]
+    Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing=FALSE), ]
     if (Biotypefreq[1, 2] == 1){
       # return the one with the highest biofunction priority
       return(as.numeric(rownames(numMatrix[which(numMatrix$V1
@@ -25,18 +25,18 @@ selectMut <- function(charMatrix) {
     } else {
       # keep rows with the highest biofunction priority, sort by consequence
       remMatrix <- charMatrix[which(numMatrix[, 1] == Biotypefreq[1, 1]), ]
-      remNumMatrix <- as.data.frame(matrix(ncol = 2, nrow = nrow(remMatrix)))
+      remNumMatrix <- as.data.frame(matrix(ncol=2, nrow=nrow(remMatrix)))
       rownames(remNumMatrix) <- rownames(remMatrix)
       for (r in seq_len(nrow(remMatrix))) {
-        Consequence <- strsplit(remMatrix[r, 2], split = "&")[[1]]
+        Consequence <- strsplit(remMatrix[r, 2], split="&")[[1]]
         conseqPriority <- 30
         for (c in Consequence) {
-          conseqPriority <- min(conseqPriority, GetConsequencePriority(c))
+          conseqPriority <- min(conseqPriority, getConsequencePriority(c))
         }
         remNumMatrix[r, 1] <- conseqPriority
       }
       Conseqfreq <- data.frame(table(remNumMatrix[, 1]))
-      Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing = FALSE), ]
+      Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing=FALSE), ]
       if (Conseqfreq[1, 2] == 1){
         # return the one with the highest consequence priority
         return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1]
@@ -89,7 +89,7 @@ selectMut <- function(charMatrix) {
 
 ## order biotype
 ## reference: vcf2maf, https://www.gencodegenes.org/pages/biotypes.html
-GetBiotypePriority <- function(biotype) {
+getBiotypePriority <- function(biotype) {
     switch(biotype,
            'protein_coding' = 1, 'LRG_gene' = 2,
            'IG_C_gene' = 2, 'IG_D_gene' = 2, 'IG_J_gene' = 2, 'IG_LV_gene' = 2, 
@@ -133,7 +133,7 @@ GetBiotypePriority <- function(biotype) {
 ## order consequence
 ## reference: vcf2maf
 ## https://ensembl.org/info/genome/variation/prediction/predicted_data.html
-GetConsequencePriority <- function(consequence) {
+getConsequencePriority <- function(consequence) {
     switch(consequence,
          'transcript_ablation' = 1, 'exon_loss_variant' = 1,
          'splice_donor_variant' = 2, 'splice_acceptor_variant' = 2,

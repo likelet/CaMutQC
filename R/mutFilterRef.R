@@ -73,6 +73,7 @@
 #' set to TRUE. Default: "mutFilterCom.log"
 #' @param verbose Whether to generate message/notification during the 
 #' filtration process. Default: TRUE.
+#' @importFrom methods is
 #'
 #' @return An MAF data frame after applied filtering strategies in another study
 #' @return A filter report in HTML format
@@ -97,96 +98,96 @@ mutFilterRef <- function(maf, reference, PONfile, PONformat = "vcf",
                          reportDir = './', TMB = FALSE, progressbar = TRUE, 
                          codelog = FALSE, codelogFile = "mutFilterCom.log",
                          verbose = TRUE) {
+  # check user input
+  if (!(is(maf, "data.frame"))) {
+    stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+  }
+  
   # "Haraldsdottir_et_al-Gastroenterology-2014-UCEC" PMID: 25194673
   if (reference == "Haraldsdottir_et_al-Gastroenterology-2014-UCEC"){
-    mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, Genomesprojects1000 = TRUE,
-                    tumorDP = tumorDP, VAF = VAF, normalDP = normalDP, 
-                    tumorAD = tumorAD, VAFratio = VAFratio, SBmethod = SBmethod,
-                    SBscore = SBscore, maxIndelLen = maxIndelLen, ExAC = ExAC,
-                    minInterval = minInterval, tagFILTER = tagFILTER, 
-                    dbVAF = dbVAF, ESP6500 = ESP6500, gnomAD = gnomAD,
-                    keepCOSMIC = keepCOSMIC, keepType = keepType, 
-                    bedFile = bedFile, bedFilter = bedFilter, TMB = TMB,
-                    mutFilter = mutFilter, selectCols = selectCols,
-                    report = report, reportFile = reportFile, codelog = codelog,
-                    reportDir = reportDir, reference = reference, 
-                    codelogFile = codelogFile, progressbar = progressbar, 
-                    PONformat = PONformat, PONfile = PONfile,
-                    verbose = verbose)
+    mafFiltered <- mutFilterCom(maf, dbSNP=TRUE, Genomesprojects1000=TRUE,
+                    tumorDP=tumorDP, VAF=VAF, normalDP=normalDP, 
+                    tumorAD=tumorAD, VAFratio=VAFratio, SBmethod=SBmethod,
+                    SBscore=SBscore, maxIndelLen=maxIndelLen, ExAC=ExAC,
+                    minInterval=minInterval, tagFILTER=tagFILTER, 
+                    dbVAF=dbVAF, ESP6500=ESP6500, gnomAD=gnomAD,
+                    keepCOSMIC=keepCOSMIC, keepType=keepType, 
+                    bedFile=bedFile, bedFilter=bedFilter, TMB=TMB,
+                    mutFilter=mutFilter, selectCols=selectCols,
+                    report=report, reportFile=reportFile, codelog=codelog,
+                    reportDir=reportDir, reference=reference, 
+                    codelogFile=codelogFile, progressbar=progressbar, 
+                    PONformat=PONformat, PONfile=PONfile, verbose=verbose)
   # "Cherniack_et_al-Cancer_Cell-2017-UCS" PMID: 28292439
   }else if(reference == "Cherniack_et_al-Cancer_Cell-2017-UCS"){
-    mafFiltered <- mutFilterCom(maf, tumorAD = 5, tumorDP = 12, normalDP = 5,
-                    keepCOSMIC = TRUE, dbSNP = dbSNP, VAFratio = VAFratio,
-                    Genomesprojects1000 = Genomesprojects1000, VAF = VAF, 
-                    SBmethod = SBmethod, keepType = keepType, SBscore = SBscore, 
-                    maxIndelLen = maxIndelLen, minInterval = minInterval, 
-                    ExAC = ExAC, tagFILTER = tagFILTER, dbVAF = dbVAF,
-                    ESP6500 = ESP6500, gnomAD = gnomAD, bedFile = bedFile, 
-                    bedFilter = bedFilter, mutFilter = mutFilter, 
-                    selectCols = selectCols, report = report, 
-                    reportFile = reportFile, reportDir = reportDir, TMB = TMB,
-                    reference = reference, codelog = codelog,
-                    codelogFile = codelogFile, progressbar = progressbar, 
-                    PONformat = PONformat, PONfile = PONfile,
-                    verbose = verbose)
-
+    mafFiltered <- mutFilterCom(maf, tumorAD=5, tumorDP=12, normalDP=5,
+                    keepCOSMIC=TRUE, dbSNP=dbSNP, VAFratio=VAFratio,
+                    Genomesprojects1000=Genomesprojects1000, VAF=VAF, 
+                    SBmethod=SBmethod, keepType=keepType, SBscore=SBscore, 
+                    maxIndelLen=maxIndelLen, minInterval=minInterval, 
+                    ExAC=ExAC, tagFILTER=tagFILTER, dbVAF=dbVAF,
+                    ESP6500=ESP6500, gnomAD=gnomAD, bedFile=bedFile, 
+                    bedFilter=bedFilter, mutFilter=mutFilter, 
+                    selectCols=selectCols, report=report, 
+                    reportFile=reportFile, reportDir=reportDir, TMB=TMB,
+                    reference=reference, codelog=codelog,
+                    codelogFile=codelogFile, progressbar=progressbar, 
+                    PONformat=PONformat, PONfile=PONfile, verbose=verbose)
   # "Gerlinger_et_al-Engl_J_Med-2012-KIRC" PMID: 22397650
   }else if(reference == "Gerlinger_et_al-Engl_J_Med-2012-KIRC"){
     mafFiltered <- mutFilterCom(maf, dbSNP = TRUE, dbVAF = 0, 
-                    Genomesprojects1000 = Genomesprojects1000,tumorDP = tumorDP, 
-                    VAF = VAF, normalDP = normalDP, tumorAD = tumorAD,
-                    VAFratio = VAFratio, SBmethod = SBmethod, SBscore = SBscore, 
-                    maxIndelLen = maxIndelLen, minInterval = minInterval, 
-                    ExAC = ExAC, tagFILTER = tagFILTER,
-                    ESP6500 = ESP6500, gnomAD = gnomAD, keepCOSMIC = keepCOSMIC, 
-                    keepType = keepType,bedFile = bedFile,bedFilter = bedFilter,
-                    mutFilter = mutFilter, selectCols = selectCols, TMB = TMB,
-                    report = report, reportFile = reportFile, codelog = codelog,
-                    reportDir = reportDir, reference = reference, 
-                    codelogFile = codelogFile, progressbar = progressbar, 
-                    PONformat = PONformat, PONfile = PONfile,
-                    verbose = verbose)
+                    Genomesprojects1000=Genomesprojects1000, tumorDP=tumorDP, 
+                    VAF=VAF, normalDP=normalDP, tumorAD=tumorAD,
+                    VAFratio=VAFratio, SBmethod=SBmethod, SBscore=SBscore, 
+                    maxIndelLen=maxIndelLen, minInterval=minInterval, 
+                    ExAC=ExAC, tagFILTER=tagFILTER, ESP6500=ESP6500, 
+                    gnomAD=gnomAD, keepCOSMIC=keepCOSMIC, keepType=keepType, 
+                    bedFile=bedFile,bedFilter=bedFilter, mutFilter=mutFilter, 
+                    selectCols=selectCols, TMB=TMB, report=report, 
+                    reportFile=reportFile, codelog=codelog, reportDir=reportDir, 
+                    reference=reference, codelogFile=codelogFile, 
+                    progressbar=progressbar, PONformat=PONformat, 
+                    PONfile=PONfile, verbose=verbose)
   # "Zhu_et_al-Nat_Commun-2020-KIRP" PMID: 32555180
   }else if(reference == "Zhu_et_al-Nat_Commun-2020-KIRP"){
-    mafFiltered <- mutFilterCom(maf, tumorDP = 8, normalDP = 6, VAF = 0.04,
-                                dbSNP = TRUE, keepCOSMIC = TRUE, tumorAD = 3,
-                                Genomesprojects1000 = TRUE, ExAC = TRUE,
-                                keepType = keepType,
-                                VAFratio = VAFratio, SBmethod = SBmethod,
-                                SBscore = SBscore, maxIndelLen = maxIndelLen,
-                                minInterval = minInterval,
-                                tagFILTER = tagFILTER, dbVAF = dbVAF,
-                                ESP6500 = ESP6500, gnomAD = gnomAD,
-                                bedFile = bedFile, bedFilter = bedFilter,
-                                mutFilter = mutFilter, selectCols = selectCols,
-                                report = report, reportFile = reportFile,
-                                reportDir = reportDir, TMB = TMB,
-                                reference = reference, codelog = codelog,
-                                codelogFile = codelogFile, 
-                                progressbar = progressbar, verbose = verbose,
-                                PONformat = PONformat, PONfile = PONfile)
+    mafFiltered <- mutFilterCom(maf, tumorDP=8, normalDP=6, VAF=0.04,
+                                dbSNP=TRUE, keepCOSMIC=TRUE, tumorAD=3,
+                                Genomesprojects1000=TRUE, ExAC=TRUE,
+                                keepType=keepType, VAFratio=VAFratio, 
+                                SBmethod=SBmethod, SBscore=SBscore, 
+                                maxIndelLen=maxIndelLen, minInterval=minInterval,
+                                tagFILTER=tagFILTER, dbVAF=dbVAF,
+                                ESP6500=ESP6500, gnomAD=gnomAD,
+                                bedFile=bedFile, bedFilter=bedFilter,
+                                mutFilter=mutFilter, selectCols=selectCols,
+                                report=report, reportFile=reportFile,
+                                reportDir=reportDir, TMB=TMB,
+                                reference=reference, codelog=codelog,
+                                codelogFile=codelogFile, 
+                                progressbar=progressbar, verbose=verbose,
+                                PONformat=PONformat, PONfile=PONfile)
 
   # "Mason_et_al-Leukemia-2015-LCML"  PMID: 26648538
   }else if(reference == "Mason_et_al-Leukemia-2015-LCML"){
-    mafFiltered <- mutFilterCom(maf, VAF = 0.2, Genomesprojects1000 = TRUE,
-                                dbSNP = dbSNP, tumorDP = tumorDP,
-                                normalDP = normalDP, tumorAD = tumorAD,
-                                VAFratio = VAFratio, SBmethod = SBmethod,
-                                SBscore = SBscore, maxIndelLen = maxIndelLen,
-                                minInterval = minInterval, ExAC = ExAC,
-                                tagFILTER = tagFILTER, dbVAF = dbVAF,
-                                ESP6500 = ESP6500, gnomAD = gnomAD,
-                                keepCOSMIC = keepCOSMIC, keepType = keepType,
-                                bedFile = bedFile, bedFilter = bedFilter,
-                                mutFilter = mutFilter, selectCols = selectCols,
-                                report = report, reportFile = reportFile,
-                                reportDir = reportDir, TMB = TMB,
-                                reference = reference, codelog = codelog,
-                                codelogFile = codelogFile, 
-                                progressbar = progressbar, verbose = verbose,
-                                PONformat = PONformat, PONfile = PONfile)
+    mafFiltered <- mutFilterCom(maf, VAF=0.2, Genomesprojects1000=TRUE,
+                                dbSNP=dbSNP, tumorDP=tumorDP,
+                                normalDP=normalDP, tumorAD=tumorAD,
+                                VAFratio=VAFratio, SBmethod=SBmethod,
+                                SBscore=SBscore, maxIndelLen=maxIndelLen,
+                                minInterval=minInterval, ExAC=ExAC,
+                                tagFILTER=tagFILTER, dbVAF=dbVAF,
+                                ESP6500=ESP6500, gnomAD=gnomAD,
+                                keepCOSMIC=keepCOSMIC, keepType=keepType,
+                                bedFile=bedFile, bedFilter=bedFilter,
+                                mutFilter=mutFilter, selectCols=selectCols,
+                                report=report, reportFile=reportFile,
+                                reportDir=reportDir, TMB=TMB,
+                                reference=reference, codelog=codelog,
+                                codelogFile=codelogFile, 
+                                progressbar=progressbar, verbose=verbose,
+                                PONformat=PONformat, PONfile=PONfile)
   }else{
-    stop('Invaild reference input detected, please provide a vaild reference.')
+      stop('Invaild reference input detected, please provide a vaild reference.')
   }
   return(mafFiltered)
 }

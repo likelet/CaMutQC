@@ -12,6 +12,7 @@
 #' @return An MAF data frame where some variants have P tag in CaTag column
 #' for PON filtration.
 #' @import vcfR stringr
+#' @importFrom methods is
 #'
 #' @export mutFilterPON
 #' @examples
@@ -22,6 +23,11 @@
 
 ## PON filtration using external dataset and info flag
 mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+        stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     # give recommendation for PON file
     if (verbose) {
         url <- "https://gatk.broadinstitute.org/hc/en-us/articles/360035890631-Panel-of-Normals-PON-"
@@ -41,7 +47,7 @@ mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
     if (length(genomeVersion) > 1){
         stop('There are more than one version of genome in this dataset.')
     } else if (!(genomeVersion %in% c('GRCh38', 'GRCh37'))){
-        stop('Invaild genome version.')
+        stop('Invaild genome version. CaMutQC only supports human genome so far.')
     } else {
         # load PON file
         if (verbose) {
@@ -67,7 +73,7 @@ mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
             stop("Wrong PONformat, should be 'vcf' or 'txt'")
         }
         # add tag qualified variants
-        discard <- rownames(pon_maf[which(pon_maf$ID == 1),])
+        discard <- rownames(pon_maf[which(pon_maf$ID == 1), ])
         maf[union(discard, preLabelled), 'CaTag'] <- paste0(maf[union(discard,
                                                                preLabelled),
                                                               'CaTag'], 'P')

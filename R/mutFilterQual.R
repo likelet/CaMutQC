@@ -13,6 +13,7 @@
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 0
 #'
 #' @import dplyr
+#' @importFrom methods is
 #'
 #' @return An MAF data frame where some variants
 #' have Q tag in CaTag column for sequencing quality filtration
@@ -27,28 +28,33 @@
 mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20, 
                           normalDP = 10, tumorAD = 5, normalAD = Inf, 
                           VAF = 0.05, VAFratio = 0) {
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+        stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }
+    
     # set different parameters for different panels
     if (panel != "Customized"){
-      normalAD <- 1
-      if (panel == "MSKCC"){
-        tumorAD <- 10
-        VAFratio <- 5
-      }else if (panel != "WES"){
-        stop("Wrong panel input! Should be one of MSKCC, WES and Customized.")
-      }
+        normalAD <- 1
+        if (panel == "MSKCC"){
+            tumorAD <- 10
+            VAFratio <- 5
+        }else if (panel != "WES"){
+            stop("Wrong panel input! Should be one of MSKCC, WES and Customized.")
+        }
     }
     # check whether VAF, t_depth and n_depth column exists (has values in it)
     ## calculate t_depth based on alt and ref
     if (all(is.na(maf$t_depth))) {
-      maf$t_depth <- maf$t_alt_count + maf$t_ref_count
+        maf$t_depth <- maf$t_alt_count + maf$t_ref_count
     }
     ## calculate n_depth based on alt and ref
     if (all(is.na(maf$n_depth))) {
-      maf$n_depth <- maf$n_alt_count + maf$n_ref_count
+        maf$n_depth <- maf$n_alt_count + maf$n_ref_count
     }
     ## add VAF column
     if (!("VAF" %in% colnames(maf))) {
-      maf$VAF <- VAF_helper(maf$t_alt_count, maf$t_depth)
+        maf$VAF <- vafHelper(maf$t_alt_count, maf$t_depth)
     }
     ## VAF filtering
     tags <- rownames(maf[maf$VAF < VAF, ])
@@ -66,7 +72,7 @@ mutFilterQual <- function(maf, panel = "Customized", tumorDP = 20,
 }
 
 # A helper function for calculating VAF and avoiding NA generation
-VAF_helper <- function(alt, depth) {
+vafHelper <- function(alt, depth) {
     res <- alt/depth
     # handle situation when depth is 0
     res[is.na(res)] <- 0
