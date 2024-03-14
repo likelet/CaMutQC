@@ -19,5 +19,5 @@ Changes in version 0.99.4 (2024-02-27)
 Changes in version 0.99.5 (2024-02-27)
 + Further remove some mutations from example VCF files to satisfy 5Mb limit
 
-Changes in version 0.99.5 (2024-02-26)
+Changes in version 0.99.6 (2024-02-27)
 + Further remove some mutations from example VCF files to satisfy 5Mb limit
