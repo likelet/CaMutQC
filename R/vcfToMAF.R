@@ -38,7 +38,7 @@
 #'
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
-#' package = "CaMutQC"))
+#' package="CaMutQC"))
 
 
 vcfToMAF <- function(vcfFile, multiVCF = FALSE, inputStrelka = FALSE,
@@ -127,18 +127,18 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
     maf[, 11] <- vcfMain$REF
     maf[, 13] <- vcfMain$ALT
     # get INFO information
-    INFOall <- readINFO(vcfHeader, vcfMain)
-    INFOFrame <- as.data.frame(INFOall[[1]])
-    INFOinfo <- as.data.frame(INFOall[[2]])
+    infoAll <- readINFO(vcfHeader, vcfMain)
+    infoFrame <- as.data.frame(infoAll[[1]])
+    infoInfo <- as.data.frame(infoAll[[2]])
     # process CSQ column
     ## extract CSQ header and set as colnames
-    csqHeaders <- strsplit(INFOFrame[which(INFOFrame$ID == 'CSQ'), 4],
+    csqHeaders <- strsplit(infoFrame[which(infoFrame$ID == 'CSQ'), 4],
                             split="Format: ")[[1]][2]
     csqHeaders <- strsplit(csqHeaders, split="\\|")[[1]]
     csqInfo <- as.data.frame(matrix(ncol=length(csqHeaders), nrow=nrow(maf)))
     colnames(csqInfo) <- csqHeaders
     ## use built functions to select proper transcripts
-    csqInfo <- selectTrans(maf, csqInfo, INFOinfo)
+    csqInfo <- selectTrans(csqInfo, infoInfo)
     # fill in other information in MAF file
     ## ID conversion
     IDs <- withWarningsAndMessages(bitr(csqInfo$Gene, fromType="ENSEMBL", 
@@ -250,8 +250,8 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                                        ":")[[1]][DPLoc])
             nDP <- as.numeric(strsplit(vcfAdditional[i, normalSampleName],
                                        ":")[[1]][DPLoc])
-          }else if('DP' %in% colnames(INFOinfo)){
-            DP <- as.numeric(INFOinfo[i, 'DP'])
+          }else if('DP' %in% colnames(infoInfo)){
+            DP <- as.numeric(infoInfo[i, 'DP'])
             tDP <- DP
             nDP <- sum(as.numeric(strsplit(strsplit(vcfAdditional[i, 
                        normalSampleName],":")[[1]][ADLoc], ",")[[1]]))
