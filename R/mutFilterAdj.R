@@ -15,7 +15,7 @@
 #' @export mutFilterAdj
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 #' mafF <- mutFilterAdj(maf)
 
 mutFilterAdj <- function(maf, maxIndelLen = 50, minInterval = 10){

@@ -17,9 +17,9 @@
 #' @export mutFilterPON
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterPON(maf, PONfile = system.file("extdata",
-#' "PON_test.txt",package = "CaMutQC"), PONformat = "txt")
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
+#' mafF <- mutFilterPON(maf, PONfile=system.file("extdata",
+#' "PON_test.txt", package="CaMutQC"), PONformat="txt")
 
 ## PON filtration using external dataset and info flag
 mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
