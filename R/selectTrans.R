@@ -2,27 +2,28 @@ selectTrans <- function(csqDat, infoDat) {
     # extract, assign and filter CSQ info from infoDat data frame
     for (n in seq_len(nrow(csqDat))) {
       csqGeneral <- strsplit(infoDat$CSQ[n], split=",")[[1]]
-      csqSubInfo <- csqDat[seq_len(length(csqGeneral)), ]
+      # split the csq info 
+      csqSubInfo <- data.frame(matrix(unlist(lapply(csqGeneral, batchCSQ, csqDat)), 
+                              nrow=length(csqGeneral), byrow=TRUE), 
+                              stringsAsFactors=FALSE)
       rownames(csqSubInfo) <- seq_len(length(csqGeneral))
-  
-      for (m in seq_len(length(csqGeneral))) {
-          csqSingle <- strsplit(csqGeneral[m], split="\\|")[[1]]
-          if(length(csqSingle) == (ncol(csqSubInfo) - 1)) {
-            csqSingle <- c(csqSingle, "")
-          }
-          csqSubInfo[m, ] <- csqSingle
-      }
+      colnames(csqSubInfo) <- colnames(csqDat)
       # compare and select
       ## construct the mut data frame
       mutDatFrame <- csqSubInfo[, c('BIOTYPE', 'Consequence', 'cDNA_position')]
-      for (d in seq_len(nrow(mutDatFrame))) {
-          for (e in seq_len(ncol(mutDatFrame))) {
-            if ((mutDatFrame[d, e] == '') | (grepl('\\?', mutDatFrame[d, e])))
-              mutDatFrame[d, e] <- 'Missing'
-          }
-      }
+      mutDatFrame[mutDatFrame == "" | grepl('\\?', mutDatFrame)] <- "Missing"
       CSQnum <- selectMut(mutDatFrame)
       csqDat[n, ] <- csqSubInfo[CSQnum, ]
     }
     return(csqDat)
 }
+
+# helper function for splitting CSQ info
+batchCSQ <- function(csq, csqDat) {
+    csqSingle <- strsplit(csq, split="\\|")[[1]]
+    if (length(csqSingle) == (ncol(csqDat) - 1)) {
+        csqSingle <- c(csqSingle, "")
+    }
+    return(csqSingle)
+}
+

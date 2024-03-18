@@ -36,7 +36,7 @@ Filter variants not in specific regions.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
-package = "CaMutQC"))
-mafF <- mutFilterReg(maf, bedFile = system.file("extdata/bed/panel_hg38",
-"Pan-cancer-hg38.rds", package = "CaMutQC"))
+package="CaMutQC"))
+mafF <- mutFilterReg(maf, bedFile=system.file("extdata/bed/panel_hg38",
+"Pan-cancer-hg38.rds", package="CaMutQC"))
 }

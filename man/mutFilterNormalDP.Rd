@@ -27,6 +27,6 @@ variants should have normal depth >= 8 to avoid being filtered.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+"WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 mafF <- mutFilterNormalDP(maf)
 }

@@ -1,86 +1,56 @@
 ## select the proper transcript based on biotype, consequence and 
 ## length of transcript
 selectMut <- function(charMatrix) { 
-  if (nrow(charMatrix) == 1 ) { return(1)
-  } else {
-    numMatrix <- as.data.frame(matrix(ncol=2, nrow=nrow(charMatrix)))
-    for (i in seq_len(nrow(numMatrix))) {
-      # handle situation when biotype is null
-      if (charMatrix[i, 1] == '') {
-        numMatrix[i, 1] <- 10
-      }else{
-        # handle biotypes that are not included
-        if (is.null(getBiotypePriority(charMatrix[i, 1]))) {
-          numMatrix[i, 1] <- 10
-          warning("At least one biotype can not be recognized!")
-        }else{ numMatrix[i, 1] <- getBiotypePriority(charMatrix[i, 1])}
-      }
-    }
-    Biotypefreq <- data.frame(table(numMatrix[, 1]))
-    Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing=FALSE), ]
-    if (Biotypefreq[1, 2] == 1){
-      # return the one with the highest biofunction priority
-      return(as.numeric(rownames(numMatrix[which(numMatrix$V1
-                                                 == Biotypefreq[1, 1]), ])))
+    if (nrow(charMatrix) == 1 ) { return(1)
     } else {
-      # keep rows with the highest biofunction priority, sort by consequence
-      remMatrix <- charMatrix[which(numMatrix[, 1] == Biotypefreq[1, 1]), ]
-      remNumMatrix <- as.data.frame(matrix(ncol=2, nrow=nrow(remMatrix)))
-      rownames(remNumMatrix) <- rownames(remMatrix)
-      for (r in seq_len(nrow(remMatrix))) {
-        Consequence <- strsplit(remMatrix[r, 2], split="&")[[1]]
-        conseqPriority <- 30
-        for (c in Consequence) {
-          conseqPriority <- min(conseqPriority, getConsequencePriority(c))
-        }
-        remNumMatrix[r, 1] <- conseqPriority
-      }
-      Conseqfreq <- data.frame(table(remNumMatrix[, 1]))
-      Conseqfreq <- Conseqfreq[order(Conseqfreq$Var1, decreasing=FALSE), ]
-      if (Conseqfreq[1, 2] == 1){
-        # return the one with the highest consequence priority
-        return(as.numeric(rownames(remNumMatrix[which(remNumMatrix[, 1]
-                                                      == Conseqfreq[1, 1]), ])))
-      } else {
-        # work on length
-        finalMatrix<-remMatrix[which(remNumMatrix[, 1] == Conseqfreq[1, 1]), ]
-        ## choose the first transcript if all cDNA position info is missing
-        if (all(finalMatrix$cDNA_position == 'Missing') |
-            length(unique(finalMatrix$cDNA_position)) == 1) {
-          return(as.numeric(rownames(finalMatrix)[1]))
-          ## choose the only one transcript with cDNA position info
-        } else if (sum(finalMatrix$cDNA_position != 'Missing') == 1) {
-          return(as.numeric(rownames(finalMatrix[which(finalMatrix[, 3]
-                                                       != 'Missing'), ])))
+        numMatrix <- as.data.frame(matrix(ncol=1, nrow=nrow(charMatrix)))
+        numMatrix[, 1] <- vapply(X=charMatrix[, 1], FUN=helperBiotype, FUN.VALUE=0)
+        Biotypefreq <- data.frame(table(numMatrix[, 1]))
+        Biotypefreq <- Biotypefreq[order(Biotypefreq$Var1, decreasing=FALSE), ]
+        if (Biotypefreq[1, 2] == 1){
+          # return the one with the highest biofunction priority
+          return(as.numeric(rownames(charMatrix[numMatrix$V1 == Biotypefreq[1, 1], ])))
         } else {
-          ## length of transcript
-          finalMatrix <- finalMatrix[which(finalMatrix$cDNA_position
-                                           != 'Missing'), ]
-          if (length(grep('/', finalMatrix$cDNA_position))){
-            Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "/")[[1]][2])
-            selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
-            for (l in seq(2,nrow(finalMatrix))) {
-              Tend <- as.numeric(strsplit(finalMatrix[l, 3], "/")[[1]][2])
-              if (Tend > Toplength) {
-                Toplength <- Tend
-                selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
-              }
+          # keep rows with the highest biofunction priority, sort by consequence
+          remMatrix <- charMatrix[numMatrix[, 1] == Biotypefreq[1, 1], ]
+          remNumMatrix <- as.data.frame(matrix(ncol=1, nrow=nrow(remMatrix)))
+          rownames(remNumMatrix) <- rownames(remMatrix)
+          remNumMatrix[, 1] <- vapply(X=remMatrix[, 2], FUN=helperConsequence, FUN.VALUE=0)
+          conseqFreq <- data.frame(table(remNumMatrix[, 1]))
+          conseqFreq <- conseqFreq[order(conseqFreq$Var1, decreasing=FALSE), ]
+        if (conseqFreq[1, 2] == 1){
+            # return the one with the highest consequence priority
+            return(as.numeric(rownames(remMatrix[remNumMatrix[, 1] == conseqFreq[1, 1], ])))
+        } else {
+            # work on length
+            finalMatrix <- remMatrix[remNumMatrix[, 1] == conseqFreq[1, 1], ]
+            ## choose the first transcript if the cDNA info of all variants are the same
+            if (length(unique(finalMatrix$cDNA_position)) == 1) {
+                return(as.numeric(rownames(finalMatrix)[1]))
+            ## choose the only one transcript with cDNA position info
+            } else if (sum(finalMatrix$cDNA_position != 'Missing') == 1) {
+                return(as.numeric(rownames(finalMatrix[finalMatrix[, 3] != 'Missing', ])))
+            } else {
+            ## select the longest transcript
+            finalMatrix <- finalMatrix[finalMatrix$cDNA_position != 'Missing', ]
+            finalNumMatrix <- as.data.frame(matrix(ncol=1, nrow=nrow(finalMatrix)))
+            rownames(finalNumMatrix) <- rownames(finalMatrix)
+            # if "/" or "-" exists in the cDNA column, process this column
+            # check "/" first
+            if (any(str_detect(finalMatrix$cDNA_position, pattern="/"))){
+                finalNumMatrix[, 1] <- as.numeric(str_split_fixed(finalMatrix[, 3], "/", 2)[,2])
+                selectedTranscript <- as.numeric(rownames(
+                finalMatrix[which.max(finalNumMatrix$V1), ]))
+            # look for "-" if there is no "/"
+            }else if (any(str_detect(finalMatrix$cDNA_position, pattern="-"))) {
+                finalNumMatrix[, 1] <- as.numeric(str_split_fixed(finalMatrix[, 3], "-", 2)[,2])
+                selectedTranscript <- as.numeric(rownames(
+                finalMatrix[which.max(finalNumMatrix$V1), ]))
+            }else{
+                selectedTranscript <- as.numeric(rownames(
+                finalMatrix[which.max(finalMatrix$cDNA_position), ]))
             }
-          }else if (length(grep('-', finalMatrix$cDNA_position))){
-            Toplength <- as.numeric(strsplit(finalMatrix[1, 3], "-")[[1]][2])
-            selectedTranscript <- as.numeric(rownames(finalMatrix[1, ]))
-            for (l in seq(2,nrow(finalMatrix))) {
-              Tend <- as.numeric(strsplit(finalMatrix[l, 3], "-")[[1]][2])
-              if (Tend > Toplength) {
-                Toplength <- Tend
-                selectedTranscript <- as.numeric(rownames(finalMatrix[l, ]))
-              }
-            }
-          }else{
-            selectedTranscript <- as.numeric(rownames(
-              finalMatrix[which.max(finalMatrix$cDNA_position), ]))
-          }
-          return(selectedTranscript)
+            return(selectedTranscript)
         }
       }
     }
@@ -171,4 +141,28 @@ getConsequencePriority <- function(consequence) {
          'intergenic_region' = 19,
          'Missing' = 20
     )
+}
+
+# helper function for getting the order of biotypes
+helperBiotype <- function(biotype) {
+    # handle situation when biotype is null
+    if (biotype == '') {
+        return(10)
+    }else{
+        # handle biotypes that are not included
+        if (is.null(getBiotypePriority(biotype))) {
+            return(10)
+            warning("At least one biotype can not be recognized!")
+        }else{
+            return(getBiotypePriority(biotype))
+        }
+    }
+}
+
+# helper function for getting the order of consequences
+helperConsequence <- function(consequence) {
+    consequences <- strsplit(consequence, split="&")[[1]]
+    conseqPriority <- 30
+    # get the highest rank of consequences
+    return(min(conseqPriority, vapply(consequences, FUN=getConsequencePriority, FUN.VALUE=1)))
 }
