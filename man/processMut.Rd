@@ -24,13 +24,13 @@ and return 7 important columns.
 maf_MuSE <- vcfToMAF(system.file("extdata/Multi-caller",
 "WES_EA_T_1.MuSE.vep.vcf", package="CaMutQC"))
 maf_MuSE_f <- mutFilterCom(maf_MuSE, report=FALSE, TMB=FALSE,
-PONfile=system.file("extdata"," PON_test.txt", package="CaMutQC"), 
+PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"), 
 PONformat="txt")
 maf_VarScan2 <- vcfToMAF(system.file("extdata/Multi-caller",
 "WES_EA_T_1_varscan_filter_snp.vep.vcf", package="CaMutQC"))
 maf_VarScan2_f <- mutFilterCom(maf_VarScan2, report=FALSE, TMB=FALSE,
-PONfile=system.file("extdata","PON_test.txt", package="CaMutQC"), 
+PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"), 
 PONformat="txt")
-mafs <- list( maf_MuSE_f, maf_VarScan2_f)
+mafs <- list(maf_MuSE_f, maf_VarScan2_f)
 maf_union <- processMut(mafs, processMethod="union")
 }
