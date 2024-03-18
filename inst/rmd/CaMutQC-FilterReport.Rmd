@@ -1,5 +1,5 @@
 ---
-title: 'Filter Report by CaMutQC'
+title: 'Filter Report from CaMutQC'
 output:
   html_document:
     df_print: paged
@@ -39,6 +39,9 @@ vignette: >
   font-size: 13pt;
 }
 </style>
+
+## Overview
+There are originally `r nrow(maf)` mutations, `r nrow(mafFilteredTs)` left after potential artifacts filtration, `r nrow(mafFilteredF)` left after candidate mutation selection. `r if(exists('TMBvalue')){return(paste0('TMB estimated is ', as.character(TMBvalue), ' mutations/Mbp.'))}else{return('TMB Calculation was not asked.')}`
 
 
 ## Settings  
@@ -115,7 +118,7 @@ Some database published germline variants and recurrent artifacts in distinct ra
 dbs <- paste0(c('ExAC', 'Genomesprojects1000', 
                 'ESP6500', 'gnomAD', 'dbSNP')[c(isTRUE(ExAC), isTRUE(Genomesprojects1000),
                                        isTRUE(ESP6500),isTRUE(gnomAD), isTRUE(dbSNP))], 
-              collapse = ', ')
+              collapse=', ')
 ```
 
 - **Database included**: <span style="color:#ED6F3E">**`r dbs`**</span>
@@ -214,15 +217,15 @@ Users are allowed to apply the same filtering strategies that were used in other
 
 ```{r, echo=FALSE}
 # build table
-t1 <- matrix(nrow = 6)
+t1 <- matrix(nrow=6)
 rownames(t1) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
-t1[names(table(maf$Variant_Type)),1] <- table(maf$Variant_Type)
-t1[which(is.na(t1[, 1])),1] <- 0
+t1[names(table(maf$Variant_Type)), 1] <- table(maf$Variant_Type)
+t1[which(is.na(t1[, 1])), 1] <- 0
 
-t2 <- matrix(nrow = 6)
+t2 <- matrix(nrow=6)
 rownames(t2) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
-t2[names(table(mafFilteredTs$Variant_Type)),1] <- table(mafFilteredTs$Variant_Type)
-t2[which(is.na(t2[, 1])),1] <- 0
+t2[names(table(mafFilteredTs$Variant_Type)), 1] <- table(mafFilteredTs$Variant_Type)
+t2[which(is.na(t2[, 1])), 1] <- 0
 ```
 
 | Type of variants | Before filtration | After filtration |
@@ -253,8 +256,7 @@ cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946",
 flagDat <- data.frame(table(mafFilteredT$CaTag))
 #flagDat <- flagDat[order(flagDat$Freq, decreasing = TRUE),]
 # calculate percent 
-piepercent = paste(round(100*flagDat$Freq/sum(flagDat$Freq), 1), "%", 
-                   sep = '')
+piepercent = paste(round(100*flagDat$Freq/sum(flagDat$Freq), 1), "%", sep='')
 
 # creat label
 if (flagDat$Var1[1] != '0'){
@@ -269,14 +271,13 @@ if (flagDat$Var1[1] != '0'){
 pie1 <- ggplot(flagDat, aes(x="", y=Freq, fill=Var1)) + 
   geom_bar(stat="identity", width=1) +
   coord_polar("y", start=0) +
-  scale_fill_manual(values=cols0, labels = lbls) +
-  labs(x = NULL, y = NULL, fill = NULL, 
-       title = "Pie Chart of variants after selection") + 
-  theme_classic() + theme(axis.line = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          plot.title = element_text(color = "black", vjust = 5),
-          plot.margin = unit(c(0, 1, 0, 1), 'cm'))
+  scale_fill_manual(values=cols0, labels=lbls) +
+  labs(x=NULL, y=NULL, fill=NULL, title="Pie Chart of variants after selection") + 
+  theme_classic() + theme(axis.line=element_blank(),
+          axis.text=element_blank(),
+          axis.ticks=element_blank(),
+          plot.title=element_text(color="black", vjust=5),
+          plot.margin=unit(c(0, 1, 0, 1), 'cm'))
 pie1
 ```
 
@@ -291,27 +292,27 @@ cols1 <- c(SNP = "#e07a5f", INS = "#f2cc8f", DEL =  "#81b29a",
 dat_before <- data.frame(table(maf$Variant_Type))
 dat_after <- data.frame(table(mafFilteredTs$Variant_Type))
 
-ggplot(dat_before, aes(x = Var1, y = Freq, fill = Var1)) + 
-    geom_bar(stat = 'identity') +
-    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
-    labs(title = 'Barplot of Variant Types before filtration', 
-         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
-    scale_fill_manual(values = cols1[as.character(unique(dat_before$Var1))]) +
+ggplot(dat_before, aes(x=Var1, y=Freq, fill=Var1)) + 
+    geom_bar(stat='identity') +
+    geom_text(aes(label=Freq), vjust=-0.5, color="black", size=3.5) +
+    labs(title='Barplot of Variant Types before filtration', 
+         x='Variant Type', y='Count', fill='Variant Type') +
+    scale_fill_manual(values=cols1[as.character(unique(dat_before$Var1))]) +
     theme_bw() + 
-    theme(axis.text.x = element_text(face = 'bold'), 
-          plot.title = element_text(size = 11, face = 'bold'), 
-          panel.border = element_blank())
+    theme(axis.text.x=element_text(face='bold'), 
+          plot.title=element_text(size=11, face='bold'), 
+          panel.border=element_blank())
 
-ggplot(dat_after, aes(x = Var1, y = Freq, fill = Var1)) + 
-    geom_bar(stat = 'identity') +
-    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+ggplot(dat_after, aes(x=Var1, y=Freq, fill=Var1)) + 
+    geom_bar(stat='identity') +
+    geom_text(aes(label=Freq), vjust=-0.5, color="black", size=3.5) +
     labs(title = 'Barplot of Variant Types after filtration', 
-         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
-    scale_fill_manual(values = cols1[as.character(unique(dat_after$Var1))]) +
+         x='Variant Type', y='Count', fill='Variant Type') +
+    scale_fill_manual(values=cols1[as.character(unique(dat_after$Var1))]) +
     theme_bw() + 
-    theme(axis.text.x = element_text(face = 'bold'), 
-          plot.title = element_text(size = 11, face = 'bold'), 
-          panel.border = element_blank())
+    theme(axis.text.x=element_text(face='bold'), 
+          plot.title=element_text(size=11, face='bold'), 
+          panel.border=element_blank())
 
 ```
 
@@ -320,21 +321,11 @@ ggplot(dat_after, aes(x = Var1, y = Freq, fill = Var1)) +
 #### 3 &nbsp;&nbsp; Distribution of variants in genome
 
 ```{r distribution-1, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
-cols2 = c('chr1' = '#0060AF', 'chr2' = '#0664B1', 'chr3' = '#0D69B4', 
-          'chr4' = '#136DB6', 'chr5' = '#1A71B8', 'chr6' = '#2075BA', 
-          'chr7' = '#277ABD', 'chr8' = '#2D7EBF', 'chr9' = '#3482C1', 
-          'chr10' = '#3A87C3', 'chr11' = '#418BC6', 'chr12' = '#478FC8', 
-          'chr13' = '#4E94CA', 'chr14' = '#5498CC', 'chr15' = '#5B9CCF', 
-          'chr16' = '#61A0D1', 'chr17' = '#68A5D3', 'chr18' = '#6EA9D5', 
-          'chr19' = '#75ADD8', 'chr20' = '#7BB2DA', 'chr21' = '#82B6DC',
-          'chr22' = '#88BADE', 'chrX' = '#8FBFE1', 'chrY' = '#A2CBE7',
-          'chrM' = '#AFD4EC')
-
 dat_before <- data.frame(table(maf$Chromosome))
 dat_after <- data.frame(table(mafFilteredTs$Chromosome))
 
 # define helper function to order chromosome
-helper <- function(x) {
+chromHelper <- function(x) {
   x <- substring(x, 4, 6)
   if (str_detect(x, '[[a-zA-Z]]')){
     return(utf8ToInt(x))
@@ -342,35 +333,43 @@ helper <- function(x) {
     return(as.numeric(x))
   }
 }
-
+# 
 dat_before <- dat_before[order(unlist(lapply(as.character(dat_before$Var1)
-                                             , helper))), ]
+                                             , chromHelper))), ]
 dat_after <- dat_after[order(unlist(lapply(as.character(dat_after$Var1)
-                                           , helper))), ]
+                                           , chromHelper))), ]
 
-ggplot(dat_before, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
-  geom_bar(stat = 'identity', fill = cols2[as.character(dat_before$Var1)]) +
-  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
-  labs(title = 'Barplot of Variant Position before filtration', 
-       x = 'Variant Type', y = 'Count') +
+# fill the missing value with 0 for dat_after
+missing_chrom <- setdiff(dat_before$Var1, dat_after$Var1)
+missing_data <- data.frame(Var1=missing_chrom, Freq = 0)
+dat_after <- rbind(dat_after, missing_data)
+
+# Calculate the difference between before and after filtration to get "filtered" counts
+dat_filtered <- merge(dat_before, dat_after, by="Var1", suffixes=c("_before", "_after"))
+dat_filtered$Freq_filtered <- dat_filtered$Freq_before - dat_filtered$Freq_after
+
+# Add a column to dat_after for the "Kept" group
+dat_after$Group <- "Kept"
+colnames(dat_filtered)[4] <- "Freq"
+
+# Create a new data frame with "filtered" and "kept" groups
+dat_stacked <- rbind(
+  transform(dat_filtered[, c(1, 4)], Group="Filtered"),
+  dat_after
+)
+
+# Plot stacked barplot
+group_colors <- c("Filtered"="#f2cc8f", "Kept"="#A2CBE7")
+ggplot(dat_stacked, aes(x=factor(Var1, levels=dat_before$Var1), y=Freq, fill=Group)) + 
+  geom_bar(stat = 'identity') +
+  geom_text(aes(label=Freq), position=position_stack(vjust=0.5), color="black", size=3.5) +
+  labs(title = 'Stacked Barplot of Variant Position before and after filtration', 
+       x='Variant Position', y='Count') +
+  scale_fill_manual(values=group_colors) +
   theme_bw() + 
-  theme(axis.text.x = element_text(face = 'bold'), 
-        plot.title = element_text(size = 11, face = 'bold'), 
-        panel.border = element_blank())
-```
-
-&nbsp;
-
-```{r distribution-2, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
-ggplot(dat_after, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
-  geom_bar(stat = 'identity', fill = cols2[as.character(dat_after$Var1)]) +
-  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
-  labs(title = 'Barplot of Variant Position after filtration', 
-       x = 'Variant Type', y = 'Count') +
-  theme_bw() + 
-  theme(axis.text.x = element_text(face = 'bold'), 
-        plot.title = element_text(size = 11, face = 'bold'), 
-        panel.border = element_blank())
+  theme(axis.text.x=element_text(face='bold'), 
+        plot.title=element_text(size=11, face='bold'), 
+        panel.border=element_blank())
 ```
 
 &nbsp;
@@ -387,26 +386,26 @@ helper <- function(num) {
     return(round(num, 1) - 0.1)
   }
 }
-maf_ext <- cbind(maf_ext, group = unlist(lapply(maf_ext$VAF, helper)))
+maf_ext <- cbind(maf_ext, group=unlist(lapply(maf_ext$VAF, helper)))
 
 maf_ext$group <- as.character(maf_ext$group)
 maf_ext$Num <- as.character(table(maf_ext$group)[maf_ext$group])
 
-ggplot(data = maf_ext, mapping = aes(group)) +
-  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
-  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
-                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
-                            as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
-  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, 
-            color = "black", size = 3) +
-  scale_fill_manual(values = cols1[unique(maf_ext$Variant_Type)]) +
-  labs(x = 'VAF', y = 'Number of Variants', 
-       title = 'Distribution of VAF before filtration', fill = 'Variant Type') +
+ggplot(data=maf_ext, mapping=aes(group)) +
+  geom_bar(position='stack', aes(fill=Variant_Type)) +
+  scale_x_discrete(breaks=as.character(seq(0, 1, 0.1)), 
+                   labels=c(paste(as.character(seq(0, 0.9, 0.1)),
+                            as.character(seq(0.1, 1, 0.1)), sep="-"),'1')) +
+  geom_text(aes(label=Num, y=as.numeric(Num)), vjust=-0.5, 
+            color="black", size=3) +
+  scale_fill_manual(values=cols1[unique(maf_ext$Variant_Type)]) +
+  labs(x='VAF', y='Number of Variants', 
+       title='Distribution of VAF before filtration', fill='Variant Type') +
   theme_bw() +
-  theme(axis.title.x = element_text(face = 'bold'),
-        axis.title.y = element_text(face = 'bold'),
-        plot.title = element_text(face = 'bold', size = 11),
-        panel.border = element_blank())
+  theme(axis.title.x=element_text(face='bold'),
+        axis.title.y=element_text(face='bold'),
+        plot.title=element_text(face='bold', size=11),
+        panel.border=element_blank())
 ```
 
 &nbsp;
@@ -415,26 +414,26 @@ ggplot(data = maf_ext, mapping = aes(group)) +
 mafFilteredTs_ext <- mafFilteredTs[, c('Variant_Type', 'VAF')]
 
 mafFilteredTs_ext <- cbind(mafFilteredTs_ext, 
-                          group = unlist(lapply(mafFilteredTs_ext$VAF, helper)))
+                          group=unlist(lapply(mafFilteredTs_ext$VAF, helper)))
 
 mafFilteredTs_ext$group <- as.character(mafFilteredTs_ext$group)
 mafFilteredTs_ext$Num <- as.character(table(mafFilteredTs_ext$group)[mafFilteredTs_ext$group])
 
-ggplot(data = mafFilteredTs_ext, mapping = aes(group)) +
-  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
-  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
-                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
-                            as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
-  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, 
-            color = "black", size = 3) +
+ggplot(data=mafFilteredTs_ext, mapping=aes(group)) +
+  geom_bar(position='stack', aes(fill=Variant_Type)) +
+  scale_x_discrete(breaks=as.character(seq(0, 1, 0.1)), 
+                   labels=c(paste(as.character(seq(0, 0.9, 0.1)),
+                            as.character(seq(0.1, 1, 0.1)), sep="-"),'1')) +
+  geom_text(aes(label=Num, y=as.numeric(Num)), vjust=-0.5, 
+            color="black", size=3) +
   scale_fill_manual(values = cols1[unique(mafFilteredTs_ext$Variant_Type)]) +
-  labs(x = 'VAF', y = 'Number of Variants', 
-       title = 'Distribution of VAF after filtration', fill = 'Variant Type') +
+  labs(x='VAF', y='Number of Variants', 
+       title='Distribution of VAF after filtration', fill='Variant Type') +
   theme_bw() +
-  theme(axis.title.x = element_text(face = 'bold'),
-        axis.title.y = element_text(face = 'bold'),
-        plot.title = element_text(face = 'bold', size = 11),
-        panel.border = element_blank())
+  theme(axis.title.x=element_text(face='bold'),
+        axis.title.y=element_text(face='bold'),
+        plot.title=element_text(face='bold', size=11),
+        panel.border=element_blank())
 ```
 
 &nbsp;
@@ -451,12 +450,12 @@ ggplot(data = mafFilteredTs_ext, mapping = aes(group)) +
 
 ```{r, echo=FALSE}
 # build table
-t1 <- matrix(nrow = 6)
+t1 <- matrix(nrow=6)
 rownames(t1) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
 t1[names(table(mafFilteredS2$Variant_Type)),1] <- table(mafFilteredS2$Variant_Type)
 t1[which(is.na(t1[, 1])),1] <- 0
 
-t2 <- matrix(nrow = 6)
+t2 <- matrix(nrow=6)
 rownames(t2) <-  c('SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL')
 t2[names(table(mafFilteredF$Variant_Type)),1] <- table(mafFilteredF$Variant_Type)
 t2[which(is.na(t2[, 1])),1] <- 0
@@ -487,13 +486,11 @@ cols0 <- c("#e07a5f","#a8dadc", "#457b9d", "#1d3557", "#f1faee", "#e63946",
 flagDat <- data.frame(table(mafFilteredS2$CaTag))
 
 # calculate percent 
-piepercent = paste(round(100*flagDat$Freq/sum(flagDat$Freq), 1), "%", 
-                   sep = '')
+piepercent = paste(round(100*flagDat$Freq/sum(flagDat$Freq), 1), "%", sep='')
 
 # creat label
 if (flagDat$Var1[1] != '0'){
-  lbls <- paste('With ', substr(flagDat$Var1, 2, 5), ' flag, ', 
-                piepercent, sep="")
+  lbls <- paste('With ', substr(flagDat$Var1, 2, 5), ' flag, ', piepercent, sep="")
 }else{
   lbls <- paste('With ', c('no', substr(flagDat$Var1[2:nrow(flagDat)], 2, 5)), 
                 ' flag, ', piepercent, sep="")
@@ -504,13 +501,13 @@ pie2 <- ggplot(flagDat, aes(x="", y=Freq, fill=Var1)) +
   geom_bar(stat="identity", width=1) +
   coord_polar("y", start=0) +
   scale_fill_manual(values=cols0, labels = lbls) +
-  labs(x = NULL, y = NULL, fill = NULL, 
+  labs(x=NULL, y=NULL, fill=NULL, 
        title = "Pie Chart of variants after selection") + 
-  theme_classic() + theme(axis.line = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          plot.title = element_text(color = "black", vjust = 20),
-          plot.margin = unit(c(0, 1, 0, 1), 'cm'))
+  theme_classic() + theme(axis.line=element_blank(),
+          axis.text=element_blank(),
+          axis.ticks=element_blank(),
+          plot.title=element_text(color="black", vjust=20),
+          plot.margin=unit(c(0, 1, 0, 1), 'cm'))
 pie2
 ```
 
@@ -525,27 +522,27 @@ cols1 <- c(SNP = "#e07a5f", INS = "#f2cc8f", DEL =  "#81b29a",
 dat_before <- data.frame(table(mafFilteredS2$Variant_Type))
 dat_after <- data.frame(table(mafFilteredF$Variant_Type))
 
-ggplot(dat_before, aes(x = Var1, y = Freq, fill = Var1)) + 
-    geom_bar(stat = 'identity') +
-    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
+ggplot(dat_before, aes(x=Var1, y=Freq, fill=Var1)) + 
+    geom_bar(stat='identity') +
+    geom_text(aes(label=Freq), vjust=-0.5, color="black", size=3.5) +
     labs(title = 'Barplot of Variant Types before selection', 
-         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
-    scale_fill_manual(values = cols1[as.character(unique(dat_before$Var1))]) +
+         x='Variant Type', y='Count', fill='Variant Type') +
+    scale_fill_manual(values=cols1[as.character(unique(dat_before$Var1))]) +
     theme_bw() + 
-    theme(axis.text.x = element_text(face = 'bold'), 
-          plot.title = element_text(size = 11, face = 'bold'), 
-          panel.border = element_blank())
+    theme(axis.text.x=element_text(face='bold'), 
+          plot.title=element_text(size=11, face='bold'), 
+          panel.border=element_blank())
 
-ggplot(dat_after, aes(x = Var1, y = Freq, fill = Var1)) + 
-    geom_bar(stat = 'identity') +
-    geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
-    labs(title = 'Barplot of Variant Types after selection', 
-         x = 'Variant Type', y = 'Count', fill = 'Variant Type') +
-    scale_fill_manual(values = cols1[as.character(unique(dat_after$Var1))]) +
+ggplot(dat_after, aes(x=Var1, y=Freq, fill=Var1)) + 
+    geom_bar(stat='identity') +
+    geom_text(aes(label=Freq), vjust=-0.5, color="black", size=3.5) +
+    labs(title='Barplot of Variant Types after selection', 
+         x='Variant Type', y='Count', fill='Variant Type') +
+    scale_fill_manual(values=cols1[as.character(unique(dat_after$Var1))]) +
     theme_bw() + 
-    theme(axis.text.x = element_text(face = 'bold'), 
-          plot.title = element_text(size = 11, face = 'bold'), 
-          panel.border = element_blank())
+    theme(axis.text.x=element_text(face='bold'), 
+          plot.title=element_text(size=11, face='bold'), 
+          panel.border=element_blank())
 
 ```
 
@@ -557,44 +554,45 @@ ggplot(dat_after, aes(x = Var1, y = Freq, fill = Var1)) +
 dat_before <- data.frame(table(mafFilteredS2$Chromosome))
 dat_after <- data.frame(table(mafFilteredF$Chromosome))
 
-# define helper function to order chromosome
-helper <- function(x) {
-  x <- substring(x, 4, 6)
-  if (str_detect(x, '[[a-zA-Z]]')){
-    return(utf8ToInt(x))
-  }else{
-    return(as.numeric(x))
-  }
-}
 
 dat_before <- dat_before[order(unlist(lapply(as.character(dat_before$Var1)
-                                             , helper))), ]
+                                             , chromHelper))), ]
 dat_after <- dat_after[order(unlist(lapply(as.character(dat_after$Var1)
-                                           , helper))), ]
+                                           , chromHelper))), ]
 
-ggplot(dat_before, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
-  geom_bar(stat = 'identity', fill = cols2[as.character(dat_before$Var1)]) +
-  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
-  labs(title = 'Barplot of Variant Position before selection', 
-       x = 'Variant Type', y = 'Count') +
+# fill the missing value with 0 for dat_after
+missing_chrom <- setdiff(dat_before$Var1, dat_after$Var1)
+if (length(missing_chrom)) {
+    missing_data <- data.frame(Var1=missing_chrom, Freq=0)
+    dat_after <- rbind(dat_after, missing_data)
+}
+
+# Calculate the difference between before and after filtration to get "filtered" counts
+dat_filtered <- merge(dat_before, dat_after, by="Var1", suffixes=c("_before", "_after"))
+dat_filtered$Freq_filtered <- dat_filtered$Freq_before - dat_filtered$Freq_after
+
+# Add a column to dat_after for the "Kept" group
+dat_after$Group <- "Kept"
+colnames(dat_filtered)[4] <- "Freq"
+
+# Create a new data frame with "filtered" and "kept" groups
+dat_stacked <- rbind(
+  transform(dat_filtered[, c(1, 4)], Group="Filtered"),
+  dat_after
+)
+
+# Plot stacked barplot
+group_colors <- c("Filtered"="#f2cc8f", "Kept"="#A2CBE7")
+ggplot(dat_stacked, aes(x=factor(Var1, levels=dat_before$Var1), y=Freq, fill=Group)) + 
+  geom_bar(stat='identity') +
+  geom_text(aes(label=Freq), position=position_stack(vjust=0.5), color="black", size=3.5) +
+  labs(title='Stacked Barplot of Variant Position before and after filtration', 
+       x='Variant Position', y='Count') +
+  scale_fill_manual(values=group_colors) +
   theme_bw() + 
-  theme(axis.text.x = element_text(face = 'bold'), 
-        plot.title = element_text(size = 11, face = 'bold'), 
-        panel.border = element_blank())
-```
-
-&nbsp;
-
-```{r distribution-2-2, echo=FALSE, fig.width=9, fig.height=4, warning=FALSE}
-ggplot(dat_after, aes(x = factor(Var1, levels = Var1), y = Freq)) + 
-  geom_bar(stat = 'identity', fill = cols2[as.character(dat_after$Var1)]) +
-  geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 3.5) +
-  labs(title = 'Barplot of Variant Position after selection', 
-       x = 'Variant Type', y = 'Count') +
-  theme_bw() + 
-  theme(axis.text.x = element_text(face = 'bold'), 
-        plot.title = element_text(size = 11, face = 'bold'), 
-        panel.border = element_blank())
+  theme(axis.text.x=element_text(face='bold'), 
+        plot.title=element_text(size=11, face='bold'), 
+        panel.border=element_blank())
 ```
 
 &nbsp;
@@ -604,33 +602,25 @@ ggplot(dat_after, aes(x = factor(Var1, levels = Var1), y = Freq)) +
 ```{r echo=FALSE, fig.width=6, fig.height=4.5}
 maf_ext <- mafFilteredS2[, c('Variant_Type', 'VAF')]
 
-helper <- function(num) {
-  if(round(num, 1) <= num){
-    return(round(num, 1))
-  }else{
-    return(round(num, 1) - 0.1)
-  }
-}
-
-maf_ext <- cbind(maf_ext, group = unlist(lapply(maf_ext$VAF, helper)))
+maf_ext <- cbind(maf_ext, group=unlist(lapply(maf_ext$VAF, helper)))
 
 maf_ext$group <- as.character(maf_ext$group)
 maf_ext$Num <- as.character(table(maf_ext$group)[maf_ext$group])
 
-ggplot(data = maf_ext, mapping = aes(group)) +
-  geom_bar(position = 'stack', aes(fill = Variant_Type)) +
-  scale_x_discrete(breaks = as.character(seq(0, 1, 0.1)), 
-                   labels = c(paste(as.character(seq(0, 0.9, 0.1)),
-                                  as.character(seq(0.1, 1, 0.1)), sep  = "-"),'1')) +
-  geom_text(aes(label = Num, y = as.numeric(Num)), vjust = -0.5, color = "black", size = 3) +
-  scale_fill_manual(values = cols1[unique(maf_ext$Variant_Type)]) +
-  labs(x = 'VAF', y = 'Number of Variants', 
-       title = 'Distribution of VAF before selection', fill = 'Variant Type') +
+ggplot(data=maf_ext, mapping=aes(group)) +
+  geom_bar(position='stack', aes(fill=Variant_Type)) +
+  scale_x_discrete(breaks=as.character(seq(0, 1, 0.1)), 
+                   labels=c(paste(as.character(seq(0, 0.9, 0.1)),
+                                  as.character(seq(0.1, 1, 0.1)), sep="-"),'1')) +
+  geom_text(aes(label=Num, y=as.numeric(Num)), vjust=-0.5, color="black", size=3) +
+  scale_fill_manual(values=cols1[unique(maf_ext$Variant_Type)]) +
+  labs(x='VAF', y='Number of Variants', 
+       title='Distribution of VAF before selection', fill='Variant Type') +
   theme_bw() +
-  theme(axis.title.x = element_text(face = 'bold'),
-        axis.title.y = element_text(face = 'bold'),
-        plot.title = element_text(face = 'bold', size = 11),
-        panel.border = element_blank())
+  theme(axis.title.x=element_text(face='bold'),
+        axis.title.y=element_text(face='bold'),
+        plot.title=element_text(face='bold', size=11),
+        panel.border=element_blank())
 ```
 
 &nbsp;
@@ -671,8 +661,6 @@ Tumor Mutational Burden (TMB) refers to the number of somatic non-synonymous mut
 There are many calculation methods for TMB, including WGS, WES, regional sequencing using gene panels, and sequencing of circulating tumor DNA in tumor samples or blood [15](#refer). Different from scientific research, the conventional method of determining TMB in clinical practice is to target-sequence tumor samples, which is to hybridize and capture the exon and intron regions of a certain number of cancer-related genes, without the need for WES sequencing. Currently, the most widely used panels are [FoundationOneCDx](https://www.foundationmedicine.com/test/foundationone-cdx) (F1CDx) and [MSK-IMPACT](https://www.mskcc.org/msk-impact) [9](#refer). The former only needs to sequence tumor samples, while the latter requires both the tumor sample and its matched normal sample to be sequenced. Both of them have certification from US Food and Drug Administration (FDA).
 
 In CaMutQC, four methods are supported for TMB calculation, including FoundationOne, MSK-IMPACT (3 versions of genelist), Pan-cancer panel [16](#refer) and WES. By default, TMB is calculated using MSK-IMPACT method (gene panel version 3, 468 genes). Also, users are free to apply their own methods by setting parameter `assay` as `Customized`. **But it is important to point out that the bed files used for these assays in CaMutQC (only cover CDS region of panel genes) are not the real bed region files, and filtration strategy used may be different, so the result can only be viewed as a reference.** 
-
-**Size of the targeted genomic region**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(paste(bedLen, ' Mbp'))}else{return('Calculation not asked.')}`**</span>
 
 **Method used to calculate TMB**: <span style="color:#ED6F3E">**`r if(exists('TMBvalue')){return(assay)}else{return('Calculation not asked.')}`**</span>
 
@@ -749,6 +737,4 @@ sessionInfo()
 15. Stenzinger A, Allen JD, Maas J, et al. Tumor mutational burden standardization initiatives: Recommendations for consistent tumor mutational burden assessment in clinical samples to guide immunotherapy treatment decisions. Genes Chromosomes Cancer. 2019;58(8):578-588. doi:10.1002/gcc.22733
 
 16. Xu Z, Dai J, Wang D, et al. Assessment of tumor mutation burden calculation from gene panel sequencing data. Onco Targets Ther. 2019;12:3401-3409. Published 2019 May 6. doi:10.2147/OTT.S196638
-
-
 

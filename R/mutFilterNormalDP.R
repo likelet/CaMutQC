@@ -8,13 +8,14 @@
 #' @param verbose Whether to generate message/notification during the 
 #' filtration process. Default: TRUE.
 #' @importFrom methods is
+#' @import dplyr
 #' 
 #' @return An MAF data frame where some variants
 #' has N tag in CaTag column for Normal depth filtration.
 #' @export mutFilterNormalDP
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 #' mafF <- mutFilterNormalDP(maf)
 
 
@@ -24,8 +25,7 @@ mutFilterNormalDP <- function(maf, dbsnpCutoff = 19, nonCutoff = 8,
     if (!(is(maf, "data.frame"))) {
       stop("maf input should be a data frame, did you get it from vcfToMAF function?")
     }
-  
-  
+    # filter based on normal DP
     if (!('Existing_variation' %in% colnames(maf))) {
       discard <- c()
       if (verbose) {
@@ -35,18 +35,12 @@ mutFilterNormalDP <- function(maf, dbsnpCutoff = 19, nonCutoff = 8,
       }
     }
     # build a vector to store discarded variants
-    discard <- rep(NA, length(maf))
-    for (i in seq_len(nrow(maf))) {
-        # variants in dbsnp
-        if(length(grep('rs', maf[i, 'Existing_variation']))) {
-            if(maf$n_depth[i] < dbsnpCutoff) {
-                discard[i] <- i
-            }
-        # variants not in dbsnp
-        }else if (maf$n_depth[i] < nonCutoff) {
-            discard[i] <- i
-        }
-    }
+    discard <- maf %>% 
+      # convert to tibble and name the rownames column
+      as_tibble(rownames="rowname") %>% 
+      filter((grepl('rs', Existing_variation) & n_depth < dbsnpCutoff) | 
+             (!grepl('rs', Existing_variation) & n_depth < nonCutoff)) %>%
+    pull(rowname)
     # add tag
     discard <- as.vector(na.omit(discard))
     maf[discard, 'CaTag'] <- paste0(maf[discard, 'CaTag'], 'N')

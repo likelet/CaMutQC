@@ -18,8 +18,8 @@
 #' @export toMesKit
 #' @examples
 #' maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-caller/",
-#' package = "CaMutQC"), multiVCF = TRUE)
-#' clin_file <- system.file("extdata", "clin.txt", package = "CaMutQC")
+#' package="CaMutQC"), multiVCF=TRUE)
+#' clin_file <- system.file("extdata", "clin.txt", package="CaMutQC")
 #' maf_MesKit <- toMesKit(maf_CaMutQC, clinicalFile=clin_file)
 
 toMesKit <- function(maf, clinicalFile, ccfFile = NULL, nonSyn.vc = NULL,

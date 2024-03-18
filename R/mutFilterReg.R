@@ -18,69 +18,59 @@
 #' @export mutFilterReg
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
-#' package = "CaMutQC"))
-#' mafF <- mutFilterReg(maf, bedFile = system.file("extdata/bed/panel_hg38",
-#' "Pan-cancer-hg38.rds", package = "CaMutQC"))
-
+#' package="CaMutQC"))
+#' mafF <- mutFilterReg(maf, bedFile=system.file("extdata/bed/panel_hg38",
+#' "Pan-cancer-hg38.rds", package="CaMutQC"))
 
 mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
                          bedFilter = TRUE, verbose = TRUE){
-  # check user input
-  if (!(is(maf, "data.frame"))) {
-    stop("maf input should be a data frame, did you get it from vcfToMAF function?")
-  }
-  
-  # check user input
-  if (!(is(maf, "data.frame"))) {
-    stop("maf input should be a data frame, did you get it from vcfToMAF function?")
-  }
-  
-  if (is.null(bedFile)){
-      if (verbose) {
-          message('\n  No bed file detected, so no variants will get an R flag.')
-      }
-  }else{
-    # read input bed file
-    bed <- readBed(bedFile, bedHeader = bedHeader)
-    if (bedFilter) {
-        chromVaild <- c(paste0('chr', seq_len(22)), 'chrX', 'chrY')
-        bed <- bed[which(bed[, 1] %in% chromVaild), ]
+    # check user input
+    if (!(is(maf, "data.frame"))) {
+      stop("maf input should be a data frame, did you get it from vcfToMAF function?")
     }
-
-    ## sort bed object
-    bedProc <- unique(bed[, seq_len(3)])
-    colnames(bedProc) <- c("chr", 'chromStart', 'chromEnd')
-    ## process maf data and start targeting
-    mafTar <- maf[, c("Chromosome", "Start_Position", "End_Position")]
-    chrs <- unique(maf$Chromosome)
-    # nums <- rep(0, length(chrs))
-    allTar <- list()
-    for (c in seq_len(length(chrs))) {
-        # split the bed file into small bed based on chromosome
-        mafSepc <- mafTar[which(mafTar$Chromosome == chrs[c]), ]
-        bedSepc <- bedProc[which(bedProc$chr == chrs[c]), ]
-        l <- list()
-        for(i in seq_len(nrow(bedSepc))) {
-            l[[i]] <- mutRegionTag(mafSepc, bedSepc[i, ])
+    
+    if (is.null(bedFile)){
+        if (verbose) {
+            message('\n  No bed file detected, so no variants will get an R flag.')
         }
-        allTar[[c]] <- l
+    }else{
+      # read input bed file
+      bed <- readBed(bedFile, bedHeader=bedHeader)
+      if (bedFilter) {
+          chromVaild <- c(paste0('chr', seq_len(22)), 'chrX', 'chrY')
+          bed <- bed[which(bed[, 1] %in% chromVaild), ]
+      }
+      ## sort bed object
+      bedProc <- unique(bed[, seq_len(3)])
+      colnames(bedProc) <- c("chr", 'chromStart', 'chromEnd')
+      ## process maf data and start targeting
+      mafTar <- maf[, c("Chromosome", "Start_Position", "End_Position")]
+      chrs <- unique(maf$Chromosome)
+      # iterate through all chroms
+      allTar <- lapply(chrs, function(chr) {
+          mafSpec <- mafTar[mafTar$Chromosome == chr, ]
+          bedSpec <- bedProc[bedProc$chr == chr, ]
+          result_matrix <- apply(expand.grid(seq_len(nrow(mafSpec)), seq_len(nrow(bedSpec))), 
+                                 1, function(idx) {
+            helperRegion(mafSpec[idx[1], , drop=FALSE], bedSpec[idx[2], , drop=FALSE])
+          })
+          as.character(na.omit(result_matrix))
+      })
+      # get complement subset (variants not in bed region)
+      tags <- setdiff(rownames(maf), unique(unlist(allTar)))
+      maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
     }
-    # get complement subset (variants not in bed region)
-    tags <- setdiff(rownames(maf), unique(unlist(allTar)))
-    maf[tags, 'CaTag'] <- paste0(maf[tags, 'CaTag'], 'R')
-  }
-  return(maf)
+    return(maf)
 }
 
-# helper function to target variants in specific region
-mutRegionTag <- function(mutLoc, bedSingle){
-    # count <- bedSingle[1, 'Num']
-    inRegion <- rep(NA, nrow(mutLoc))
-    for (i in seq_len(nrow(mutLoc))) {
-        if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
-            mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
-            inRegion[i] <- rownames(mutLoc[i, ])
-        }
+# helper function to target variants in a specific region
+helperRegion <- function(mutSingle, bedSingle) {
+    # return the row name if this mutation is in the target region
+    # which will be kept in the end
+    if ((mutSingle[1, 'Start_Position'] >= bedSingle[, 'chromStart']) &
+        (mutSingle[1, 'End_Position'] <= bedSingle[, 'chromEnd'])) {
+        return(rownames(mutSingle))
+    }else{
+        return(NA)
     }
-    return(na.omit(inRegion))
 }

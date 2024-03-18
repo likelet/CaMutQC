@@ -97,10 +97,10 @@
 #' @export mutFilterCom
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 #' mafF <- mutFilterCom(maf,
-#' PONfile = system.file("extdata","PON_test.txt",package = "CaMutQC"),
-#' TMB = FALSE, report = FALSE, PONformat = "txt")
+#' PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"),
+#' TMB=FALSE, report=FALSE, PONformat="txt", verbose=FALSE)
 
 
 mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized", 
@@ -155,7 +155,7 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                    Genomesprojects1000=Genomesprojects1000, dbSNP=dbSNP,
                    ESP6500=ESP6500, gnomAD=gnomAD, keepCOSMIC=keepCOSMIC,
                    keepType=keepType, bedFile=bedFile,bedHeader=bedHeader,
-                   bedFilter=bedFilter, progressbar = FALSE, verbose = FALSE)
+                   bedFilter=bedFilter, progressbar=FALSE, verbose=FALSE)
     mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
     if (nrow(mafFilteredF) == 0){ stop('No variants left after filtration.')}
     if (TMB){

@@ -25,7 +25,7 @@
 #' @export mutFilterDB
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 #' mafF <- mutFilterDB(maf)
 
 mutFilterDB <- function(maf, dbVAF = 0.01, ExAC = TRUE,

@@ -17,9 +17,9 @@
 #' @export mutFilterPON
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterPON(maf, PONfile = system.file("extdata",
-#' "PON_test.txt",package = "CaMutQC"), PONformat = "txt")
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
+#' mafF <- mutFilterPON(maf, PONfile=system.file("extdata",
+#' "PON_test.txt", package="CaMutQC"), PONformat="txt")
 
 ## PON filtration using external dataset and info flag
 mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
@@ -27,7 +27,6 @@ mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
     if (!(is(maf, "data.frame"))) {
         stop("maf input should be a data frame, did you get it from vcfToMAF function?")
     }
-    
     # give recommendation for PON file
     if (verbose) {
         url <- "https://gatk.broadinstitute.org/hc/en-us/articles/360035890631-Panel-of-Normals-PON-"
@@ -57,18 +56,18 @@ mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
             invisible(capture.output(somatic <- read.vcfR(PONfile)))
             # give PON a unique label, so they can be easily found and targeted
             somatic@fix[, 'ID'] <- 1
-            pon_maf <- merge(maf, somatic@fix, all.x = TRUE, 
+            pon_maf <- merge(maf, somatic@fix, all.x=TRUE, 
                            by = c("Chromosome", "Start_Position", 
                                   "Reference_Allele", "Tumor_Seq_Allele2"), 
-                           by.y = c("CHROM", "POS", "REF", "ALT"), all.y = FALSE)
+                           by.y = c("CHROM", "POS", "REF", "ALT"), all.y=FALSE)
         }else if (PONformat == "txt") {
-            PON_frame <- read.table(PONfile, header = TRUE, sep = "\t")
+            PON_frame <- read.table(PONfile, header=TRUE, sep = "\t")
             PON_frame$ID <- 1
             # get the intersect veriants using merging action
-            pon_maf <- merge(maf, PON_frame, all.x = TRUE, 
+            pon_maf <- merge(maf, PON_frame, all.x=TRUE, 
                              by.x = c("Chromosome", "Start_Position", 
                                       "Reference_Allele", "Tumor_Seq_Allele2"), 
-                             by.y = c("CHROM", "POS", "REF", "ALT"), all.y = FALSE)
+                             by.y = c("CHROM", "POS", "REF", "ALT"), all.y=FALSE)
         }else{
             stop("Wrong PONformat, should be 'vcf' or 'txt'")
         }

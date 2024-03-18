@@ -1,28 +1,29 @@
-selectTrans <- function(maf, csqDat, infoDat) {
-    # extract, assign and filter CSQ info from maf data frame
-    for (n in seq_len(nrow(maf))) {
-      CSQ_general <- strsplit(infoDat$CSQ[n], split=",")[[1]]
-      CSQ_subinfo <- csqDat[seq_len(length(CSQ_general)), ]
-      rownames(CSQ_subinfo) <- seq_len(length(CSQ_general))
-  
-      for (m in seq_len(length(CSQ_general))) {
-          CSQ_p <- strsplit(CSQ_general[m], split="\\|")[[1]]
-          if(length(CSQ_p) == (ncol(CSQ_subinfo) - 1)) {
-            CSQ_p <- c(CSQ_p, "")
-          }
-          CSQ_subinfo[m, ] <- CSQ_p
-      }
+selectTrans <- function(csqDat, infoDat) {
+    # extract, assign and filter CSQ info from infoDat data frame
+    for (n in seq_len(nrow(csqDat))) {
+      csqGeneral <- strsplit(infoDat$CSQ[n], split=",")[[1]]
+      # split the csq info 
+      csqSubInfo <- data.frame(matrix(unlist(lapply(csqGeneral, batchCSQ, csqDat)), 
+                              nrow=length(csqGeneral), byrow=TRUE), 
+                              stringsAsFactors=FALSE)
+      rownames(csqSubInfo) <- seq_len(length(csqGeneral))
+      colnames(csqSubInfo) <- colnames(csqDat)
       # compare and select
       ## construct the mut data frame
-      mutDatFrame <- CSQ_subinfo[, c('BIOTYPE', 'Consequence', 'cDNA_position')]
-      for (d in seq_len(nrow(mutDatFrame))) {
-          for (e in seq_len(ncol(mutDatFrame))) {
-            if ((mutDatFrame[d, e] == '') | (grepl('\\?', mutDatFrame[d, e])))
-              mutDatFrame[d, e] <- 'Missing'
-          }
-      }
+      mutDatFrame <- csqSubInfo[, c('BIOTYPE', 'Consequence', 'cDNA_position')]
+      mutDatFrame[mutDatFrame == "" | grepl('\\?', mutDatFrame)] <- "Missing"
       CSQnum <- selectMut(mutDatFrame)
-      csqDat[n, ] <- CSQ_subinfo[CSQnum, ]
+      csqDat[n, ] <- csqSubInfo[CSQnum, ]
     }
     return(csqDat)
 }
+
+# helper function for splitting CSQ info
+batchCSQ <- function(csq, csqDat) {
+    csqSingle <- strsplit(csq, split="\\|")[[1]]
+    if (length(csqSingle) == (ncol(csqDat) - 1)) {
+        csqSingle <- c(csqSingle, "")
+    }
+    return(csqSingle)
+}
+

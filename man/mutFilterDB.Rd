@@ -51,6 +51,6 @@ Filter variants in germline database.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+"WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 mafF <- mutFilterDB(maf)
 }

@@ -27,7 +27,7 @@ Filter variants based on Panel of Normals
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-mafF <- mutFilterPON(maf, PONfile = system.file("extdata",
-"PON_test.txt",package = "CaMutQC"), PONformat = "txt")
+"WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
+mafF <- mutFilterPON(maf, PONfile=system.file("extdata",
+"PON_test.txt", package="CaMutQC"), PONformat="txt")
 }

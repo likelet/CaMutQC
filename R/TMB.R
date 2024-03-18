@@ -21,9 +21,9 @@
 #' @export calTMB
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
-#' package = "CaMutQC"))
-#' TMB_value <- calTMB(maf, bedFile = system.file("extdata/bed/panel_hg38",
-#' "FlCDx-hg38.rds",package = "CaMutQC"))
+#' package="CaMutQC"))
+#' TMB_value <- calTMB(maf, bedFile=system.file("extdata/bed/panel_hg38",
+#' "FlCDx-hg38.rds", package="CaMutQC"))
 
 calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3', 
                    genelist = NULL, mutType = 'nonsynonymous', bedFilter = TRUE){
@@ -35,10 +35,14 @@ calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3',
     # obtain genome build version and filter maf 
     if (length(unique(maf$NCBI_Build)) == 1) {
         genVer <- unique(maf$NCBI_Build)
+        # give user a message about the bed used in CaMutQC
+        mes <- paste0("Bed files in CaMutQC are not accurate.", 
+                      " The result serves only as a reference. \n")
+        warning(mes)
         res <- readBedPanel(assay=assay, genVer=genVer, maf=maf, bedFile=bedFile)
         maf <- res[[1]]
         bedFile <- res[[2]]
-    }else{stop("More than 1 unique NCBI_Build value detected in this dataset.")}
+    }else{stop("More than 1 unique NCBI_Build value, or missing value detected.")}
     ## select variants based on chosen assay
     if (strsplit(assay, split = '-')[[1]][1] == 'MSK'){
         # filter on VAF, VAFratio and AD
@@ -101,7 +105,7 @@ calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3',
         bedProc <- unique(bed[, seq_len(3)])
         colnames(bedProc) <- c('chrom', 'chromStart', 'chromEnd')
         bedProc <- unique(cbind(bedProc,
-                          interval=bedProc$chromEnd-bedProc$chromStart, Num = 0))
+                          interval=bedProc$chromEnd-bedProc$chromStart, Num=0))
         rownames(bedProc) <- seq_len(nrow(bedProc))
         maf <- maf[, c("Chromosome", "Start_Position", "End_Position")]
         chrs <- unique(maf$Chromosome)
@@ -111,14 +115,13 @@ calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3',
                           "bed file.\n", "Maybe '1' in maf should be 'chr1'?")
             stop(mes)
         }
-        for (c in seq_len(length(chrs))) {
-            mafTarget <- maf[which(maf$Chromosome == chrs[c]), ]
-            bedTarget <- bedProc[which(bedProc$chrom == chrs[c]), ]
-            l <- rep(0, nrow(bedTarget))
-            for(i in seq_len(nrow(bedTarget))) {
-                l[i] <- mutCountRegion(mafTarget, bedTarget[i, ])
-            }
-            bedProc[which(bedProc$chrom == chrs[c]), 'Num'] <- l
+        # iterate through every chromosome
+        for (chr in chrs) {
+            mafTarget <- maf[maf$Chromosome == chr, ]
+            bedTarget <- bedProc[bedProc$chrom == chr, ]
+            l <- vapply(seq_len(nrow(bedTarget)), function(i) {
+                mutCountRegion(mafTarget, bedTarget[i, ]) }, numeric(1))
+            bedProc[bedProc$chrom == chr, 'Num'] <- l
         }
         TMB <- round(mean(bedProc$Num/bedProc$interval) * 1000000, 3)
         return(TMB)
@@ -127,22 +130,14 @@ calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3',
 
 ## helper function for counting variants in specific region
 mutCountRegion <- function(mutLoc, bedSingle){
-    count <- bedSingle[1, 'Num']
-    for (i in seq_len(nrow(mutLoc))) {
-        if (mutLoc[i, 'Start_Position'] >= bedSingle[1, 'chromStart'] &
-            mutLoc[i, 'End_Position'] <= bedSingle[1, 'chromEnd']) {
-            count <- count  + 1
-        }
-    }
+    count <- sum(mutLoc$Start_Position >= bedSingle[1, 'chromStart'] & 
+                     mutLoc$End_Position <= bedSingle[1, 'chromEnd'])
+    count <- count + bedSingle[1, 'Num']
     return(count)
 }
 
 ## helper function for reading corresponding bed and panel file
 readBedPanel <- function(assay, genVer, maf, bedFile){
-    # give user a message about the bed used in CaMutQC
-    mes <- paste0("Bed files in CaMutQC are not accurate.", 
-                " The result serves only as a reference. \n")
-    warning(mes)
     # check genome version
     if (!(genVer %in% c("GRCh37", "GRCh38"))){ stop("Invalid human genome version!") }
     if (assay == 'MSK-v3') {
