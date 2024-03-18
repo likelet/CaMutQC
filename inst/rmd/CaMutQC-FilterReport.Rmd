@@ -562,8 +562,10 @@ dat_after <- dat_after[order(unlist(lapply(as.character(dat_after$Var1)
 
 # fill the missing value with 0 for dat_after
 missing_chrom <- setdiff(dat_before$Var1, dat_after$Var1)
-missing_data <- data.frame(Var1=missing_chrom, Freq=0)
-dat_after <- rbind(dat_after, missing_data)
+if (length(missing_chrom)) {
+    missing_data <- data.frame(Var1=missing_chrom, Freq=0)
+    dat_after <- rbind(dat_after, missing_data)
+}
 
 # Calculate the difference between before and after filtration to get "filtered" counts
 dat_filtered <- merge(dat_before, dat_after, by="Var1", suffixes=c("_before", "_after"))
