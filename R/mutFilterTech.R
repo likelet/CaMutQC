@@ -41,9 +41,9 @@
 #' @export mutFilterTech
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterTech(maf, PONfile = system.file("extdata",
-#' "PON_test.txt",package = "CaMutQC"), PONformat = "txt")
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
+#' mafF <- mutFilterTech(maf, PONfile=system.file("extdata",
+#' "PON_test.txt", package="CaMutQC"), PONformat="txt")
 
 mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized", 
                           tumorDP = 20, normalDP = 10, tumorAD = 5, 

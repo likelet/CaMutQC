@@ -281,10 +281,10 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
           if (inputStrelka == 'INDEL'){
             TIRLoc <- strsplit(vcfAdditional[i, 1], ":")[[1]] == 'TIR'
             TARLoc <- strsplit(vcfAdditional[i, 1], ":")[[1]] == 'TAR'
-            tTIR <-strsplit(vcfAdditional[i,tumorSampleName],":")[[1]][TIRLoc]
-            tTAR <-strsplit(vcfAdditional[i,tumorSampleName],":")[[1]][TARLoc]
-            nTIR<-strsplit(vcfAdditional[i,normalSampleName],":")[[1]][TIRLoc]
-            nTAR<-strsplit(vcfAdditional[i,normalSampleName],":")[[1]][TARLoc]
+            tTIR <-strsplit(vcfAdditional[i,tumorSampleName], ":")[[1]][TIRLoc]
+            tTAR <-strsplit(vcfAdditional[i,tumorSampleName], ":")[[1]][TARLoc]
+            nTIR<-strsplit(vcfAdditional[i,normalSampleName], ":")[[1]][TIRLoc]
+            nTAR<-strsplit(vcfAdditional[i,normalSampleName], ":")[[1]][TARLoc]
             # use tire1 information
             tAltAD <- as.numeric(strsplit(tTIR, ",")[[1]][1])
             tRefAD <- as.numeric(strsplit(tTAR, ",")[[1]][1])

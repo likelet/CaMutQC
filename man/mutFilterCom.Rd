@@ -187,8 +187,8 @@ Apply common filtering strategies on a MAF data frame.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+"WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 mafF <- mutFilterCom(maf,
-PONfile = system.file("extdata","PON_test.txt",package = "CaMutQC"),
-TMB = FALSE, report = FALSE, PONformat = "txt")
+PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"),
+TMB=FALSE, report=FALSE, PONformat="txt", verbose=FALSE)
 }

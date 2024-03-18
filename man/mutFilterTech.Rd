@@ -82,7 +82,7 @@ tag, normal depth, panel of normal (PON) and FILTER field.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-mafF <- mutFilterTech(maf, PONfile = system.file("extdata",
-"PON_test.txt",package = "CaMutQC"), PONformat = "txt")
+"WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
+mafF <- mutFilterTech(maf, PONfile=system.file("extdata",
+"PON_test.txt", package="CaMutQC"), PONformat="txt")
 }

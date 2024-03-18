@@ -81,10 +81,10 @@
 #' @export mutFilterCan
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-#' mafF <- mutFilterCan(maf, cancerType = 'BRCA', 
-#' PONfile = system.file("extdata","PON_test.txt",package = "CaMutQC"), 
-#' PONformat = "txt", TMB = FALSE)
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
+#' mafF <- mutFilterCan(maf, cancerType='BRCA', 
+#' PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"), 
+#' PONformat="txt", TMB=FALSE)
 
 mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf", 
                          panel = 'Customized', tumorDP = 0,

@@ -84,6 +84,6 @@ Transform a CaMutQC maf object to a maftools maf object.
 }
 \examples{
 maf_CaMutQC <- vcfToMAF(system.file("extdata/Multi-caller/",
-package = "CaMutQC"), multiVCF = TRUE)
+package="CaMutQC"), multiVCF=TRUE)
 maf_maftools <- tomaftools(maf_CaMutQC)
 }

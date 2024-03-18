@@ -18,7 +18,7 @@
 #' @export mutFilterSB
 #' @examples
 #' maf <- vcfToMAF(system.file("extdata",
-#' "WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+#' "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 #' mafF <- mutFilterSB(maf)
 
 mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
@@ -66,7 +66,7 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
         refF1R2 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][refF1R2index]
         refF2R1 <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][refF2R1index]
         SBcharmatix <- paste(refF1R2, refF2R1, altF1R2, altF2R1, sep = ',')
-        if (calSBscore(SBcharmatix, method, rorder = TRUE) > SBscore) {
+        if (calSBscore(SBcharmatix, method, rorder=TRUE) > SBscore) {
           maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
         }
       }else if (length(grep('F1R2', maf$FORMAT[i]))){
@@ -81,7 +81,7 @@ mutFilterSB <- function(maf, method = 'SOR', SBscore = 3) {
       }else if (length(grep('DP4', maf$FORMAT[i]))){
         DP4index <- strsplit(maf$FORMAT[i], ':')[[1]] == 'DP4'
         SBcharmatix <- strsplit(maf[i, 'tumorSampleInfo'], ':')[[1]][DP4index]
-        if (calSBscore(SBcharmatix, method, rorder = TRUE) > SBscore) {
+        if (calSBscore(SBcharmatix, method, rorder=TRUE) > SBscore) {
             maf[i, 'CaTag'] <- paste0(maf[i, 'CaTag'] , 'S')
         }
       }

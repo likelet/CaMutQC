@@ -161,8 +161,8 @@ top-rated strategies shared by users.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
-mafR <- mutFilterRef(maf, reference = "Zhu_et_al-Nat_Commun-2020-KIRP",
-PONfile = system.file("extdata","PON_test.txt",package = "CaMutQC"), 
-PONformat = "txt", TMB = FALSE)
+"WES_EA_T_1_mutect2.vep.vcf",package="CaMutQC"))
+mafR <- mutFilterRef(maf, reference="Zhu_et_al-Nat_Commun-2020-KIRP",
+PONfile=system.file("extdata","PON_test.txt", package="CaMutQC"), 
+PONformat="txt", TMB=FALSE, verbose=FALSE, report=FALSE)
 }

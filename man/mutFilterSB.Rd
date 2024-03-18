@@ -28,6 +28,6 @@ Filter variants based on strand bias.
 }
 \examples{
 maf <- vcfToMAF(system.file("extdata",
-"WES_EA_T_1_mutect2.vep.vcf",package = "CaMutQC"))
+"WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 mafF <- mutFilterSB(maf)
 }
