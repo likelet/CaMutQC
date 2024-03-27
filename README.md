@@ -9,7 +9,7 @@
 
 The quality control of cancer somatic mutations has a great significance in the research of cancer genomics. It helps reduce the noise, systematic bias, as well as the false positive rate in dataset, and to pick out candidate mutations related to tumorigenesis. However, existing tools were not designed especially for cancer somatic mutations, and parameters and filtering standards used are different among them. Besides, there is no such a platform, database or tool stores or summarizes the standards for filtration of cancer somatic mutations applied in previous studies, which increases the time and energy spent on related research.  
 
-Therefore, we present this R package, CaMutQC, for the comprehensive filtration and selection of cancer somatic mutations. CaMutQC is able to filter false positive mutations generated due to technical issues, as well as to select candidate cancer mutations through a series of well-structured functions by labeling mutations with various flags.
+Therefore, we present this R package, CaMutQC, for the comprehensive filtration and selection of cancer somatic mutations for tumor-normal paired samples. CaMutQC is able to filter false positive mutations generated due to technical issues, as well as to select candidate cancer mutations through a series of well-structured functions by labeling mutations with various flags.
 
 Also, a detailed and vivid filter report will be offered after completing a whole filtration or selection section.
 
