@@ -120,7 +120,17 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
                     't_alt_count', 'n_depth', 'n_ref_count', 'n_alt_count',
                     'all_effects'
     )
-    message('VCF to MAF conversion is in process...')
+    # handle conditions when there is no variants in the VCF file
+    if (nrow(vcfMain) == 0) {
+        stop("No variants in VCF file. Program stops here.")
+    }else{
+        # check whether there is a paired normal sample in the VCF
+        if (ncol(vcfAdditional) < 3) {
+            stop("Missing columns in VCF, a paired normal sample is required.")
+        }else{
+            message('VCF to MAF conversion is in process...')
+        }
+    }
     # assign chromosome, Start_Position,Reference_Allele, Tumor_Seq_Allele1 info
     maf[, 5] <- vcfMain$CHROM
     maf[, 6] <- vcfMain$POS
