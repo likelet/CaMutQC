@@ -1,7 +1,7 @@
 Package: CaMutQC
 Type: Package
 Title: An R Package for Comprehensive Filtration and Selection of Cancer Somatic Mutations
-Version: 0.99.10
+Version: 1.0.0
 Authors@R: c(person(given = "Xin", family = "Wang", 
                      role = c("aut", "cre"),
                      email = "sylviawang555@gmail.com",
@@ -17,7 +17,8 @@ Encoding: UTF-8
 LazyData: false
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    BiocStyle
 VignetteBuilder: knitr
 RoxygenNote: 7.3.1
 NeedsCompilation: no
