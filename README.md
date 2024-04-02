@@ -14,7 +14,16 @@ Therefore, we present this R package, CaMutQC, for the comprehensive filtration 
 Also, a detailed and vivid filter report will be offered after completing a whole filtration or selection section.
 
 ## Installation
+1. Through Bioconductor (**recommended**) to get the latest & most stable version:
+```R
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+BiocManager::install("CaMutQC")
+```
 
+2. Through Github to get the latest version: 
 ```R
 #  install the latest version from GitHub
 if(!require(devtools)) install.packages("devtools")
