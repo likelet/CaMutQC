@@ -65,9 +65,22 @@ In R console, enter `citation("CaMutQC")`.
 
 ## Installation
 
+### Via Bioconductor (recommended)
+Install the latest and most stable version of CaMutQC with [Bioconductor](https://www.bioconductor.org/) by typing the commands below in R console:
+```{r eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("CaMutQC")
+```
+
+
 ### Via GitHub 
 
-Install the latest version of this package by typing the commands below in R console:  
+Install the latest version of CaMutQC by typing the commands below in R console:  
   
 ```{r eval=FALSE}
 if (!requireNamespace("devtools", quietly = TRUE)) {
