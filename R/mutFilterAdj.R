@@ -28,6 +28,10 @@ mutFilterAdj <- function(maf, maxIndelLen = 50, minInterval = 10){
         "INS" %in% unique(maf$Variant_Type)) {
         # create an indel bed with indels of length <= maxIndelLen
         bedFrame <- selectIndel(maf, maxIndelLen, minInterval)
+        # directly return the dataframe if there is no satisfied indel
+        if (is.null(bedFrame)) {
+            return(maf)
+        }
         snpFrame <- maf[maf$Variant_Type == "SNP", ]
         # add tags to variants in expanded bed
         nTags <- rownames(snpFrame[snpFrame$Chromosome 
@@ -45,6 +49,10 @@ selectIndel <- function(mafDat, maxIndelLen = 50, minInterval = 10) {
     indels <- rownames(mafDat[(mafDat$Variant_Type %in% c("DEL", "INS")) & 
                               (mafDat$End_Position - mafDat$Start_Position <=
                                  maxIndelLen),])
+    # if no indel satisfies the requirement, return NULL
+    if (length(indels) == 0) {
+        return(NULL)
+    }
     chrs <- mafDat[indels, "Chromosome"]
     starts <- mafDat[indels, "Start_Position"]
     ends <- mafDat[indels, "End_Position"]
