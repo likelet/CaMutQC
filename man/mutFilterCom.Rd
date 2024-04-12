@@ -149,7 +149,8 @@ including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{reportDir}{Path to the output report file. Default: './'.}
 
-\item{TMB}{Whether to calculate TMB. Default: TRUE.}
+\item{TMB}{Whether to calculate TMB. Default: TRUE. Note: CaMutQC uses 
+unfiltered maf to calculate TMB value.}
 
 \item{cancerType}{Type of cancer whose filtering parameters
 need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
