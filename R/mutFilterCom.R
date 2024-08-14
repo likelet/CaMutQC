@@ -59,7 +59,8 @@
 #' @param report Whether to generate report automatically. Default: TRUE
 #' @param reportFile File name of the report. Default: 'FilterReport.html'
 #' @param reportDir Path to the output report file. Default: './'.
-#' @param TMB Whether to calculate TMB. Default: TRUE.
+#' @param TMB Whether to calculate TMB. Default: TRUE. Note: CaMutQC uses 
+#' unfiltered maf to calculate TMB value.
 #' @param assay Methodology and assay will be applied as a reference, including
 #' 'MSK-v3', 'MSK-v2', 'MSK-v1', 'FoundationOne', 'Pan-Cancer Panel' and
 #' 'Customized'. Default: 'MSK-v3'.
@@ -157,7 +158,7 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                    keepType=keepType, bedFile=bedFile,bedHeader=bedHeader,
                    bedFilter=bedFilter, progressbar=FALSE, verbose=FALSE)
     mafFilteredF <- mafFilteredS2[mafFilteredS2$CaTag == '0', ]
-    if (nrow(mafFilteredF) == 0){ stop('No variants left after filtration.')}
+    if (nrow(mafFilteredF) == 0){ warning('No variant left after filtration.')}
     if (TMB){
         TMBvalue <- calTMB(maf, bedFile=bedFile, assay=assay,
                             genelist=genelist, mutType=mutType, 

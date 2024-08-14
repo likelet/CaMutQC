@@ -2,14 +2,21 @@ citHeader("CaMutQC can be cited as:")
 
 citEntry(
    entry = "article",
-   title = "Integrative quality control of cancer somatic mutations with CaMutQC through somatic alterations (abstract)",
+   title = "CaMutQC: An R Package for Integrative Quality Control of Cancer Somatic Mutations",
    author = personList(as.person("Xin Wang"),
-                       as.person("Jian Ren"),
+                       as.person(" Tengjia Jiang"),
+                       as.person(" Ao Shen"),
+                       as.person(" Yaru Chen"),
+                       as.person(" Yanqing Zhou"),
+                       as.person(" Jie Liu"),
+                       as.person(" Shuhan Zhao"),
+                       as.person(" Shifu Chen"),
+                       as.person(" Jian Ren"),
                        as.person(" Qi Zhao")
                        ),
-   journal = "AACR annual meeting 2022",
-   year = 2022,
-   url = "https://aacrjournals.org/cancerres/article/82/12_Supplement/5004/700670/",
-   doi = "10.1158/1538-7445.AM2022-5004",
-   textVersion = "Xin Wang, Jian Ren, Qi Zhao, Integrative quality control of cancer somatic mutations with CaMutQC through somatic alterations (abstract), AACR annual meeting 2022"
+   journal = "bioRxiv",
+   year = 2024,
+   url = "https://www.biorxiv.org/content/early/2024/08/12/2024.08.12.606123",
+   doi = "10.1101/2024.08.12.606123",
+   textVersion = "Xin Wang, Tengjia Jiang, Ao Shen et al. CaMutQC: An R Package for Integrative Quality Control of Cancer Somatic Mutations. bioRxiv 2024.08.12.606123; doi: https://doi.org/10.1101/2024.08.12.606123"
 )
