@@ -43,7 +43,7 @@ vignette: >
   font-size: 13pt;
 }
   #TOC {
-  font-size: 10pt;
+  font-size: 8pt;
 }
   #TOC li:before {
   counter-increment: none;
@@ -115,7 +115,7 @@ MAF data frame with special labels from CaMutQC will be returned after each filt
 
 
 ### Multiple VCF
-CaMutQC supports VEP annotated multi-sample or multi-caller VCF files as inputs, which should be under the same file path. **Supported caller: MuTect2, VarScan2, MuSE, Strelka2.**
+CaMutQC supports VEP annotated multi-sample or multi-caller VCF files as inputs, which should be under the same file path. **Supported caller: MuTect2, VarScan2, MuSE.**
 
 
 &nbsp;
@@ -392,7 +392,7 @@ MAFCom_tmb <- mutFilterCom(MAFdat, panel="WES", assay="Customized", report=FALSE
                            bedFile=system.file("extdata/bed/panel_hg38", 
                                                "Pan-cancer-hg38.rds", package="CaMutQC"), 
                            PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"), 
-                           PONformat="txt", progressbar=TRUE, verbose=FALSE)
+                           PONformat="txt", progressbar=FALSE, verbose=FALSE)
 ```
 When running `mutFilterCom`, `mutFilterTech` or `mutSelection`, a progress bar and some messages will display by default to notify users how the task goes, as well as some potential issues. Users can turn off the message by setting `verbose=FALSE`. When `TMB=TRUE`, the TMB will be calculated using a specific assay and printed out on the screen. TMB is 0.847 in this case.
 
