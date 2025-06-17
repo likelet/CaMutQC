@@ -11,15 +11,16 @@ The quality control of cancer somatic mutations has a great significance in the 
 
 Therefore, we present this R package, CaMutQC, for the comprehensive filtration and selection of cancer somatic mutations for tumor-normal paired samples. CaMutQC is able to filter false positive mutations generated due to technical issues, as well as to select candidate cancer mutations through a series of well-structured functions by labeling mutations with various flags.
 
-Also, a detailed and vivid filter report will be offered after completing a whole filtration or selection section.
+Also, a detailed and vivid filter report will be generated after completing a whole filtration or selection section.
 
 ## Installation
-1. Through Bioconductor (**recommended**) to get the latest & most stable version:
+1. Through Bioconductor (**recommended**) to get the most stable version:
 ```R
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-# The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
+# the latest version is on the devel branch, but might not be the most stable version
+# BiocManager::install(version='devel')
+# the most stable version is on the release branch (by default)
 BiocManager::install("CaMutQC")
 ```
 
