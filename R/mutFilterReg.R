@@ -7,7 +7,7 @@
 #' @param bedHeader Whether the input bed file has a header or not. 
 #' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
-#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE
 #' @param verbose Whether to generate message/notification during the 
 #' filtration process. Default: TRUE.
 #' @importFrom methods is
@@ -20,10 +20,10 @@
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 #' package="CaMutQC"))
 #' mafF <- mutFilterReg(maf, bedFile=system.file("extdata/bed/panel_hg38",
-#' "Pan-cancer-hg38.rds", package="CaMutQC"))
+#' "Pan-cancer-hg38.rds", package="CaMutQC"), bedFilter = FALSE)
 
 mutFilterReg <- function(maf, bedFile = NULL, bedHeader = FALSE,
-                         bedFilter = TRUE, verbose = TRUE){
+                         bedFilter = FALSE, verbose = TRUE){
     # check user input
     if (!(is(maf, "data.frame"))) {
       stop("maf input should be a data frame, did you get it from vcfToMAF function?")

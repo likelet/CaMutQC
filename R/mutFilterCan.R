@@ -51,7 +51,7 @@
 #' @param bedHeader Whether the input bed file has a header or not. 
 #' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
-#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE
 #' @param mutFilter Whether to directly return a filtered MAF data frame.
 #' If FALSE, a simulation filtration process will be run, and the original MAF
 #' data frame with tags in CaTag column, and  a filter report will be returned.
@@ -94,7 +94,7 @@ mutFilterCan <- function(maf, cancerType, PONfile, PONformat = "vcf",
                          tagFILTER = NULL, dbVAF = 0.01, ExAC = FALSE,
                          Genomesprojects1000 = FALSE, ESP6500 = FALSE,
                          gnomAD = FALSE, dbSNP = FALSE, keepCOSMIC = FALSE,
-                         keepType = 'all', bedFile = NULL, bedFilter = TRUE,
+                         keepType = 'all', bedFile = NULL, bedFilter = FALSE,
                          bedHeader = FALSE, mutFilter = FALSE, 
                          selectCols = FALSE, report = TRUE,
                          reportFile = 'FilterReport.html', reportDir = './',

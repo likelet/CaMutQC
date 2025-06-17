@@ -30,7 +30,7 @@ mutFilterCan(
   keepCOSMIC = FALSE,
   keepType = "all",
   bedFile = NULL,
-  bedFilter = TRUE,
+  bedFilter = FALSE,
   bedHeader = FALSE,
   mutFilter = FALSE,
   selectCols = FALSE,
@@ -118,7 +118,7 @@ including 'exonic', 'nonsynonymous' and 'all'. Default: 'exonic'.}
 Default: NULL}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
-only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}
+only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE}
 
 \item{bedHeader}{Whether the input bed file has a header or not. 
 Default: FALSE.}

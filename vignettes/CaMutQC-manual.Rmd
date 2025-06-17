@@ -305,10 +305,10 @@ table(MAF_type$Variant_Classification[which(MAF_type$CaTag == '0')])
 
 #### Region selection
 
-In this step, users are able to further select variants related to cancer development by providing an additional BED file (or a .rds file with a `bed` variable in it), and variants will be searched only in target regions covered in the BED file. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file (only leaves segments in `Chr1-Chr22`, `ChrX` and `ChrY`).
+In this step, users can further select variants related to cancer development by providing an additional BED file (or a `.rds` file with a `bed` variable in it), and variants will be searched only in target regions covered in the BED file. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file (only leaves segments in `Chr1-Chr22`, `ChrX` and `ChrY`).
 
 ```{r, message=FALSE}
-MAF_reg <- mutFilterReg(MAFdat, 
+MAF_reg <- mutFilterReg(MAFdat, bedFilter = TRUE,
                         bedFile=system.file("extdata/bed/panel_hg19", 
                                             "FlCDx-hg19.rds", package="CaMutQC"))
 table(MAF_reg$CaTag)

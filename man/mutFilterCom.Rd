@@ -29,7 +29,7 @@ mutFilterCom(
   keepType = "exonic",
   bedFile = NULL,
   bedHeader = FALSE,
-  bedFilter = TRUE,
+  bedFilter = FALSE,
   mutFilter = FALSE,
   ESP6500 = TRUE,
   selectCols = TRUE,
@@ -117,7 +117,7 @@ Default: NULL.}
 Default: FALSE.}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
-only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.}
+only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE.}
 
 \item{mutFilter}{Whether to directly return a filtered MAF data frame.
 If FALSE, a simulation filtration process will be run, and the original MAF
