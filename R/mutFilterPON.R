@@ -26,6 +26,8 @@ mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
     # check user input
     if (!(is(maf, "data.frame"))) {
         stop("maf input should be a data frame, did you get it from vcfToMAF function?")
+    }else if (nrow(maf) == 0){
+        stop("No variant in the maf!")
     }
     # give recommendation for PON file
     if (verbose) {
