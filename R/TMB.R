@@ -23,7 +23,7 @@
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 #' package="CaMutQC"))
 #' TMB_value <- calTMB(maf, bedFile=system.file("extdata/bed/panel_hg38",
-#' "FlCDx-hg38.rds", package="CaMutQC"))
+#' "Pan-cancer-hg38.rds", package="CaMutQC"), assay = "Customized")
 
 calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3', 
                    genelist = NULL, mutType = 'nonsynonymous', bedFilter = TRUE){
