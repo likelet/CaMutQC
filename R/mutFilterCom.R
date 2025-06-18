@@ -66,8 +66,8 @@
 #' 'Customized'. Default: 'MSK-v3'.
 #' @param genelist A vector of panel gene list, only useful when assay is set to
 #' 'Customized'.
-#' @param mutType A group of variant classifications that will be kept,
-#' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
+#' @param mutType A group of variant classifications that will be kept in TMB
+#' calculation, only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
 #' @param cancerType Type of cancer whose filtering parameters
 #' need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",

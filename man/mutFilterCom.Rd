@@ -141,8 +141,8 @@ Or a vector contains column names will be kept.}
 \item{genelist}{A vector of panel gene list, only useful when assay is set to
 'Customized'.}
 
-\item{mutType}{A group of variant classifications that will be kept,
-only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
+\item{mutType}{A group of variant classifications that will be kept in TMB
+calculation, only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.}
 
 \item{reportFile}{File name of the report. Default: 'FilterReport.html'}
