@@ -63,8 +63,33 @@ getVarFeature <- function(vcfPos, ref, alt, csqalt) {
         alt <- substring(alt, 1, 1)
         return(list(start_pos, start_pos + 1, "INS", ref, alt, 
                     (nchar(alt)) %% 3 == 0))
+    # handle case: Ref: GTGG. Alt: TGG. csqalt: TGG
+    }else if(nchar(alt) < nchar(ref) && any(grepl(alt, ref)) ) {
+        ref_len <- nchar(ref)
+        alt_len <- nchar(alt)
+        # iterate through every possible case
+        for (i in 1:(ref_len - alt_len + 1)) {
+            if (substr(ref, i, i + alt_len - 1) == alt) {
+                # calculate the deleted base
+                del_start <- 1
+                del_end <- i - 1
+                deleted_bases <- substr(ref, del_start, del_end)
+                length_changed <- del_end - del_start + 1
+                # adjust ref and alt
+                new_ref <- deleted_bases
+                new_alt <- "-"
+                # modify pos
+                start_pos <- vcfPos
+                end_pos <- vcfPos + length_changed - 1
+                # return results
+                return(list(start_pos, end_pos, 'DEL', new_ref, new_alt,
+                            (length_changed %% 3 == 0)))
+            }
+        }
     }else{
         mes <- paste0("Ref: ", ref, ". Alt: ", alt, ". csqalt: ", csqalt)
+        print("This is a case that CaMutQC cannot handle during MAF transformation.")
+        print("Please contact the developer through email or post on github issue, thanks!")
         stop(mes)
     }
 }
