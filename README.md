@@ -41,6 +41,22 @@ This is a simple workflow of CaMutQC.
 
 A detailed manual can be found [here](https://seqworld.com/CaMutQC/).
 
+## Shiny APP
+We developed a Shiny application for CaMutQC to enhance its accessibility. Users can use the following code to launch Shiny app build with the package.
+```R
+pkg_required_shiny <- c('shiny','shinyjs', 'shinyFiles', 'DT')
+
+# Install required packages
+checkPackage <- function(pkg){
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(paste0("Package ", pkg, " needed for shiny app. Please install it."), call. = FALSE)
+  }
+}
+invisible(lapply(pkg_required_shiny, checkPackage))
+# run shiny app from shiny package
+shiny::runApp(system.file("shiny", package = "CaMutQC"))
+```
+
 ## Author
 
 This software was mainly developed by:
@@ -55,5 +71,9 @@ This software was mainly developed by:
 ## Maintainer
 [Xin Wang](sylviawang555@gmail.com)  
 
-## Citation (AACR 2022 abstract)
+## Citation
+### AACR 2022 abstract
 *Xin Wang, Jian Ren, Qi Zhao*. Integrative quality control of cancer somatic mutations with CaMutQC [abstract]. In: Proceedings of the 113th Annual Meeting of the American Association for Cancer Research; 2022 April 8-13; New Orleans LA. Philadelphia (PA): AACR; 2022. Abstract nr 5004
+### bioRxiv
+CaMutQC: An R Package for Integrative Quality Control of Cancer Somatic Mutations. *Xin Wang, Tengjia Jiang, Ao Shen, Yaru Chen, Yanqing Zhou, Jie Liu, Shuhan Zhao, Shifu Chen, Jian Ren, Qi Zhao*. bioRxiv 2024.08.12.606123; doi: https://doi.org/10.1101/2024.08.12.606123
+
