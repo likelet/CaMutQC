@@ -50,7 +50,7 @@ There are originally `r nrow(maf)` mutations, `r nrow(mafFilteredTs)` left after
 
 * Tumor sample name: <span style="color:#ED6F3E">**`r unique(maf$Tumor_Sample_Barcode)`**</span>
 * Normal Sample name: <span style="color:#ED6F3E">**`r unique(maf$Matched_Norm_Sample_Barcode)`**</span>
-* Size of MAF data frame: <span style="color:#ED6F3E">**`r paste0(as.character(round(object.size(maf)/1024, 2)), ' kb')`**</span>
+* Number of rows in the final MAF data frame: <span style="color:#ED6F3E">**`r as.character(nrow(maf))`**</span>
 
 &nbsp;
 

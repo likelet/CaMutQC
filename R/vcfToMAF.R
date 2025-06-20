@@ -376,6 +376,8 @@ vcfhelper <- function(vcfFile, tumorSampleName = 'Extracted',
     maf <- maf %>% mutate_at(vars(78:86, 101:117), as.numeric)
     maf <- cbind(maf, CaTag='0')
     rownames(maf) <- seq_len(nrow(maf))
+    ## set Tumor_Seq_Allele1 same as ref, double check
+    maf[, 12] <- maf[, 11]
     message('VCF to MAF conversion has been done successfully!')
     return(maf)
 }

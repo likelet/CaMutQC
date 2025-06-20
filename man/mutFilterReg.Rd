@@ -8,7 +8,7 @@ mutFilterReg(
   maf,
   bedFile = NULL,
   bedHeader = FALSE,
-  bedFilter = TRUE,
+  bedFilter = FALSE,
   verbose = TRUE
 )
 }
@@ -22,7 +22,7 @@ Default: NULL}
 Default: FALSE.}
 
 \item{bedFilter}{Whether to filter the information in bed file or not, which
-only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE}
+only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE}
 
 \item{verbose}{Whether to generate message/notification during the 
 filtration process. Default: TRUE.}
@@ -38,5 +38,5 @@ Filter variants not in specific regions.
 maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 package="CaMutQC"))
 mafF <- mutFilterReg(maf, bedFile=system.file("extdata/bed/panel_hg38",
-"Pan-cancer-hg38.rds", package="CaMutQC"))
+"Pan-cancer-hg38.rds", package="CaMutQC"), bedFilter = FALSE)
 }
