@@ -1,7 +1,7 @@
 Package: CaMutQC
 Type: Package
 Title: An R Package for Comprehensive Filtration and Selection of Cancer Somatic Mutations
-Version: 1.1.1
+Version: 1.5.2
 Authors@R: c(person(given = "Xin", family = "Wang", 
                      role = c("aut", "cre"),
                      email = "sylviawang555@gmail.com",
@@ -18,13 +18,14 @@ LazyData: false
 Suggests: 
     knitr,
     rmarkdown,
-    BiocStyle
+    BiocStyle,
+    shiny
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
 BugReports: https://github.com/likelet/CaMutQC/issues
 URL: https://github.com/likelet/CaMutQC
-Depends: R (>= 4.0.0)
+Depends: R (>= 4.5.0)
 Imports: 
     ggplot2,
     dplyr,

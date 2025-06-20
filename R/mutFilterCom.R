@@ -47,7 +47,7 @@
 #' @param bedHeader Whether the input bed file has a header or not. 
 #' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
-#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE.
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE.
 #' @param mutFilter Whether to directly return a filtered MAF data frame.
 #' If FALSE, a simulation filtration process will be run, and the original MAF
 #' data frame with tags in CaTag column, and  a filter report will be returned.
@@ -66,8 +66,8 @@
 #' 'Customized'. Default: 'MSK-v3'.
 #' @param genelist A vector of panel gene list, only useful when assay is set to
 #' 'Customized'.
-#' @param mutType A group of variant classifications that will be kept,
-#' only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
+#' @param mutType A group of variant classifications that will be kept in TMB
+#' calculation, only useful when assay is set to 'Pan-Cancer Panel' or 'Customized',
 #' including 'exonic' and 'nonsynonymous'. Default: 'nonsynonymous'.
 #' @param cancerType Type of cancer whose filtering parameters
 #' need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
@@ -112,7 +112,7 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
                          ExAC = TRUE, Genomesprojects1000 = TRUE, 
                          gnomAD = TRUE, dbSNP = FALSE, keepCOSMIC = TRUE,
                          keepType = 'exonic', bedFile = NULL, bedHeader = FALSE,
-                         bedFilter = TRUE, mutFilter = FALSE, ESP6500 = TRUE,
+                         bedFilter = FALSE, mutFilter = FALSE, ESP6500 = TRUE,
                          selectCols = TRUE, report = TRUE,
                          assay = 'MSK-v3', genelist = NULL,
                          mutType = 'nonsynonymous',

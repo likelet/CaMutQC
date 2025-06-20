@@ -54,7 +54,7 @@ vignette: >
 
 ## Introduction 
 
-The quality control of cancer somatic mutations is of great significance in cancer genomics. It helps to eliminate false positive mutations arisen during the sequencing process, thereby improving the efficiency and accuracy of downstream analysis. Here, we developed an R package CaMutQC, for the quality control and selection of cancer somatic mutations. It offers both common and customized strategies for the filtration of cancer somatic mutations based on the MAF data frame, which also can select key somatic mutations related to tumorigenesis. In addition, we believe that the union of CaMutQC-filtered mutations returned by multiple variant caller contains more true positive somatic mutations than that from a single variant caller or the intersection of multiple callers. The package, source code and documents are freely available through Github (https://github.com/likelet/CaMutQC)
+The quality control of cancer somatic mutations is of great significance in cancer genomics. It helps to eliminate false positive mutations arisen during the sequencing process, thereby improving the efficiency and accuracy of downstream analysis. Here, we developed an R package CaMutQC, for the quality control and selection of cancer somatic mutations. It offers both common and customized strategies for the filtration of cancer somatic mutations based on the MAF data frame, which also can select key somatic mutations related to tumorigenesis. In addition, we believe that the union of CaMutQC-filtered mutations returned by multiple variant caller contains more true positive somatic mutations than that from a single variant caller or the intersection of multiple callers. The package, source code and documents are freely available through Github (https://github.com/likelet/CaMutQC). We also developed a shiny application to enhance its accessibility.
 
 
 ### Citation
@@ -305,10 +305,10 @@ table(MAF_type$Variant_Classification[which(MAF_type$CaTag == '0')])
 
 #### Region selection
 
-In this step, users are able to further select variants related to cancer development by providing an additional BED file (or a .rds file with a `bed` variable in it), and variants will be searched only in target regions covered in the BED file. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file (only leaves segments in `Chr1-Chr22`, `ChrX` and `ChrY`).
+In this step, users can further select variants related to cancer development by providing an additional BED file (or a `.rds` file with a `bed` variable in it), and variants will be searched only in target regions covered in the BED file. Besides, parameter `bedFilter` can be set as `TRUE` to clean the bed file (only leaves segments in `Chr1-Chr22`, `ChrX` and `ChrY`).
 
 ```{r, message=FALSE}
-MAF_reg <- mutFilterReg(MAFdat, 
+MAF_reg <- mutFilterReg(MAFdat, bedFilter = TRUE,
                         bedFile=system.file("extdata/bed/panel_hg19", 
                                             "FlCDx-hg19.rds", package="CaMutQC"))
 table(MAF_reg$CaTag)
