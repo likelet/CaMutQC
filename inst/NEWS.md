@@ -21,3 +21,8 @@ Changes in version 0.99.5 (2024-02-27)
 
 Changes in version 0.99.6 (2024-02-27)
 + Further remove some mutations from example VCF files to satisfy 5Mb limit
+
+Changes in version 1.5.2 (2024-06-20)
++ Develop A Shiny APP
++ Update manual, filterreport and README
++ Fix some bugs
