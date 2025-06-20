@@ -23,7 +23,7 @@
 #' @param bedHeader Whether the input bed file has a header or not. 
 #' Default: FALSE.
 #' @param bedFilter Whether to filter the information in bed file or not, which
-#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: TRUE
+#' only leaves segments in Chr1-Ch22, ChrX and ChrY. Default: FALSE
 #' @param progressbar Whether to show progress bar when running this function
 #' Default: TRUE
 #' @param verbose Whether to generate message/notification during the 
@@ -46,7 +46,7 @@ mutSelection <- function(maf, dbVAF = 0.01, ExAC = TRUE,
                          gnomAD = TRUE, dbSNP = FALSE,
                          keepCOSMIC = TRUE, keepType = 'exonic',
                          bedFile = NULL, bedHeader = FALSE,
-                         bedFilter = TRUE, progressbar = TRUE, verbose = TRUE){
+                         bedFilter = FALSE, progressbar = TRUE, verbose = TRUE){
     # check user input
     if (!(is(maf, "data.frame"))) {
       stop("maf input should be a data frame, did you get it from vcfToMAF function?")

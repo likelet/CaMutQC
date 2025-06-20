@@ -23,7 +23,7 @@
 #' maf <- vcfToMAF(system.file("extdata", "WES_EA_T_1_mutect2.vep.vcf",
 #' package="CaMutQC"))
 #' TMB_value <- calTMB(maf, bedFile=system.file("extdata/bed/panel_hg38",
-#' "FlCDx-hg38.rds", package="CaMutQC"))
+#' "Pan-cancer-hg38.rds", package="CaMutQC"), assay = "Customized")
 
 calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3', 
                    genelist = NULL, mutType = 'nonsynonymous', bedFilter = TRUE){
@@ -84,6 +84,9 @@ calTMB <- function(maf, bedFile = NULL, bedHeader = FALSE, assay = 'MSK-v3',
         # filter variants in COSMIC
         tags2 <- rownames(maf[grep('COSV', maf[, 'Existing_variation']), ])
         maf <- maf[setdiff(rownames(maf), tags2), ]
+        # 
+        maf <- mutFilterQual(maf, tumorDP=0, normalDP=0,
+                             tumorAD=0, VAF=0.05, VAFratio=0)
     }else if (assay == 'Customized'){
         if (!(is.null(genelist))){
             maf <- maf[(maf$Hugo_Symbol %in% genelist), ]
@@ -183,8 +186,6 @@ readBedPanel <- function(assay, genVer, maf, bedFile){
     } else if (assay == 'Pan-Cancer Panel') {
         panelGene <- read.table(system.file("extdata/Panel_gene",
                                 "Pan-cancer_genelist.txt", package="CaMutQC"))
-        maf <- mutFilterQual(maf, tumorDP=0, normalDP=0,
-                             tumorAD=0, VAF=0.05, VAFratio=0)
         if (is.null(bedFile)){
             bedFile <- system.file("extdata/bed/panel_hg19", 
                                    "Pan-cancer-hg19.rds", package="CaMutQC")
