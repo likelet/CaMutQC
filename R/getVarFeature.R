@@ -68,7 +68,7 @@ getVarFeature <- function(vcfPos, ref, alt, csqalt) {
         ref_len <- nchar(ref)
         alt_len <- nchar(alt)
         # iterate through every possible case
-        for (i in 1:(ref_len - alt_len + 1)) {
+        for (i in seq_len(ref_len - alt_len + 1)) {
             if (substr(ref, i, i + alt_len - 1) == alt) {
                 # calculate the deleted base
                 del_start <- 1
@@ -88,8 +88,8 @@ getVarFeature <- function(vcfPos, ref, alt, csqalt) {
         }
     }else{
         mes <- paste0("Ref: ", ref, ". Alt: ", alt, ". csqalt: ", csqalt)
-        print("This is a case that CaMutQC cannot handle during MAF transformation.")
-        print("Please contact the developer through email or post on github issue, thanks!")
+        message("This is a case that CaMutQC cannot handle during MAF transformation.")
+        message("Please contact the developer through email or post on github issue, thanks!")
         stop(mes)
     }
 }
