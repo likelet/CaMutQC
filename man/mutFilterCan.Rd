@@ -51,7 +51,7 @@ mutFilterCan(
 
 \item{cancerType}{Type of cancer whose filtering parameters
 need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
-"LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"}
+"LCML", "UCEC", "UCS", "BLCA", "KIRC", "KIRP" and "STAD".}
 
 \item{PONfile}{Panel-of-Normals files, which can be either obtained through 
 GATK (https://gatk.broadinstitute.org/hc/en-us/articles/360035890631-Panel-of-Normals-PON-)
@@ -174,5 +174,5 @@ maf <- vcfToMAF(system.file("extdata",
 "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 mafF <- mutFilterCan(maf, cancerType='BRCA', 
 PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"), 
-PONformat="txt", TMB=FALSE)
+PONformat="txt", TMB=FALSE, report=FALSE)
 }
