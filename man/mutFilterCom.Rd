@@ -15,6 +15,8 @@ mutFilterCom(
   normalAD = Inf,
   VAF = 0.05,
   VAFratio = 0,
+  dbsnpCutoff = 19,
+  nonCutoff = 8,
   SBmethod = "SOR",
   SBscore = 3,
   maxIndelLen = 50,
@@ -72,6 +74,10 @@ panels. Default: "Customized". Options: "MSKCC", "WES".}
 \item{VAF}{Threshold of VAF value. Default: 0.05}
 
 \item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 0.}
+
+\item{dbsnpCutoff}{Cutoff of normal depth for dbSNP variants. Default: 19.}
+
+\item{nonCutoff}{Cutoff of normal depth for non-dbSNP variants. Default: 8.}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
