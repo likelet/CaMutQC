@@ -137,6 +137,8 @@ function(input, output, session) {
             VAFratio = input$VAFratio,
             tumorDP = input$tumorDP,
             tumorAD = input$tumorAD,
+            dbsnpCutoff = input$dbsnpCutoff,
+            nonCutoff = input$nonCutoff,
             PONfile = pon_file_path(),
             PONformat = input$PON_file_type,
             progressbar = FALSE,

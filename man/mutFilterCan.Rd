@@ -16,6 +16,8 @@ mutFilterCan(
   normalAD = Inf,
   VAF = 0,
   VAFratio = 0,
+  dbsnpCutoff = 0,
+  nonCutoff = 0,
   SBmethod = "SOR",
   SBscore = Inf,
   maxIndelLen = Inf,
@@ -49,7 +51,7 @@ mutFilterCan(
 
 \item{cancerType}{Type of cancer whose filtering parameters
 need to be referred to.  Options are: "COADREAD", "BRCA", "LIHC", "LAML",
-"LCML", "UCEC", "UCS", "BLCA", "KIRC" and "KIRP"}
+"LCML", "UCEC", "UCS", "BLCA", "KIRC", "KIRP" and "STAD".}
 
 \item{PONfile}{Panel-of-Normals files, which can be either obtained through 
 GATK (https://gatk.broadinstitute.org/hc/en-us/articles/360035890631-Panel-of-Normals-PON-)
@@ -72,6 +74,10 @@ panels. Default: "Customized". Options: "MSKCC", "WES".}
 \item{VAF}{Threshold of VAF value. Default: 0.05}
 
 \item{VAFratio}{Threshold of VAF ratio (tVAF/nVAF). Default: 0}
+
+\item{dbsnpCutoff}{Cutoff of normal depth for dbSNP variants. Default: 19.}
+
+\item{nonCutoff}{Cutoff of normal depth for non-dbSNP variants. Default: 8.}
 
 \item{SBmethod}{Method will be used to detect strand bias,
 including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
@@ -168,5 +174,5 @@ maf <- vcfToMAF(system.file("extdata",
 "WES_EA_T_1_mutect2.vep.vcf", package="CaMutQC"))
 mafF <- mutFilterCan(maf, cancerType='BRCA', 
 PONfile=system.file("extdata", "PON_test.txt", package="CaMutQC"), 
-PONformat="txt", TMB=FALSE)
+PONformat="txt", TMB=FALSE, report=FALSE)
 }

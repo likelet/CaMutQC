@@ -16,6 +16,8 @@
 #' @param normalAD Threshold of normal alternative allele depth. Default: Inf
 #' @param VAF Threshold of VAF value. Default: 0.05
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 0
+#' @param dbsnpCutoff Cutoff of normal depth for dbSNP variants. Default: 19.
+#' @param nonCutoff Cutoff of normal depth for non-dbSNP variants. Default: 8.
 #' @param SBmethod Method will be used to detect strand bias,
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
@@ -48,6 +50,7 @@
 mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized", 
                           tumorDP = 20, normalDP = 10, tumorAD = 5, 
                           normalAD = Inf, VAF = 0.05, VAFratio = 0, 
+                          dbsnpCutoff = 19, nonCutoff = 8,
                           SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50, 
                           minInterval = 10, tagFILTER = 'PASS', 
                           progressbar = TRUE, verbose = TRUE){
@@ -70,7 +73,8 @@ mutFilterTech <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
     maf <- mutFilterAdj(maf, maxIndelLen=maxIndelLen, minInterval=minInterval)
     # normalDP filtration
     if (progressbar) {setTxtProgressBar(pb, 60, title=progressbar)}
-    maf <- mutFilterNormalDP(maf, verbose=verbose)
+    maf <- mutFilterNormalDP(maf, dbsnpCutoff=dbsnpCutoff, 
+                             nonCutoff=nonCutoff, verbose=verbose)
     # PON filtration
     if (progressbar) {
         setTxtProgressBar(pb, 80, title=progressbar)
