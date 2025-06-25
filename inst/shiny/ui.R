@@ -63,6 +63,8 @@ fluidPage(
             numericInput("normalDP", "Normal Depth (DP) cutoff", value = 10, min = 0, max = Inf, step = 1),
             numericInput("tumorAD", "Tumor Allele Depth (AD) cutoff", value = 5, min = 0, max = Inf, step = 1),
             numericInput("normalAD", "Normal Allele Depth (AD) cutoff", value = 500, min = 0, max = Inf, step = 1),
+            numericInput("dbsnpCutoff", "Normal Allele Depth (AD) cutoff for dbSNP variants", value = 19, min = 0, max = Inf, step = 1),
+            numericInput("nonCutoff", "Normal Allele Depth (AD) cutoff for non-dbSNP variants", value = 8, min = 0, max = Inf, step = 1),
             selectInput("sb", "Strand Bias method", choices = c('SOR', 'Fisher')),
             numericInput("sbscore", "Strand Bias cutoff", value = 3, min = 0, max = Inf, step = 1),
             numericInput("maxIndelLen", "Max length of indel will be filtered when next to SNV", value = 50, min = 0, max = Inf, step = 1),

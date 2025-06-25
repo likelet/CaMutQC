@@ -39,7 +39,7 @@ This is a simple workflow of CaMutQC.
 
 </div>
 
-A detailed manual can be found [here](https://seqworld.com/CaMutQC/).
+A detailed manual can be found [here](https://likelet.github.io/CaMutQC/).
 
 ## Shiny APP
 We developed a Shiny application for CaMutQC to enhance its accessibility. Users can use the following code to launch Shiny app build with the package.

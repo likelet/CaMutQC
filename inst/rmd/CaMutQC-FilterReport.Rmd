@@ -132,10 +132,10 @@ dbs <- paste0(c('ExAC', 'Genomesprojects1000',
 
 ##### b. &nbsp;&nbsp; Normal depth threshold
 
-To avoid miscalling germline variants and to ensure the quality of variants [4](#refer), filtration for normal depth is also applied in CaMutQC as follows. 
+To avoid miscalling germline variants and to ensure the quality of variants [4](#refer), the filtration for dbsnp/non-dbsnp variants is embedded in CaMutQC with the following cutoffs on normal depth:
 
-* **[dbsnp](http://www.bioinfo.org.cn/relative/dbSNP%20Home%20Page.htm) Variants**: <span style="color:#ED6F3E">**19**</span>
-* **Non-dbsnp variants**: <span style="color:#ED6F3E">**8**</span>
+* **[dbsnp](http://www.bioinfo.org.cn/relative/dbSNP%20Home%20Page.htm) Variants**: <span style="color:#ED6F3E">**`r dbsnpCutoff`**</span>
+* **Non-dbsnp variants**: <span style="color:#ED6F3E">**`r nonCutoff`**</span>
 
 &nbsp;
 

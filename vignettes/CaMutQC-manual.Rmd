@@ -1,5 +1,5 @@
 ---
-title: 'CaMutQC: Cancer Mutation Quality Control'
+title: 'CaMutQC: Cancer Somatic Mutation Quality Control'
 output:
   BiocStyle::html_document:
     df_print: paged
@@ -54,7 +54,7 @@ vignette: >
 
 ## Introduction 
 
-The quality control of cancer somatic mutations is of great significance in cancer genomics. It helps to eliminate false positive mutations arisen during the sequencing process, thereby improving the efficiency and accuracy of downstream analysis. Here, we developed an R package CaMutQC, for the quality control and selection of cancer somatic mutations. It offers both common and customized strategies for the filtration of cancer somatic mutations based on the MAF data frame, which also can select key somatic mutations related to tumorigenesis. In addition, we believe that the union of CaMutQC-filtered mutations returned by multiple variant caller contains more true positive somatic mutations than that from a single variant caller or the intersection of multiple callers. The package, source code and documents are freely available through Github (https://github.com/likelet/CaMutQC). We also developed a shiny application to enhance its accessibility.
+The quality control of cancer somatic mutations is of great significance in cancer genomics. It helps to eliminate false positive mutations arisen during the sequencing process, thereby improving the efficiency and accuracy of downstream analysis. Here, we developed an R package CaMutQC, for the quality control and selection of cancer somatic mutations. It offers both common and customized strategies for the filtration of cancer somatic mutations based on the MAF data frame, which also can select key somatic mutations related to tumorigenesis. In addition, we believe that the union of CaMutQC-filtered mutations returned by multiple variant caller contains more true positive somatic mutations than that from a single variant caller or the intersection of multiple callers. The package, including source code and documentation, is available through Github (https://github.com/likelet/CaMutQC). A Shiny web application is also provided for interactive use.
 
 
 ### Citation
@@ -403,9 +403,9 @@ When running `mutFilterCom`, `mutFilterTech` or `mutSelection`, a progress bar a
 
 ### Cancer type-based filtration
 
-With CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types, where thresholds for parameters all come from classical studies. `mutFilterCan` function integrates 10 cancer types so far, with different parameters for each cancer type, for a more precise and customized filtration. 
+With CaMutQC, users are able to filter and select cancer somatic mutations according to cancer types, where thresholds for parameters all come from classical studies. `mutFilterCan` function integrates 11 cancer types so far, with different parameters for each cancer type, to achieve more precise and customized filtrations. 
 
-Cancer types supported in CaMutQC: **COADREAD**, **BRCA**, **LIHC**, **LAML**, **LCML**, **UCEC**, **UCS**, **BLCA**, **KIRC**, **KIRP**.
+Cancer types supported in CaMutQC: **COADREAD**, **BRCA**, **LIHC**, **LAML**, **LCML**, **UCEC**, **UCS**, **BLCA**, **KIRC**, **KIRP** and **STAD**.
 
 ```{r, message=FALSE}
 MAFCan <- mutFilterCan(MAFdat, cancerType='LAML', report=FALSE, TMB=FALSE, 

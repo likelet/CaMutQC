@@ -15,6 +15,8 @@
 #' @param normalAD Threshold of normal alternative allele depth. Default: Inf
 #' @param VAF Threshold of VAF value. Default: 0.05
 #' @param VAFratio Threshold of VAF ratio (tVAF/nVAF). Default: 0.
+#' @param dbsnpCutoff Cutoff of normal depth for dbSNP variants. Default: 19.
+#' @param nonCutoff Cutoff of normal depth for non-dbSNP variants. Default: 8.
 #' @param SBmethod Method will be used to detect strand bias,
 #' including 'SOR' and 'Fisher'. Default: 'SOR'. SOR: StrandOddsRatio
 #' (https://gatk.broadinstitute.org/hc/en-us/articles/360041849111-
@@ -107,6 +109,7 @@
 mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized", 
                          tumorDP = 20, normalDP = 10, tumorAD = 5, 
                          normalAD = Inf, VAF = 0.05, VAFratio = 0,
+                         dbsnpCutoff = 19, nonCutoff = 8,
                          SBmethod = 'SOR', SBscore = 3, maxIndelLen = 50,
                          minInterval = 10, tagFILTER = 'PASS', dbVAF = 0.01,
                          ExAC = TRUE, Genomesprojects1000 = TRUE, 
@@ -132,6 +135,7 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
     mafFilteredT <- mutFilterTech(maf, panel=panel, tumorDP=tumorDP,
                             normalDP=normalDP, tumorAD=tumorAD, VAF=VAF,
                             normalAD=normalAD, VAFratio=VAFratio, 
+                            dbsnpCutoff=dbsnpCutoff, nonCutoff=nonCutoff,
                             SBmethod=SBmethod, SBscore=SBscore, 
                             maxIndelLen=maxIndelLen, minInterval=minInterval, 
                             tagFILTER=tagFILTER, progressbar=progressbar,
@@ -181,8 +185,10 @@ mutFilterCom <- function(maf, PONfile, PONformat = "vcf", panel = "Customized",
         running_code <- paste0("mutFilterCom(maf, panel=", panel, ", tumorDP=", 
                       tumorDP, ", normalDP=", normalDP, ", tumorAD=", tumorAD,
                       ", normalAD=", normalAD, ", VAF=", VAF, ", VAFratio=",
-                      VAFratio, ", SBmethod=", SBmethod, ", SBscore=", 
-                      SBscore, ", maxIndelLen=", maxIndelLen, ", minInterval=",
+                      VAFratio, "dbsnpCutoff=", dbsnpCutoff, 
+                      "nonCutoff=", nonCutoff, ", SBmethod=", SBmethod, 
+                      ", SBscore=", SBscore, ", maxIndelLen=", 
+                      maxIndelLen, ", minInterval=",
                       minInterval, ", tagFILTER=", tagFILTER, ", dbVAF=",
                       dbVAF, ", ExAC=", ExAC, ", Genomesprojects1000=", 
                       Genomesprojects1000, ", ESP6500=", ESP6500, ", gnomAD=",
