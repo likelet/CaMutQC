@@ -26,3 +26,8 @@ Changes in version 1.5.2 (2024-06-20)
 + Develop A Shiny APP
 + Update manual, filterreport and README
 + Fix some bugs
+
+Changes in version 1.5.3 (2024-06-25)
++ Customized normalDP cutoff for dbsnp and non-dbsnp variants
++ Add a new cancer type: STAD
++ Update manual, workflow and filterreport

@@ -64,6 +64,11 @@ mutFilterPON <- function(maf, PONfile, PONformat = "vcf", verbose = TRUE) {
                            by.y = c("CHROM", "POS", "REF", "ALT"), all.y=FALSE)
         }else if (PONformat == "txt") {
             PON_frame <- read.table(PONfile, header=TRUE, sep = "\t")
+            # handle cases when the PON file only has a header
+            if (nrow(PON_frame) == 0) {
+                message("PON file is empty, no variant will get an R flag.")
+                return(maf)
+            }
             PON_frame$ID <- 1
             # get the intersect veriants using merging action
             pon_maf <- merge(maf, PON_frame, all.x=TRUE, 
