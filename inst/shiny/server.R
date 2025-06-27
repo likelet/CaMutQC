@@ -45,20 +45,22 @@ function(input, output, session) {
     
     # Reactive expression for PON file path
     pon_file_path <- reactive({
-        if (!is.null(input$PON_file)) {
-            # Return the uploaded file path
-            input$PON_file$datapath
-        } else {
-            # Return default file path
-            default_path <- file.path("dom", "PON_example.txt")
-            # Check if default file exists
-            if (!file.exists(default_path)) {
-                showNotification("Default PON file not found in dom/PON_example.txt", type = "error")
-                return(NULL)
+        if (input$PON_filter) {
+            if (!is.null(input$PON_file)) {
+                return(input$PON_file$datapath)
+            } else {
+                default_path <- file.path("dom", "PON_example.txt")
+                if (!file.exists(default_path)) {
+                    showNotification("Default PON file not found in dom/PON_example.txt", type = "error")
+                    return(NULL)
+                }
+                return(default_path)
             }
-            return(default_path)
+        } else {
+            return(NULL)
         }
     })
+    
     
     bed_file_path <- reactive({
         if (!is.null(input$bed_file)) {
@@ -116,7 +118,9 @@ function(input, output, session) {
     
     observeEvent(input$run_filter, {
         req(vcf_file_path())
-        req(pon_file_path())
+        if (input$PON_filter) {
+            req(pon_file_path())
+        }
         # If multiple VCFs, use multiVCF=TRUE
         maf <- vcfToMAF(vcf_file_path())
         # process gene list
@@ -124,6 +128,12 @@ function(input, output, session) {
             genes <- NULL
         }else{
             genes <- unlist(strsplit(input$genelist, split = ","))
+        }
+        # handle ponformat when PON filter is set to FALSE
+        if (!(input$PON_filter)){
+            PON_format_final <- '.vcf'
+        }else{
+            PON_format_final <- input$PON_file_type
         }
         # Apply filtration
         maf_filtered <- mutFilterCom(
@@ -140,7 +150,7 @@ function(input, output, session) {
             dbsnpCutoff = input$dbsnpCutoff,
             nonCutoff = input$nonCutoff,
             PONfile = pon_file_path(),
-            PONformat = input$PON_file_type,
+            PONformat = PON_format_final,
             progressbar = FALSE,
             SBmethod = input$sb,
             SBscore = input$sbscore,
@@ -176,11 +186,11 @@ function(input, output, session) {
         }
         filtered_results <- maf_data()
         rownames(filtered_results) <- 1:nrow(filtered_results)
-        filtered_results <- filtered_results[,c(1,5,6,7,9,10,11,13,125)]
+        filtered_results <- filtered_results[,c(125,1,5,6,7,9,10,11,13)]
         results(filtered_results)
     })
     
-    output$filtered_table <- renderDT({
+    output$labeled_table <- renderDT({
         req(maf_data())
         req(results())
         datatable(results(), options = list(pageLength = 20))
@@ -188,7 +198,7 @@ function(input, output, session) {
     
     output$download_maf <- downloadHandler(
         filename = function() {
-            paste0("filtered_", Sys.Date(), ".maf")
+            paste0("labeled_", Sys.Date(), ".maf")
         },
         content = function(file) {
             write.table(maf_data(), file, sep = "\t", row.names = FALSE, quote = FALSE)
