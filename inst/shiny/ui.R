@@ -53,9 +53,13 @@ fluidPage(
         sidebarPanel(
             fileInput("vcf_file", "Upload VCF file(s)", multiple = FALSE, accept = ".vcf", placeholder = "example.vcf"),
             downloadButton("download_example", "Download VCF"),
-            fileInput("PON_file", "Upload one PON file, txt or vcf", multiple = FALSE, accept = c(".vcf", ".txt"),
-                      placeholder = "PON_example.txt"),
-            selectInput("PON_file_type", "PON file type", choices = c("txt", "vcf")),
+            checkboxInput("PON_filter", "Filter based on PON file", value = FALSE),
+            conditionalPanel(
+              condition = "input.PON_filter == true",
+              fileInput("PON_file", "Upload one PON file, txt or vcf", multiple = FALSE, accept = c(".vcf", ".txt"),
+                        placeholder = "PON_example.txt"),
+              selectInput("PON_file_type", "PON file type", choices = c("txt", "vcf")),
+            ),
             selectInput("panel", "Filtration Panel", choices = c("Customized","MSKCC", "WES")),
             numericInput("VAF", "VAF cutoff", value = 0.05, min = 0, max = 1, step = 0.01),
             numericInput("VAFratio", "VAF ratio cutoff", value = 0, min = 0, max = Inf, step = 0.5),
@@ -114,11 +118,12 @@ fluidPage(
               condition = "input.bedFilter == true || input.assay === 'Customized'",
               checkboxInput("bedHeader", "bed has a header", value = FALSE)
             ),
-            actionButton("run_filter", "Run Filtration"),
-            downloadButton("download_maf", "Download Filtered MAF")
+            actionButton("run_filter", "Filter NOW"),
+            downloadButton("download_maf", "Download Labeled MAF")
         ),
         mainPanel(
-            DTOutput("filtered_table"),
+          verbatimTextOutput("error_message"),
+            DTOutput("labeled_table"),
             verbatimTextOutput("tmb_value")
         )
     )
