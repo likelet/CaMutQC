@@ -31,3 +31,7 @@ Changes in version 1.5.3 (2024-06-25)
 + Customized normalDP cutoff for dbsnp and non-dbsnp variants
 + Add a new cancer type: STAD
 + Update manual, workflow and filterreport
+
+Changes in version 1.5.4 (2024-06-27)
++ Change PON_file to an optional parameter
++ Modify the description of parameters in mutFilterCan function
