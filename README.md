@@ -74,6 +74,6 @@ This software was mainly developed by:
 ## Citation
 ### AACR 2022 abstract
 *Xin Wang, Jian Ren, Qi Zhao*. Integrative quality control of cancer somatic mutations with CaMutQC [abstract]. In: Proceedings of the 113th Annual Meeting of the American Association for Cancer Research; 2022 April 8-13; New Orleans LA. Philadelphia (PA): AACR; 2022. Abstract nr 5004
-### bioRxiv
+### Computational and Structural Biotechnology Journal
 CaMutQC: An R Package for Integrative Quality Control of Cancer Somatic Mutations. *Xin Wang, Tengjia Jiang, Ao Shen, Yaru Chen, Yanqing Zhou, Jie Liu, Shuhan Zhao, Shifu Chen, Jian Ren*, Qi Zhao*. Computational and Structural Biotechnology Journal; 2025; doi: https://doi.org/10.1016/j.csbj.2025.07.011
 
