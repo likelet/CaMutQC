@@ -22,16 +22,19 @@ Changes in version 0.99.5 (2024-02-27)
 Changes in version 0.99.6 (2024-02-27)
 + Further remove some mutations from example VCF files to satisfy 5Mb limit
 
-Changes in version 1.5.2 (2024-06-20)
+Changes in version 1.5.2 (2025-06-20)
 + Develop A Shiny APP
 + Update manual, filterreport and README
 + Fix some bugs
 
-Changes in version 1.5.3 (2024-06-25)
+Changes in version 1.5.3 (2025-06-25)
 + Customized normalDP cutoff for dbsnp and non-dbsnp variants
 + Add a new cancer type: STAD
 + Update manual, workflow and filterreport
 
-Changes in version 1.5.4 (2024-06-27)
+Changes in version 1.5.4 (2025-06-27)
 + Change PON_file to an optional parameter
 + Modify the description of parameters in mutFilterCan function
+
+Changes in version 1.5.5 (2025-07-21)
++ Update citation

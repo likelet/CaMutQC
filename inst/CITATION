@@ -2,21 +2,25 @@ citHeader("CaMutQC can be cited as:")
 
 citEntry(
    entry = "article",
-   title = "CaMutQC: An R Package for Integrative Quality Control of Cancer Somatic Mutations",
-   author = personList(as.person("Xin Wang"),
-                       as.person(" Tengjia Jiang"),
-                       as.person(" Ao Shen"),
-                       as.person(" Yaru Chen"),
-                       as.person(" Yanqing Zhou"),
-                       as.person(" Jie Liu"),
-                       as.person(" Shuhan Zhao"),
-                       as.person(" Shifu Chen"),
-                       as.person(" Jian Ren"),
-                       as.person(" Qi Zhao")
-                       ),
-   journal = "bioRxiv",
-   year = 2024,
-   url = "https://www.biorxiv.org/content/early/2024/08/12/2024.08.12.606123",
-   doi = "10.1101/2024.08.12.606123",
-   textVersion = "Xin Wang, Tengjia Jiang, Ao Shen et al. CaMutQC: An R Package for Integrative Quality Control of Cancer Somatic Mutations. bioRxiv 2024.08.12.606123; doi: https://doi.org/10.1101/2024.08.12.606123"
+   title = "CaMutQC: An R package for integrative quality control and filtration of cancer somatic mutations",
+   author = personList(
+       as.person("Xin Wang"),
+       as.person("Tengjia Jiang"),
+       as.person("Ao Shen"),
+       as.person("Yaru Chen"),
+       as.person("Yanqing Zhou"),
+       as.person("Jie Liu"),
+       as.person("Shuhan Zhao"),
+       as.person("Shifu Chen"),
+       as.person("Jian Ren"),
+       as.person("Qi Zhao")
+   ),
+   journal = "Computational and Structural Biotechnology Journal",
+   year = 2025,
+   volume = "27",
+   pages = "3147–3154",
+   doi = "10.1016/j.csbj.2025.07.011",
+   url = "https://doi.org/10.1016/j.csbj.2025.07.011",
+   textVersion = "Xin Wang, Tengjia Jiang, Ao Shen, Yaru Chen, Yanqing Zhou, Jie Liu, Shuhan Zhao, Shifu Chen, Jian Ren, and Qi Zhao. CaMutQC: An R package for integrative quality control and filtration of cancer somatic mutations. Computational and Structural Biotechnology Journal. 2025;27:3147–3154. https://doi.org/10.1016/j.csbj.2025.07.011"
 )
+
