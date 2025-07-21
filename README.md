@@ -72,5 +72,5 @@ This software was mainly developed by:
 [Xin Wang](sylviawang555@gmail.com)  
 
 ## Citation
-Xin Wang, Tengjia Jiang, Ao Shen, Yaru Chen, Yanqing Zhou, Jie Liu, Shuhan Zhao, Shifu Chen, Jian Ren, and Qi Zhao. CaMutQC: An R package for integrative quality control and filtration of cancer somatic mutations. Computational and Structural Biotechnology Journal. 2025;27:3147–3154. https://doi.org/10.1016/j.csbj.2025.07.011
+Xin Wang, Tengjia Jiang, Ao Shen, Yaru Chen, Yanqing Zhou, Jie Liu, Shuhan Zhao, Shifu Chen, Jian Ren, and Qi Zhao. CaMutQC: An R package for integrative quality control and filtration of cancer somatic mutations. *Computational and Structural Biotechnology Journal*. 2025;27:3147–3154. https://doi.org/10.1016/j.csbj.2025.07.011
 
