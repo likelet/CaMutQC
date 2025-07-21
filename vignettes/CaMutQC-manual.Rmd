@@ -70,10 +70,10 @@ Install the latest and most stable version of CaMutQC with [Bioconductor](https:
 ```{r eval=FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
+# the latest version is on the devel branch, but might not be the most stable version
+# BiocManager::install(version='devel')
 
-# The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
-
+# the most stable version is on the release branch (by default)
 BiocManager::install("CaMutQC")
 ```
 
