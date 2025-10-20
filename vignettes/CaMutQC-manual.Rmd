@@ -59,7 +59,12 @@ The quality control of cancer somatic mutations is of great significance in canc
 
 ### Citation
 
-In R console, enter `citation("CaMutQC")`.
+If you find this tool useful, please cite:
+
+&nbsp;
+
+***Xin Wang, Tengjia Jiang, Ao Shen, Yaru Chen, Yanqing Zhou, Jie Liu, Shuhan Zhao, Shifu Chen, Jian Ren, and Qi Zhao. CaMutQC: An R package for integrative quality control and filtration of cancer somatic mutations. Computational and Structural Biotechnology Journal. 2025;27:3147–3154. https://doi.org/10.1016/j.csbj.2025.07.011
+***
 
 &nbsp;
 
