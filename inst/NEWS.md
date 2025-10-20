@@ -38,3 +38,7 @@ Changes in version 1.5.4 (2025-06-27)
 
 Changes in version 1.5.5 (2025-07-21)
 + Update citation
+
+Changes in version 1.5.6 (2025-10-20)
++ Update citation in manual
+
