@@ -21,7 +21,7 @@ Suggests:
     BiocStyle,
     shiny
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 NeedsCompilation: no
 BugReports: https://github.com/likelet/CaMutQC/issues
 URL: https://github.com/likelet/CaMutQC
